@@ -1,0 +1,17 @@
+{
+  "name": "personal-design",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.24.0",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @personal-design/web dev",
+    "build": "pnpm --filter @personal-design/web build",
+    "start": "pnpm --filter @personal-design/web start",
+    "lint": "pnpm --filter @personal-design/web lint",
+    "typecheck": "pnpm -r typecheck",
+    "sync:layouts": "pnpm --filter @personal-design/layout-compositions sync"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@personal-design/layout-compositions",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./catalog.json": "./catalog.json"
+  },
+  "scripts": {
+    "sync": "node scripts/sync.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "26.4.0",
+    "sharp": "^0.35.4",
+    "typescript": "6.0.3"
+  }
+}
