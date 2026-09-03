@@ -4,6 +4,11 @@
 
 Use **pnpm** (11.x, workspaces): `pnpm install`, `pnpm dev`, `pnpm build`
 
+## Dev Server
+
+- `pnpm dev` 通过 [portless](https://github.com/vercel-labs/portless)（全局安装）启动，站点在 **https://personal-design.localhost**（HTTPS + HTTP/2，无端口）
+- 路由名在根 `portless.json` 配置；绕过代理直连端口用 `pnpm dev:direct`（http://localhost:3000）
+
 ## Commit Attribution
 
 AI commits MUST include:
@@ -24,7 +29,8 @@ Co-Authored-By: (the agent model's name and attribution byline)
 
 - `apps/web` — 唯一站点（Next.js 16 App Router + Tailwind v4），产品集门户
 - `packages/<product>` — 每个产品的内容/数据包（catalog、类型、同步脚本）
-- 新增产品：`packages/<product>` + `apps/web/app/products/<slug>/` + 在 `apps/web/lib/products.ts` 注册；需要独立部署才拆 `apps/<product>`
+- 新增产品：`packages/<product>` + `apps/web/app/products/<slug>/` + 在 `apps/web/lib/products.ts` 注册（必填 `date` 上线日期，首页时间轴按它排序）；需要独立部署才拆 `apps/<product>`
+- 首页/产品页是横向 lifeline 时间轴（`apps/web/components/lifeline/`：滚动驱动 rail、hover 浮动预览、灯箱、撕角），零动画库依赖，手写 rAF；时间轴节点用 `LifelineTimeline` + `LifelineNode` 组合
 - 站点内图片一律放 `apps/web/public/`，由包的同步脚本生成，不手写路径
 
 ## layout-compositions 包

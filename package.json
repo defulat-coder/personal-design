@@ -7,7 +7,8 @@
     "node": ">=22.19.0"
   },
   "scripts": {
-    "dev": "pnpm --filter @personal-design/web dev",
+    "dev": "portless",
+    "dev:direct": "pnpm --filter @personal-design/web dev",
     "build": "pnpm --filter @personal-design/web build",
     "start": "pnpm --filter @personal-design/web start",
     "lint": "pnpm --filter @personal-design/web lint",

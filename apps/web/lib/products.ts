@@ -8,12 +8,15 @@ export interface Product {
   name: string;
   tagline: string;
   description: string;
+  /** 上线日期（ISO），首页时间轴按它排序 */
+  date: string;
   href: string;
   /** 首页卡片封面图（public 下路径） */
   cover: string;
   stats: string[];
 }
 
+/** 按上线日期升序 */
 export const products: Product[] = [
   {
     slug: 'layout-compositions',
@@ -21,8 +24,9 @@ export const products: Product[] = [
     tagline: '350 种排版构图图鉴',
     description:
       '从经典构图、视觉原则到出版广告、字体网格、网页 UI、影视画面、中国传统构图与演示文稿，按 8 个分类与 33 个主题组织的排版知识图鉴。',
+    date: '2026-09-03',
     href: '/products/layout-compositions',
     cover: '/layout-compositions/thumbnails/01-composition-logic/001.webp',
     stats: ['8 个分类', '33 个主题', '350 张高清图'],
   },
-];
+].sort((a, b) => a.date.localeCompare(b.date));

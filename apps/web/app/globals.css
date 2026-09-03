@@ -22,3 +22,124 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
+
+/* ---- lifeline 时间轴 ---- */
+
+@keyframes lifeline-rail-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes lifeline-node-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lifeline-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes lifeline-hint-nudge {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(4px, -4px);
+  }
+}
+
+/* 详情页入场（server component 兼容的纯 CSS 过渡，页间导航重挂载即重播） */
+@keyframes detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.detail-in {
+  animation: detail-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.detail-in-delay {
+  animation-delay: 80ms;
+}
+
+/* 详情→详情翻页进入时跳过入场动画（连翻图鉴不被强制拖节奏） */
+html[data-detail-nav='true'] .detail-in {
+  animation: none;
+}
+
+.lifeline-rail {
+  transform-origin: left center;
+  animation: lifeline-rail-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+.lifeline-node {
+  animation: lifeline-node-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(0.25s + var(--i, 0) * 90ms);
+}
+
+/* 时间轴重挂载（退出搜索）时跳过入场级联，不强制重播 ~1.5s */
+.lifeline-no-entry .lifeline-rail,
+.lifeline-no-entry .lifeline-node {
+  animation: none;
+}
+
+.lifeline-marquee {
+  animation: lifeline-marquee var(--dur, 80s) linear infinite;
+}
+
+.lifeline-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* 撕角关闭时，被遮住的灵感墙 marquee 暂停，不空烧合成器 */
+[data-peel-open='false'] .lifeline-marquee {
+  animation-play-state: paused;
+}
+
+/* 灯箱打开时 marquee 暂停（关闭动画要飞回卡片，位置不能动） */
+[data-lightbox-open='true'] .lifeline-marquee {
+  animation-play-state: paused;
+}
+
+/* reduced-motion 时 marquee 停播，行容器改为可手动横滑 */
+@media (prefers-reduced-motion: reduce) {
+  .lifeline-marquee-row {
+    overflow-x: auto;
+  }
+}
+
+.lifeline-hint {
+  animation: lifeline-hint-nudge 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lifeline-rail,
+  .lifeline-node,
+  .lifeline-marquee,
+  .lifeline-hint,
+  .detail-in {
+    animation: none;
+  }
+}
