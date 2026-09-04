@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { upstream } from '@personal-design/layout-compositions';
+import { upstream } from '@personal-design/layout-compositions/upstream';
 import type { LineId, Product } from '@/lib/products';
 import { LifelineNode, LifelineTimeline } from './lifeline/timeline';
 

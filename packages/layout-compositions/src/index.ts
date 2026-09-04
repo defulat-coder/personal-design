@@ -1,3 +1,7 @@
+import { existsSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import rawCatalog from '../catalog.json';
 import rawCorrections from '../corrections.json';
 
@@ -90,18 +94,52 @@ const MEDIA_BASE = (process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? '').replace(
   '',
 );
 
-/** 站点内高清 WebP 路径（由 sync 脚本生成；媒体迁移对象存储后为其上的绝对 URL）。 */
-export function imageUrl(item: LayoutItem): string {
-  return `${MEDIA_BASE}/layout-compositions/images/${item.category_slug}/${item.id}.webp`;
-}
+/** 上游仓库的 jsDelivr CDN（热链原图用，免自建存储） */
+const UPSTREAM_CDN =
+  'https://cdn.jsdelivr.net/gh/nevertoday/350-layout-compositions@main/';
 
-/** 站点内缩略图 WebP 路径。 */
-export function thumbnailUrl(item: LayoutItem): string {
-  return `${MEDIA_BASE}/layout-compositions/thumbnails/${item.category_slug}/${item.id}.webp`;
-}
+const PUBLIC_DIR = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  '../../../apps/web/public',
+);
 
 type Corrections = Record<string, { v2?: string; v1?: string; missing?: boolean }>;
 const corrections = rawCorrections as Corrections;
+
+/**
+ * 解析条目实际的上游图源文件（与 sync 脚本同一套 corrections 逻辑）：
+ * - 默认：条目自身 image 字段
+ * - { v2 }：v2 里的另一个文件（上游图文错位，以 corrections 为准）
+ * - { v1 }：旧版 100 种排版里的等价图（v2 丢失，v1 补齐）
+ * - { missing }：上游不存在
+ */
+function resolveUpstreamImage(item: LayoutItem): string | null {
+  const correction = corrections[item.id];
+  if (!correction) return item.image;
+  if (correction.missing) return null;
+  if (correction.v1) return `images/layout-${correction.v1}.png`;
+  const source = byId.get(correction.v2!);
+  if (!source) return null;
+  return source.image;
+}
+
+/**
+ * 高清图地址：本地无损 WebP 存在时用本地（sync 脚本生成），
+ * 否则热链上游 jsDelivr CDN 的 PNG 原图。
+ */
+export function imageUrl(item: LayoutItem): string {
+  const local = `/layout-compositions/images/${item.category_slug}/${item.id}.webp`;
+  if (existsSync(join(PUBLIC_DIR, local))) {
+    return `${MEDIA_BASE}${local}`;
+  }
+  const upstreamPath = resolveUpstreamImage(item);
+  return upstreamPath ? UPSTREAM_CDN + encodeURI(upstreamPath) : '';
+}
+
+/** 站点内缩略图 WebP 路径（本地常驻，体积小）。 */
+export function thumbnailUrl(item: LayoutItem): string {
+  return `${MEDIA_BASE}/layout-compositions/thumbnails/${item.category_slug}/${item.id}.webp`;
+}
 
 /** 上游图片缺失的条目 id（v2 丢失且 v1 无等价图）。 */
 export const missingImageIds: ReadonlySet<string> = new Set(
@@ -132,11 +170,5 @@ export function itemsBySubcategory(
   );
 }
 
-/** 上游项目信息（CC BY 4.0 署名用）。 */
-export const upstream = {
-  name: '350-layout-compositions',
-  author: 'nevertoday',
-  url: 'https://github.com/nevertoday/350-layout-compositions',
-  license: 'CC BY 4.0',
-  licenseUrl: 'https://creativecommons.org/licenses/by/4.0/',
-} as const;
+/** 上游项目信息（CC BY 4.0 署名用），实现见 upstream.ts（客户端安全模块）。 */
+export { upstream } from './upstream';

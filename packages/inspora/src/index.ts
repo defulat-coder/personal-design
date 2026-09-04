@@ -1,20 +1,29 @@
 /**
  * inspora 数据包查询 API —— web 端只通过这里取数，不直接读 DB、不手拼路径。
- * 数据由 `scripts/sync.mjs` 生成：inspora.db（SQLite）+ apps/web/public/inspora/（媒体）。
+ * 数据由 `scripts/sync.mjs` 生成：inspora.db（SQLite）+ apps/web/public/inspora/（海报/缩略图/头像）。
+ * 大图与视频热链原站（media.inspora.design），本地文件存在时优先用本地副本。
  */
 import { DatabaseSync } from 'node:sqlite';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const DB_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../inspora.db');
+const PKG_DIR = path.dirname(fileURLToPath(import.meta.url));
+const DB_PATH = path.resolve(PKG_DIR, '../inspora.db');
+const PUBLIC_DIR = path.resolve(PKG_DIR, '../../../apps/web/public');
 
 /** 媒体 base：缺省为空（本地 public 路径）；设 NEXT_PUBLIC_MEDIA_BASE_URL（对象存储公开域名）后返回绝对 URL */
 const MEDIA_BASE = (process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? '').replace(
   /\/+$/,
   '',
 );
-function mediaUrl(localPath: string | null): string | null {
-  return localPath ? `${MEDIA_BASE}${localPath}` : null;
+
+/** 本地副本存在用本地（含外置 base），否则回退热链原站 */
+function mediaUrl(localPath: string | null, upstream: string | null): string | null {
+  if (localPath && existsSync(path.join(PUBLIC_DIR, localPath))) {
+    return `${MEDIA_BASE}${localPath}`;
+  }
+  return upstream;
 }
 
 let db: DatabaseSync | undefined;
@@ -35,11 +44,11 @@ export interface InsporaMedia {
   height: number | null;
   sizeBytes: number | null;
   alt: string | null;
-  /** 本地路径（/inspora/...），同步未完成时可能为 null */
+  /** 媒体地址：本地副本存在时为本地路径（或外置 base URL），否则为原站热链 URL */
   src: string | null;
-  /** 视频封面（本地） */
+  /** 视频封面（本地优先，缺省原站） */
   poster: string | null;
-  /** 缩略图（本地）：图片为最小 variant，视频为封面 */
+  /** 缩略图（本地优先，缺省原站）：图片为最小 variant，视频为封面 */
   thumb: string | null;
 }
 
@@ -134,9 +143,9 @@ function toMedia(row: MediaRow): InsporaMedia {
     height: row.height,
     sizeBytes: row.size_bytes,
     alt: row.alt,
-    src: mediaUrl(row.local_path),
-    poster: mediaUrl(row.local_poster_path),
-    thumb: mediaUrl(row.local_thumb_path),
+    src: mediaUrl(row.local_path, row.url),
+    poster: mediaUrl(row.local_poster_path, row.poster_url),
+    thumb: mediaUrl(row.local_thumb_path, row.poster_url ?? row.url),
   };
 }
 
@@ -155,7 +164,7 @@ function toPost(row: PostRow, media: InsporaMedia[]): InsporaPost {
     title: row.title,
     creatorName: row.creator_name,
     creatorUrl: row.creator_url,
-    creatorAvatar: mediaUrl(row.creator_avatar),
+    creatorAvatar: mediaUrl(row.creator_avatar, null),
     description: row.description,
     category: row.category,
     industries: parseJsonArray(row.industries),

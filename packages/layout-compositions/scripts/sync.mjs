@@ -5,8 +5,9 @@
  * 1. 下载上游仓库 tarball 到 .upstream/（已存在则复用，幂等）
  * 2. 解压并按 catalog.json 逐条 sha256 校验 PNG
  * 3. sharp 转 WebP 输出到 apps/web/public/layout-compositions/
- *    - images/<category_slug>/<id>.webp     高清图，无损（lossless），保持 1086×1448
- *    - thumbnails/<category_slug>/<id>.webp 缩略图 q82，宽 720（同样从 PNG 原图缩放）
+ *    - thumbnails/<category_slug>/<id>.webp 缩略图 q82，宽 720（从 PNG 原图缩放）
+ *    - images/<category_slug>/<id>.webp    高清无损图（仅 --with-images 时生成；
+ *      缺省不生成——线上热链上游 jsDelivr 原图，本地存在时包 API 自动优先用本地）
  * 4. 已存在的输出跳过，可重复运行
  */
 import { createHash } from 'node:crypto';
@@ -39,6 +40,8 @@ const outBase = path.resolve(
 const TARBALL_URL =
   'https://codeload.github.com/nevertoday/350-layout-compositions/tar.gz/refs/heads/main';
 const CONCURRENCY = 8;
+/** 默认只出缩略图（线上热链上游原图）；--with-images 才生成无损高清图 */
+const WITH_IMAGES = process.argv.includes('--with-images');
 
 const catalog = JSON.parse(
   await readFile(path.join(pkgDir, 'catalog.json'), 'utf8'),
@@ -139,7 +142,8 @@ async function convertOne(root, item) {
     item.category_slug,
     `${item.id}.webp`,
   );
-  const imageDone = existsSync(imageOut) && statSync(imageOut).size > 0;
+  const imageDone =
+    !WITH_IMAGES || (existsSync(imageOut) && statSync(imageOut).size > 0);
   const thumbDone = existsSync(thumbOut) && statSync(thumbOut).size > 0;
   if (imageDone && thumbDone) return 'skipped';
 

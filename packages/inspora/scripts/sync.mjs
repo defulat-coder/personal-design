@@ -8,7 +8,9 @@
  * - 详情：无 API，抓取 `/posts/<slug>` 的 HTML，从 RSC payload
  *   （self.__next_f.push）里提取含 sourceUrl 的完整帖子对象
  *   （description / category / industries / colors / styles / sourceUrl …）。
- * - 媒体：`media.inspora.design`（Cloudflare R2）直链无防护，Node 直接下载。
+ * - 媒体：`media.inspora.design`（Cloudflare R2）直链无防护。只下载
+ *   海报/缩略图/头像入库；大图与视频不入库，web 端热链原站，
+ *   包查询 API 按本地文件存在性自动优先本地副本。
  *
  * 增量逻辑：feed 翻到「已入库的 post id」即停；详情只在 enriched_at 为空时补抓；
  * 媒体文件已存在且非空即跳过。可随时中断，下次接着跑。
@@ -124,10 +126,11 @@ const stmts = {
       local_thumb_path=COALESCE(media.local_thumb_path, excluded.local_thumb_path),
       raw_json=excluded.raw_json
   `),
+  // 大图/视频不再下载（热链原站，见包 README/AGENTS.md）；只补本地的海报与缩略图
   mediaNeedingDownload: db.prepare(`
     SELECT id, type, url, poster_url, local_path, local_poster_path, local_thumb_path, raw_json
     FROM media
-    WHERE local_path IS NULL OR (type = 'video' AND local_poster_path IS NULL)
+    WHERE (type = 'video' AND local_poster_path IS NULL AND poster_url IS NOT NULL)
        OR (type = 'image' AND local_thumb_path IS NULL)
   `),
   updateMediaPaths: db.prepare(
@@ -401,30 +404,18 @@ async function main() {
 
   await browser.close();
 
-  // 3. 媒体下载（R2 直链，无需浏览器）
+  // 3. 媒体下载（R2 直链，无需浏览器）——只下载海报/缩略图；
+  //    大图与视频热链原站（src/index.ts 查询时按本地文件存在性回退）
   const mediaRows = stmts.mediaNeedingDownload.all();
   console.log(`待下载媒体: ${mediaRows.length} 个`);
   const mediaResults = await pool(mediaRows, 6, async (m) => {
-    let localPath = null;
-    let localPoster = null;
-    let localThumb = null;
     if (m.type === 'video') {
-      const rel = `videos/${m.id}${extOf(m.url)}`;
-      const r1 = await download(m.url, path.join(PUBLIC_DIR, rel));
-      localPath = `/inspora/${rel}`;
-      if (m.poster_url) {
-        const relP = `posters/${m.id}${extOf(m.poster_url)}`;
-        await download(m.poster_url, path.join(PUBLIC_DIR, relP));
-        localPoster = `/inspora/${relP}`;
-        localThumb = localPoster;
-      }
-      stmts.updateMediaPaths.run(localPath, localPoster, localThumb, m.id);
-      return r1;
+      const relP = `posters/${m.id}${extOf(m.poster_url)}`;
+      const r = await download(m.poster_url, path.join(PUBLIC_DIR, relP));
+      stmts.updateMediaPaths.run(null, `/inspora/${relP}`, `/inspora/${relP}`, m.id);
+      return r;
     }
-    // image：原图 + 最小 variant 作缩略图
-    const rel = `images/${m.id}${extOf(m.url)}`;
-    const r1 = await download(m.url, path.join(PUBLIC_DIR, rel));
-    localPath = `/inspora/${rel}`;
+    // image：只留最小 variant 作缩略图，原图热链
     let thumbUrl = m.url;
     try {
       const variants = JSON.parse(m.raw_json)?.variants;
@@ -433,10 +424,9 @@ async function main() {
       }
     } catch {}
     const relT = `thumbnails/${m.id}${extOf(thumbUrl)}`;
-    await download(thumbUrl, path.join(PUBLIC_DIR, relT));
-    localThumb = `/inspora/${relT}`;
-    stmts.updateMediaPaths.run(localPath, null, localThumb, m.id);
-    return r1;
+    const r = await download(thumbUrl, path.join(PUBLIC_DIR, relT));
+    stmts.updateMediaPaths.run(null, null, `/inspora/${relT}`, m.id);
+    return r;
   });
   console.log(`媒体下载: ${JSON.stringify(mediaResults)}`);
 

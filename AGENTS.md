@@ -42,11 +42,12 @@ Co-Authored-By: (the agent model's name and attribution byline)
 - `catalog.json` 是上游原样拷贝，**不要改内容**；`category_slug`、`id` 是稳定标识
 - 上游 v2 图片存在系统性图文错位，`corrections.json` 记录「内容 id → 实际源文件」的纠正映射（319 条 v2 重映射、3 条 v1 补齐、8 条上游缺失）；sync 脚本与 `hasImage()` 都依赖它，改动前先看脚本里的说明
 - 查询一律用 `src/index.ts` 的 API（`catalog`、`categories`、`imageUrl`、`thumbnailUrl`、`hasImage`…），不在 app 里拼路径
-- 图片署名（CC BY 4.0）统一收在首页「关于」节点，引用包的 `upstream` 常量渲染，不在各页脚重复
+- 图片署名（CC BY 4.0）统一收在首页「关于」节点，引用包的 `upstream` 常量渲染（客户端组件从子路径 `@personal-design/layout-compositions/upstream` 引，index.ts 含 node:fs 不能进客户端包）
+- 媒体策略：sync 默认只出缩略图（720px q82）；高清图线上热链上游 jsDelivr CDN（`imageUrl` 按本地文件存在性自动优先本地无损 WebP）；要本地全量高清图用 `pnpm sync:layouts -- --with-images`
 
 ## inspora 包
 
-- 从 inspora.design 增量同步的灵感库：`inspora.db`（SQLite，`node:sqlite` 读写）+ `apps/web/public/inspora/`（媒体全量本地化），两者都是生成物但随仓库提交
+- 从 inspora.design 增量同步的灵感库：`inspora.db`（SQLite，`node:sqlite` 读写）+ `apps/web/public/inspora/`（海报/缩略图/头像本地化），两者都是生成物但随仓库提交；大图与视频不入库，查询 API 按本地文件存在性自动回退热链原站（media.inspora.design）
 - 列表 API `/api/posts` 被 Vercel checkpoint 拦截，sync 脚本必须用 Playwright 在页面上下文里 fetch；详情无 API，从 `/posts/<slug>` HTML 的 RSC payload 提取（脚本头部注释有完整说明）
 - 增量逻辑：feed 遇到已入库 id 即停；`enriched_at IS NULL` 才补详情；媒体按文件存在性跳过——可随时中断重跑
 - 查询一律用 `src/index.ts` 的 API（`listPosts`、`getPostBySlug`、`listCategories`、`upstreamUrl`…），不在 app 里读 DB、不拼路径
