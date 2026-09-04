@@ -5,8 +5,8 @@
  * 1. 下载上游仓库 tarball 到 .upstream/（已存在则复用，幂等）
  * 2. 解压并按 catalog.json 逐条 sha256 校验 PNG
  * 3. sharp 转 WebP 输出到 apps/web/public/layout-compositions/
- *    - images/<category_slug>/<id>.webp     高清图 q80，保持 1086×1448
- *    - thumbnails/<category_slug>/<id>.webp 缩略图 q75，宽 480
+ *    - images/<category_slug>/<id>.webp     高清图，无损（lossless），保持 1086×1448
+ *    - thumbnails/<category_slug>/<id>.webp 缩略图 q82，宽 720（同样从 PNG 原图缩放）
  * 4. 已存在的输出跳过，可重复运行
  */
 import { createHash } from 'node:crypto';
@@ -144,7 +144,6 @@ async function convertOne(root, item) {
   if (imageDone && thumbDone) return 'skipped';
 
   const srcImage = path.join(root, source.image);
-  const srcThumb = path.join(root, source.thumbnail);
 
   // 校验高清图源文件完整性（catalog 里的 sha256 即 PNG 的哈希；v1 无哈希可校）
   if (source.sha256) {
@@ -162,14 +161,16 @@ async function convertOne(root, item) {
   const jobs = [];
   if (!imageDone) {
     jobs.push(
-      sharp(srcImage).webp({ quality: 80 }).toFile(imageOut),
+      sharp(srcImage).webp({ lossless: true }).toFile(imageOut),
     );
   }
   if (!thumbDone) {
+    // 缩略图也从 PNG 原图缩放（上游 JPG 缩略图本身已压缩，再压会糊）；
+    // 720 宽覆盖灵感墙卡片 3x DPR（208px CSS ≈ 624px）
     jobs.push(
-      sharp(srcThumb)
-        .resize({ width: 480 })
-        .webp({ quality: 75 })
+      sharp(srcImage)
+        .resize({ width: 720 })
+        .webp({ quality: 82 })
         .toFile(thumbOut),
     );
   }

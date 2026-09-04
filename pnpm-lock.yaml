@@ -10,6 +10,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@personal-design/inspora':
+        specifier: workspace:*
+        version: link:../../packages/inspora
       '@personal-design/layout-compositions':
         specifier: workspace:*
         version: link:../../packages/layout-compositions

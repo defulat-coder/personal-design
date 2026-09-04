@@ -52,7 +52,8 @@ export function useLightbox() {
   return useContext(LightboxContext);
 }
 
-const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+// 与 globals.css 的 --ease-out 同源（内联 style 里的 var() 从 :root 解析）
+const EASE = 'var(--ease-out)';
 const DURATION = 450;
 
 interface ActiveImage {
@@ -396,10 +397,11 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
               className="fixed inset-0 z-[80] outline-none"
               onKeyDown={onDialogKeyDown}
             >
-          {/* 遮罩：毛玻璃 + 加深，明暗两种背景下都能分离层次 */}
+          {/* 遮罩：毛玻璃 + 加深，明暗两种背景下都能分离层次。
+             灯箱是恒定暗房表面（不随主题翻转），色值取自暗色 palette 原值而非 token */}
           <div
             aria-hidden
-            className="absolute inset-0 bg-neutral-950/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-[#0d1015]/70 backdrop-blur-sm"
             style={{
               opacity: expanded ? 1 : 0,
               transition: reducedMotion
@@ -425,7 +427,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
               alt=""
               aria-hidden
               draggable={false}
-              className="absolute rounded-lg object-cover shadow-2xl"
+              className="absolute object-cover"
               style={{
                 ...frame,
                 transform: expanded ? 'none' : startTransform,
@@ -441,7 +443,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
                 alt=""
                 aria-hidden
                 draggable={false}
-                className="absolute rounded-lg object-cover shadow-2xl"
+                className="absolute object-cover"
                 style={{
                   ...frame,
                   opacity: fullReady ? 0 : 1,
@@ -457,7 +459,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
               src={active.item.src}
               alt={active.item.alt}
               draggable={false}
-              className="absolute rounded-lg object-cover shadow-2xl ring-1 ring-white/10"
+              className="absolute object-cover ring-1 ring-white/10"
               style={{
                 ...frame,
                 transform: expanded ? 'none' : startTransform,
@@ -490,14 +492,14 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
                 : `opacity ${DURATION}ms ${EASE}`,
             }}
           >
-            <p className="flex min-w-0 items-center truncate text-neutral-200">
+            <p className="flex min-w-0 items-center truncate text-[#edf1f6]">
               {hasSiblings ? (
                 <span className="mr-2 inline-flex shrink-0 gap-1 sm:hidden">
                   <button
                     type="button"
                     aria-label="上一张"
                     onClick={() => go(-1)}
-                    className="flex size-7 items-center justify-center rounded-full bg-white/10 text-white transition active:scale-95"
+                    className="flex size-7 items-center justify-center bg-white/10 text-white transition active:scale-95"
                   >
                     <ChevronLeft className="size-4" />
                   </button>
@@ -505,14 +507,14 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
                     type="button"
                     aria-label="下一张"
                     onClick={() => go(1)}
-                    className="flex size-7 items-center justify-center rounded-full bg-white/10 text-white transition active:scale-95"
+                    className="flex size-7 items-center justify-center bg-white/10 text-white transition active:scale-95"
                   >
                     <ChevronRight className="size-4" />
                   </button>
                 </span>
               ) : null}
               {active.item.serial ? (
-                <span className="mr-2 shrink-0 font-mono text-xs text-neutral-400">
+                <span className="mr-2 shrink-0 font-mono text-xs text-[#97a2b1]">
                   {active.item.serial}
                 </span>
               ) : null}
@@ -520,14 +522,14 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
             </p>
             <span className="flex shrink-0 items-center gap-3">
               {hasSiblings ? (
-                <span className="font-mono text-xs text-neutral-400">
+                <span className="font-mono text-xs text-[#97a2b1]">
                   {active.index + 1} / {active.siblings.length}
                 </span>
               ) : null}
               {active.item.href ? (
                 <Link
                   href={active.item.href}
-                  className="inline-flex items-center gap-1 text-neutral-300 underline-offset-4 transition-colors hover:text-white hover:underline"
+                  className="inline-flex items-center gap-1 text-[#c3ccd8] underline-offset-4 transition-colors hover:text-white hover:underline"
                 >
                   查看详情
                   <ArrowUpRight className="size-3.5" />
@@ -543,7 +545,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
             type="button"
             aria-label="关闭"
             onClick={close}
-            className="absolute top-4 right-4 flex size-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition active:scale-95 hover:bg-white/20"
+            className="absolute top-4 right-4 flex size-10 items-center justify-center bg-white/10 text-white backdrop-blur-sm transition active:scale-95 hover:bg-white/20"
           >
             <X className="size-5" />
           </button>
@@ -555,7 +557,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
                 type="button"
                 aria-label="上一张"
                 onClick={() => go(-1)}
-                className="absolute top-1/2 left-5 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition active:scale-95 hover:bg-white/20 sm:flex"
+                className="absolute top-1/2 left-5 hidden size-10 -translate-y-1/2 items-center justify-center bg-white/10 text-white backdrop-blur-sm transition active:scale-95 hover:bg-white/20 sm:flex"
               >
                 <ChevronLeft className="size-5" />
               </button>
@@ -563,7 +565,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
                 type="button"
                 aria-label="下一张"
                 onClick={() => go(1)}
-                className="absolute top-1/2 right-5 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition active:scale-95 hover:bg-white/20 sm:flex"
+                className="absolute top-1/2 right-5 hidden size-10 -translate-y-1/2 items-center justify-center bg-white/10 text-white backdrop-blur-sm transition active:scale-95 hover:bg-white/20 sm:flex"
               >
                 <ChevronRight className="size-5" />
               </button>

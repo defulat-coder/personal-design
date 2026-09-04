@@ -84,14 +84,20 @@ export function getLayoutById(id: string): LayoutItem | undefined {
   return byId.get(id);
 }
 
-/** 站点内高清 WebP 路径（由 sync 脚本生成到 apps/web/public 下）。 */
+/** 媒体 base：缺省为空（本地 public 路径）；设 NEXT_PUBLIC_MEDIA_BASE_URL（对象存储公开域名）后返回绝对 URL */
+const MEDIA_BASE = (process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? '').replace(
+  /\/+$/,
+  '',
+);
+
+/** 站点内高清 WebP 路径（由 sync 脚本生成；媒体迁移对象存储后为其上的绝对 URL）。 */
 export function imageUrl(item: LayoutItem): string {
-  return `/layout-compositions/images/${item.category_slug}/${item.id}.webp`;
+  return `${MEDIA_BASE}/layout-compositions/images/${item.category_slug}/${item.id}.webp`;
 }
 
 /** 站点内缩略图 WebP 路径。 */
 export function thumbnailUrl(item: LayoutItem): string {
-  return `/layout-compositions/thumbnails/${item.category_slug}/${item.id}.webp`;
+  return `${MEDIA_BASE}/layout-compositions/thumbnails/${item.category_slug}/${item.id}.webp`;
 }
 
 type Corrections = Record<string, { v2?: string; v1?: string; missing?: boolean }>;

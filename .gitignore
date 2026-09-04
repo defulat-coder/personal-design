@@ -11,3 +11,7 @@ dist/
 
 # 上游仓库下载缓存（sync 脚本临时目录）
 packages/layout-compositions/.upstream/
+
+# impeccable 技能运行产物（评审截图、构建状态机）；config/design.json 是系统记录，入库
+.impeccable/review/
+.impeccable/build/

@@ -1,26 +1,135 @@
 @import 'tailwindcss';
 
+/* data-theme 驱动的 dark 变体（不用媒体查询，跟主题切换钮走） */
+@custom-variant dark (&:where(html[data-theme='dark'] *));
+
+/*
+ * 地铁导视系统（Transit wayfinding）——整站视觉世界
+ * 站牌纸白底、信号黑、3px 线路带、线路色是功能色（每产品一条线）；
+ * 直角（唯站环/主题钮正圆）、mono 只载数据、展示字走 Barlow Condensed。
+ * 已通车段 = ink 实线；规划段 = hairline-strong 虚线。
+ */
 @theme {
   --font-sans:
-    -apple-system, BlinkMacSystemFont, 'SF Pro SC', 'PingFang SC',
-    'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+    'SF Pro Text', 'SF Pro Display', -apple-system, system-ui, 'Helvetica Neue',
+    'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
   --font-mono:
-    'SF Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  /* 展示字：刊头大字、站名、产品名（latin 走 Barlow Condensed，CJK 落系统栈）。
+   * 直接命名字体而不引用 next/font 的 var(--font-display-barlow)：自定义属性在
+   * :root 求值时该变量（挂在 body 的类上）尚未定义，整条栈会 guaranteed-invalid，
+   * display 字静默落回 sans。font-face 全局注册，按名引用即可。 */
+  --font-display:
+    'Barlow Condensed', 'Barlow Condensed Fallback', 'SF Pro Display',
+    -apple-system, system-ui, 'Helvetica Neue', 'PingFang SC',
+    'Microsoft YaHei', Arial, sans-serif;
+
+  --color-paper: #ffffff;
+  --color-plate: #f3f4f2;
+  --color-ink: #11151b;
+  --color-ink-soft: #566070;
+  --color-ink-faint: #66707e;
+  --color-hairline: #e4e7ea;
+  --color-hairline-strong: #c8ced6;
+  /* 线路色（功能色，每产品一条线） */
+  --color-line-muse: #d23c2e;
+  --color-line-layouts: #1a6fb4;
+
+  /* 动效编排：单一 expo-out 缓动 + 两档时长；
+   * Tailwind 默认 transition（transition-colors 等无显式时长的类）全站走这两个值 */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 150ms;
+  --dur-base: 300ms;
+  --default-transition-duration: var(--dur-fast);
+  --default-transition-timing-function: var(--ease-out);
+}
+
+/* 深色套（夜行灯箱）：覆盖同名 token，utility 全部随主题翻转 */
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --color-paper: #0d1015;
+  --color-plate: #161b23;
+  --color-ink: #edf1f6;
+  --color-ink-soft: #97a2b1;
+  --color-ink-faint: #7d8794;
+  --color-hairline: #242b36;
+  --color-hairline-strong: #39424f;
+  --color-line-muse: #e86050;
+  --color-line-layouts: #55a0e0;
 }
 
 :root {
-  --background: #fafafa;
-  --foreground: #171717;
-  --muted: #737373;
-  --line: #e5e5e5;
-  --card: #ffffff;
+  color-scheme: light;
+  --background: var(--color-paper);
+  --foreground: var(--color-ink);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  font-size: 12.5px;
+  line-height: 1.5;
+  min-width: 20rem;
+  text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
+}
+
+/* 浏览器表面也从 palette 出：选区 = ink 低透明，焦点环 = ink */
+::selection {
+  background: color-mix(in srgb, var(--color-ink) 16%, transparent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+/* 滚动条 overlay 化：不占地（时间轴节点列等局部滚动条有显式覆写） */
+html {
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* 图版的套准十字角标（registration marks，图版拼幅的统一签名） */
+.plate-reg::before,
+.plate-reg::after,
+.plate-reg > .plate-reg-marks::before,
+.plate-reg > .plate-reg-marks::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--color-ink-faint), var(--color-ink-faint)) center/9px 1px
+      no-repeat,
+    linear-gradient(var(--color-ink-faint), var(--color-ink-faint)) center/1px 9px
+      no-repeat;
+}
+
+.plate-reg::before {
+  top: -5px;
+  left: -5px;
+}
+
+.plate-reg::after {
+  top: -5px;
+  right: -5px;
+}
+
+.plate-reg > .plate-reg-marks::before {
+  bottom: -5px;
+  left: -5px;
+}
+
+.plate-reg > .plate-reg-marks::after {
+  bottom: -5px;
+  right: -5px;
 }
 
 /* ---- lifeline 时间轴 ---- */
@@ -54,16 +163,6 @@ body {
   }
 }
 
-@keyframes lifeline-hint-nudge {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  50% {
-    transform: translate(4px, -4px);
-  }
-}
-
 /* 详情页入场（server component 兼容的纯 CSS 过渡，页间导航重挂载即重播） */
 @keyframes detail-in {
   from {
@@ -77,7 +176,7 @@ body {
 }
 
 .detail-in {
-  animation: detail-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: detail-in 0.5s var(--ease-out) both;
 }
 
 .detail-in-delay {
@@ -89,20 +188,24 @@ html[data-detail-nav='true'] .detail-in {
   animation: none;
 }
 
+/* expo-out：首屏 rail 从左「画」出来 */
 .lifeline-rail {
   transform-origin: left center;
-  animation: lifeline-rail-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+  animation: lifeline-rail-in 0.9s var(--ease-out) 0.1s both;
+}
+
+/* 规划段 rail：hairline-strong 虚线（已通车段是 ink 实线） */
+.rail-planned {
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--color-hairline-strong) 0 8px,
+    transparent 8px 16px
+  );
 }
 
 .lifeline-node {
-  animation: lifeline-node-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: lifeline-node-in 0.6s var(--ease-out) both;
   animation-delay: calc(0.25s + var(--i, 0) * 90ms);
-}
-
-/* 时间轴重挂载（退出搜索）时跳过入场级联，不强制重播 ~1.5s */
-.lifeline-no-entry .lifeline-rail,
-.lifeline-no-entry .lifeline-node {
-  animation: none;
 }
 
 .lifeline-marquee {
@@ -113,14 +216,16 @@ html[data-detail-nav='true'] .detail-in {
   animation-play-state: paused;
 }
 
-/* 撕角关闭时，被遮住的灵感墙 marquee 暂停，不空烧合成器 */
-[data-peel-open='false'] .lifeline-marquee {
-  animation-play-state: paused;
-}
-
 /* 灯箱打开时 marquee 暂停（关闭动画要飞回卡片，位置不能动） */
 [data-lightbox-open='true'] .lifeline-marquee {
   animation-play-state: paused;
+}
+
+/* 横屏手机等矮视口：卡片收窄，两行 marquee 尽量都留在屏内（双类选择器压过 w-40/sm:w-52） */
+@media (max-height: 30rem) {
+  .lifeline-marquee > .layout-wall-card.layout-wall-card {
+    width: 7rem;
+  }
 }
 
 /* reduced-motion 时 marquee 停播，行容器改为可手动横滑 */
@@ -130,16 +235,19 @@ html[data-detail-nav='true'] .detail-in {
   }
 }
 
-.lifeline-hint {
-  animation: lifeline-hint-nudge 2.4s ease-in-out infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .lifeline-rail,
   .lifeline-node,
   .lifeline-marquee,
-  .lifeline-hint,
   .detail-in {
     animation: none;
+  }
+
+  /* 全量瞬时化：散布的 hover/active 微 transition 一并归零（0.01ms 而非 0，
+   * 保留 transitionend 事件，灯箱等依赖事件收尾的逻辑不失效） */
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
   }
 }

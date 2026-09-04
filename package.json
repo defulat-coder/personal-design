@@ -13,6 +13,7 @@
     "start": "pnpm --filter @personal-design/web start",
     "lint": "pnpm --filter @personal-design/web lint",
     "typecheck": "pnpm -r typecheck",
-    "sync:layouts": "pnpm --filter @personal-design/layout-compositions sync"
+    "sync:layouts": "pnpm --filter @personal-design/layout-compositions sync",
+    "sync:inspora": "pnpm --filter @personal-design/inspora sync"
   }
 }

@@ -70,13 +70,16 @@ function MainImageButton({
   );
 }
 
-/** 详情页键盘 ←/→ 翻页（与灯箱翻页心智一致）；并负责 detail-in 翻页跳过标记 */
+/** 详情页键盘 ←/→ 翻页（与灯箱翻图心智一致）；并负责 detail-in 翻页跳过标记 */
 export function DetailKeyboardNav({
   prevHref,
   nextHref,
+  hrefPattern = '^/products/layout-compositions/\\d+',
 }: {
   prevHref?: string;
   nextHref?: string;
+  /** 判定「详情→详情」链接的正则（用于翻页跳过入场动画） */
+  hrefPattern?: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -97,16 +100,17 @@ export function DetailKeyboardNav({
   }, [pathname]);
 
   useEffect(() => {
+    const pattern = new RegExp(hrefPattern);
     const onClickCapture = (event: MouseEvent) => {
       const anchor = (event.target as Element).closest?.('a[href]');
       const href = anchor?.getAttribute('href') ?? '';
-      if (/^\/products\/layout-compositions\/\d+/.test(href)) {
+      if (pattern.test(href)) {
         sessionStorage.setItem('detail-nav', href);
       }
     };
     document.addEventListener('click', onClickCapture, true);
     return () => document.removeEventListener('click', onClickCapture, true);
-  }, []);
+  }, [hrefPattern]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {

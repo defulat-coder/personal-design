@@ -8,6 +8,15 @@ import { fileURLToPath } from 'node:url';
 
 const DB_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../inspora.db');
 
+/** 媒体 base：缺省为空（本地 public 路径）；设 NEXT_PUBLIC_MEDIA_BASE_URL（对象存储公开域名）后返回绝对 URL */
+const MEDIA_BASE = (process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? '').replace(
+  /\/+$/,
+  '',
+);
+function mediaUrl(localPath: string | null): string | null {
+  return localPath ? `${MEDIA_BASE}${localPath}` : null;
+}
+
 let db: DatabaseSync | undefined;
 function conn(): DatabaseSync {
   db ??= new DatabaseSync(DB_PATH, { readOnly: true });
@@ -125,9 +134,9 @@ function toMedia(row: MediaRow): InsporaMedia {
     height: row.height,
     sizeBytes: row.size_bytes,
     alt: row.alt,
-    src: row.local_path,
-    poster: row.local_poster_path,
-    thumb: row.local_thumb_path,
+    src: mediaUrl(row.local_path),
+    poster: mediaUrl(row.local_poster_path),
+    thumb: mediaUrl(row.local_thumb_path),
   };
 }
 
@@ -146,7 +155,7 @@ function toPost(row: PostRow, media: InsporaMedia[]): InsporaPost {
     title: row.title,
     creatorName: row.creator_name,
     creatorUrl: row.creator_url,
-    creatorAvatar: row.creator_avatar,
+    creatorAvatar: mediaUrl(row.creator_avatar),
     description: row.description,
     category: row.category,
     industries: parseJsonArray(row.industries),
@@ -200,7 +209,8 @@ export function listCategories(): InsporaCategory[] {
       "SELECT category AS name, COUNT(*) AS count FROM posts WHERE category IS NOT NULL GROUP BY category ORDER BY count DESC",
     )
     .all() as unknown as { name: string; count: number }[];
-  return rows;
+  // node:sqlite 返回 null 原型对象，RSC 序列化只认普通对象
+  return rows.map((row) => ({ name: row.name, count: row.count }));
 }
 
 /** 同分类内的前后帖（按发布时间倒序的位置），用于详情页翻页 */
@@ -212,11 +222,10 @@ export function getAdjacentPosts(post: InsporaPost): {
     .prepare('SELECT slug, title, created_at FROM posts ORDER BY created_at DESC')
     .all() as unknown as { slug: string; title: string; created_at: string }[];
   const idx = rows.findIndex((r) => r.slug === post.slug);
+  const prevRow = idx > 0 ? rows[idx - 1] : undefined;
+  const nextRow = idx >= 0 && idx < rows.length - 1 ? rows[idx + 1] : undefined;
   return {
-    prev: idx > 0 ? { slug: rows[idx - 1].slug, title: rows[idx - 1].title } : null,
-    next:
-      idx >= 0 && idx < rows.length - 1
-        ? { slug: rows[idx + 1].slug, title: rows[idx + 1].title }
-        : null,
+    prev: prevRow ? { slug: prevRow.slug, title: prevRow.title } : null,
+    next: nextRow ? { slug: nextRow.slug, title: nextRow.title } : null,
   };
 }

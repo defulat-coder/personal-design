@@ -11,7 +11,6 @@ import {
   thumbnailUrl,
   type LayoutItem,
 } from '@personal-design/layout-compositions';
-import { Attribution } from '@/components/attribution';
 import { DetailKeyboardNav, DetailMainImage } from '@/components/detail-tools';
 import type { LightboxItem } from '@/components/lifeline/lightbox';
 
@@ -45,12 +44,12 @@ function NavCard({ item, dir }: { item: LayoutItem; dir: 'prev' | 'next' }) {
   return (
     <Link
       href={detailHref(item)}
-      className="group flex items-center gap-3 rounded-lg border border-neutral-200 p-2 transition active:scale-[0.98] hover:border-neutral-400"
+      className="group flex items-center gap-3 border border-hairline bg-plate p-2 transition active:scale-[0.98] hover:border-ink"
     >
       {dir === 'prev' ? (
-        <ArrowLeft className="ml-1 size-4 shrink-0 text-neutral-400 transition-transform group-hover:-translate-x-0.5" />
+        <ArrowLeft className="ml-1 size-4 shrink-0 text-ink-faint transition-transform group-hover:-translate-x-0.5" />
       ) : null}
-      <span className="relative h-12 w-9 shrink-0 overflow-hidden rounded border border-neutral-200 bg-white">
+      <span className="relative h-12 w-9 shrink-0 overflow-hidden border border-hairline bg-plate">
         {hasImage(item) ? (
           <Image
             src={thumbnailUrl(item)}
@@ -60,20 +59,20 @@ function NavCard({ item, dir }: { item: LayoutItem; dir: 'prev' | 'next' }) {
             className="object-cover"
           />
         ) : (
-          <span className="flex h-full items-center justify-center font-mono text-[9px] text-neutral-300">
+          <span className="flex h-full items-center justify-center font-mono text-[11.5px] text-ink-faint">
             {item.id}
           </span>
         )}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block font-mono text-xs text-neutral-400">
+        <span className="block font-mono text-[11.5px] text-ink-faint">
           {dir === 'prev' ? '上一张 · ' : '下一张 · '}
           {item.id}
         </span>
-        <span className="block truncate text-sm">{item.name}</span>
+        <span className="block truncate text-[12.5px]">{item.name}</span>
       </span>
       {dir === 'next' ? (
-        <ArrowRight className="mr-1 size-4 shrink-0 text-neutral-400 transition-transform group-hover:translate-x-0.5" />
+        <ArrowRight className="mr-1 size-4 shrink-0 text-ink-faint transition-transform group-hover:translate-x-0.5" />
       ) : null}
     </Link>
   );
@@ -120,22 +119,28 @@ export default async function LayoutDetailPage({ params }: PageProps) {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-10 sm:py-14">
-      <nav className="flex items-center gap-1 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-neutral-900">
+      <nav className="flex items-center gap-1 text-[11.5px] text-ink-faint">
+        <Link href="/" className="hover:text-ink">
           产品集
         </Link>
         <ChevronRight className="size-3.5" />
-        <Link href={categoryHref} className="hover:text-neutral-900">
+        <Link
+          href={categoryHref}
+          className="flex items-center gap-1.5 hover:text-ink"
+        >
+          <span className="bg-line-layouts px-1.5 py-px font-mono text-[10.5px] font-medium text-white dark:text-paper">
+            L·01
+          </span>
           布局参考
         </Link>
         <ChevronRight className="size-3.5" />
-        <span className="text-neutral-900">
+        <span className="text-ink">
           {item.id} {item.name}
         </span>
       </nav>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <div className="detail-in relative aspect-[3/4] overflow-hidden rounded-2xl border border-neutral-200 bg-white lg:aspect-auto lg:h-[calc(100dvh-12rem)]">
+        <div className="detail-in relative aspect-[3/4] overflow-hidden border border-hairline bg-plate p-1.5 lg:aspect-auto lg:h-[calc(100dvh-12rem)]">
           {src ? (
             <DetailMainImage
               src={src}
@@ -146,32 +151,34 @@ export default async function LayoutDetailPage({ params }: PageProps) {
               index={lightboxIndex}
             />
           ) : (
-            <div className="absolute inset-3 flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-neutral-200 text-neutral-300">
+            <div className="absolute inset-3 flex flex-col items-center justify-center gap-3 border border-dashed border-hairline-strong text-ink-faint">
               <span className="font-mono text-4xl">{item.id}</span>
-              <span className="text-sm">上游图片缺失</span>
+              <span className="text-[12.5px]">上游图片缺失</span>
             </div>
           )}
         </div>
 
         <div className="detail-in detail-in-delay flex flex-col">
-          <p className="font-mono text-sm text-neutral-400">
+          {/* 信息牌的线路归属带：全页只此一条色带 */}
+          <div aria-hidden className="h-[3px] bg-line-layouts" />
+          <p className="mt-5 font-mono text-[11.5px] text-ink-soft">
             {item.id} / {catalog.length}
           </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+          <h1 className="mt-2 font-display text-[26px] leading-[1.05] font-semibold text-balance">
             {item.name}
           </h1>
 
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-neutral-500">
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-[11.5px] text-ink-soft">
             <Link
               href={categoryHref}
-              className="rounded-full border border-neutral-200 px-2.5 py-0.5"
+              className="border border-hairline px-2.5 py-0.5 font-mono text-[11.5px] transition-colors hover:border-ink hover:text-ink"
             >
               {item.category}
             </Link>
-            <span className="rounded-full border border-neutral-200 px-2.5 py-0.5">
+            <span className="border border-hairline px-2.5 py-0.5 font-mono text-[11.5px]">
               {item.subcategory}
             </span>
-            <span className="text-neutral-400">
+            <span className="font-mono text-ink-faint">
               {item.width} × {item.height}
             </span>
           </div>
@@ -180,8 +187,9 @@ export default async function LayoutDetailPage({ params }: PageProps) {
             <a
               href={src}
               download={`${item.id}-${item.name}.webp`}
-              className="mt-8 inline-flex w-fit items-center gap-2 rounded-full border border-neutral-900 bg-neutral-900 px-4 py-2 text-sm text-white transition active:scale-[0.97] hover:bg-neutral-700"
+              className="mt-8 inline-flex w-fit items-center gap-2 bg-ink px-4 py-2 text-[12.5px] text-plate transition active:scale-[0.97] hover:bg-ink/85"
             >
+              <span aria-hidden className="size-3 shrink-0 bg-line-layouts" />
               <Download className="size-4" />
               下载高清图
             </a>
@@ -190,7 +198,7 @@ export default async function LayoutDetailPage({ params }: PageProps) {
           {prev || next ? (
             <nav
               aria-label="同主题翻页"
-              className="mt-8 flex flex-col gap-2 border-t border-neutral-200 pt-6"
+              className="mt-8 flex flex-col gap-2 border-t border-hairline pt-6"
             >
               {prev ? <NavCard item={prev} dir="prev" /> : null}
               {next ? <NavCard item={next} dir="next" /> : null}
@@ -198,8 +206,8 @@ export default async function LayoutDetailPage({ params }: PageProps) {
           ) : null}
 
           {related.length > 0 ? (
-            <div className="mt-8 border-t border-neutral-200 pt-6">
-              <h2 className="text-sm font-medium text-neutral-700">
+            <div className="mt-8 border-t border-hairline pt-6">
+              <h2 className="text-[14px] font-semibold tracking-[-0.01em]">
                 同主题 · {item.subcategory}
               </h2>
               <div className="mt-3 grid grid-cols-3 gap-2">
@@ -210,16 +218,16 @@ export default async function LayoutDetailPage({ params }: PageProps) {
                     className="group"
                     title={`${entry.id} ${entry.name}`}
                   >
-                    <div className="relative aspect-[3/4] overflow-hidden rounded-md border border-neutral-200 bg-white transition active:scale-[0.97]">
+                    <div className="relative aspect-[3/4] overflow-hidden border border-hairline bg-plate transition active:scale-[0.97]">
                       <Image
                         src={thumbnailUrl(entry)}
                         alt={entry.name}
                         fill
                         sizes="(min-width: 1024px) 140px, 33vw"
-                        className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                        className="object-cover transition-transform duration-(--dur-base) group-hover:scale-[1.03]"
                       />
                     </div>
-                    <span className="mt-1 block font-mono text-[10px] text-neutral-400">
+                    <span className="mt-1 block font-mono text-[11.5px] text-ink-faint">
                       {entry.id}
                     </span>
                   </Link>
@@ -234,10 +242,6 @@ export default async function LayoutDetailPage({ params }: PageProps) {
         prevHref={prev ? detailHref(prev) : undefined}
         nextHref={next ? detailHref(next) : undefined}
       />
-
-      <footer className="mt-16 border-t border-neutral-200 pt-6">
-        <Attribution />
-      </footer>
     </main>
   );
 }
