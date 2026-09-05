@@ -4,7 +4,6 @@ import {
   catalog,
   categories,
   hasImage,
-  imageUrl,
   thumbnailUrl,
 } from '@personal-design/layout-compositions';
 import { LayoutWall, type LayoutWallItem } from '@/components/layout-wall';
@@ -12,26 +11,22 @@ import { LayoutWall, type LayoutWallItem } from '@/components/layout-wall';
 export const metadata: Metadata = {
   title: '布局参考 · 350 种排版构图图鉴',
   description:
-    '350 种排版构图的暗房灵感墙：两行反向慢速流动，悬停暂停、点击放大，按分类重发。',
+    '排版构图图鉴：按分类、主题与关键词检索，查看图鉴与高清资源。',
 };
 
 // 只把客户端需要的字段传下去，控制 RSC 负载
-const items: LayoutWallItem[] = catalog.flatMap((item) => {
-  if (!hasImage(item)) return [];
-  return [
-    {
-      id: item.id,
-      name: item.name,
-      category: item.category,
-      thumb: thumbnailUrl(item),
-      full: imageUrl(item),
-    },
-  ];
-});
+const items: LayoutWallItem[] = catalog.map((item) => ({
+  id: item.id,
+  name: item.name,
+  category: item.category,
+  theme: item.subcategory,
+  themeSlug: item.subcategory_slug,
+  thumb: hasImage(item) ? thumbnailUrl(item) : null,
+}));
 
 const tabs = categories.map((category) => ({
   name: category.name,
-  count: category.count,
+  count: items.filter((item) => item.category === category.name).length,
 }));
 
 const themeCount = categories.reduce(
@@ -41,9 +36,9 @@ const themeCount = categories.reduce(
 
 export default function LayoutCompositionsPage() {
   return (
-    <main className="h-dvh">
+    <main >
       {/* LayoutWall 内用 useSearchParams 读分类，需要 Suspense 边界 */}
-      <Suspense fallback={null}>
+      <Suspense fallback={<p className="p-6 text-ink-soft" role="status">正在加载布局图鉴…</p>}>
         <LayoutWall categories={tabs} items={items} themeCount={themeCount} />
       </Suspense>
     </main>

@@ -1,0 +1,4 @@
+.tabs { display:flex; gap:8px; overflow-x:auto; min-width:0; max-width:100%; scrollbar-width:thin; padding:4px 2px 12px; }
+.tab { position:relative; gap:8px; }
+.tab:focus-visible { outline-offset:-3px; }
+.count { font-size:12px; font-variant-numeric:tabular-nums; font-weight:400; opacity:.8; }

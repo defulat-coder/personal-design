@@ -5,8 +5,6 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
-  ChevronRight,
-  FileJson,
 } from 'lucide-react';
 import {
   getAdjacentPosts,
@@ -15,6 +13,10 @@ import {
 } from '@personal-design/inspora';
 import { DetailKeyboardNav } from '@/components/detail-tools';
 import { MuseMediaCarousel } from '@/components/inspora-media-carousel';
+import { Button, buttonClassName } from '@/components/button';
+import { MuseReturnLink } from '../return-link';
+import styles from './page.module.css';
+import { RawJsonDetails } from '@/components/raw-json-details';
 
 export const dynamicParams = false;
 
@@ -47,30 +49,10 @@ function formatBytes(bytes: number | null): string | null {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
-/** 标签行：左 label 右 chips（Industries / Colors / Styles） */
 function MetaRow({ label, values }: { label: string; values: string[] }) {
   if (values.length === 0) return null;
-  return (
-    <div className="flex items-center justify-between gap-4 text-[12.5px]">
-      <span className="shrink-0 text-ink">{label}</span>
-      <span className="flex flex-wrap justify-end gap-1.5">
-        {values.map((value) => (
-          <span
-            key={value}
-            className="border border-hairline px-2 py-1 font-mono text-[11.5px] text-ink-soft"
-          >
-            {value}
-          </span>
-        ))}
-      </span>
-    </div>
-  );
+  return <div className={styles.row}><span>{label}</span><div className={styles.chips}>{values.map((value, index) => <span key={`${value}-${index}`} className={styles.chip}>{value}</span>)}</div></div>;
 }
-
-const navButtonClass =
-  'flex size-8 items-center justify-center border border-hairline text-ink-soft transition-colors hover:border-ink hover:text-ink';
-const navButtonDisabledClass =
-  'flex size-8 items-center justify-center border border-hairline text-hairline-strong';
 
 export default async function MuseDetailPage({ params }: PageProps) {
   const { slug } = await params;
@@ -96,8 +78,9 @@ export default async function MuseDetailPage({ params }: PageProps) {
     : '/products/muse';
 
   const first = post.media[0];
+  const date = new Date(post.publishedAt ?? post.createdAt);
   const metaLine = [
-    dateFmt.format(new Date(post.publishedAt ?? post.createdAt)),
+    Number.isNaN(date.getTime()) ? '日期未提供' : dateFmt.format(date),
     post.media.length > 0 ? `${post.media.length} 个媒体` : null,
     first?.width && first?.height ? `${first.width} × ${first.height}` : null,
     formatBytes(first?.sizeBytes ?? null),
@@ -106,162 +89,42 @@ export default async function MuseDetailPage({ params }: PageProps) {
     .join(' · ');
 
   return (
-    <main className="flex min-h-dvh flex-col lg:h-dvh">
-      <nav className="flex shrink-0 items-center gap-1 px-6 pt-5 text-[11.5px] text-ink-faint sm:px-10">
-        <Link href="/" className="hover:text-ink">
-          产品集
-        </Link>
-        <ChevronRight className="size-3.5" />
-        <Link href={listHref} className="flex items-center gap-1.5 hover:text-ink">
-          <span className="bg-line-muse px-1.5 py-px font-mono text-[10.5px] font-medium text-white dark:text-paper">
-            M·01
-          </span>
-          灵感集
-        </Link>
-        <ChevronRight className="size-3.5" />
-        <span className="text-ink">{post.title}</span>
+    <main className={styles.page}>
+      <nav className={styles.navigation} aria-label="灵感导航">
+        <MuseReturnLink fallback={listHref} />
+        <div className={styles.adjacent}>
+          {prev ? <Link href={`/products/muse/${prev.slug}`} aria-label={`上一件：${prev.title}`} className={buttonClassName({variant:'ghost'})}><ArrowLeft size={16} /><span>上一件</span></Link> : <Button variant="ghost" disabled aria-label="已是第一件"><ArrowLeft size={16} /><span>上一件</span></Button>}
+          {next ? <Link href={`/products/muse/${next.slug}`} aria-label={`下一件：${next.title}`} className={buttonClassName({variant:'ghost'})}><span>下一件</span><ArrowRight size={16} /></Link> : <Button variant="ghost" disabled aria-label="已是最后一件"><span>下一件</span><ArrowRight size={16} /></Button>}
+        </div>
       </nav>
-      <div className="flex flex-1 flex-col lg:min-h-0 lg:flex-row">
-      {/* 媒体区：图版框内横向 snap 轮播，媒体 contain 居中 */}
-      <div className="relative flex-1 bg-paper p-4 sm:p-6 lg:min-h-0">
-        {media.length > 0 ? (
-          <div className="h-full border border-hairline bg-plate p-1.5">
-            <MuseMediaCarousel media={media} />
-          </div>
-        ) : (
-          <div className="flex h-full items-center justify-center text-[12.5px] text-ink-faint">
-            媒体缺失
-          </div>
-        )}
-      </div>
-
-      {/* 侧栏：固定宽度、1px 分隔线、直角 */}
-      <aside className="flex w-full flex-col border-t border-hairline bg-plate lg:h-full lg:w-[clamp(360px,30vw,510px)] lg:shrink-0 lg:border-t-0 lg:border-l">
-        {/* 信息牌的线路归属带：只做这一条 */}
-        <div aria-hidden className="h-[3px] shrink-0 bg-line-muse" />
-
-        <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-6 py-6 sm:px-8">
-          {post.category ? (
-            <p>
-              <Link
-                href={listHref}
-                className="inline-block border border-hairline px-2 py-1 font-mono text-[11.5px] text-ink-soft transition-colors hover:border-ink hover:text-ink"
-              >
-                {post.category}
-              </Link>
-            </p>
-          ) : null}
-
-          <div>
-            <h1 className="font-display text-[26px] leading-[1.05] font-semibold text-balance">
-              {post.title}
-            </h1>
-            {post.creatorName ? (
-              <p className="mt-2 flex items-center gap-2">
-                {post.creatorAvatar ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- 小头像无需优化管线
-                  <img
-                    src={post.creatorAvatar}
-                    alt=""
-                    className="size-5 rounded-full border border-hairline object-cover"
-                  />
-                ) : null}
-                {post.creatorUrl ? (
-                  <a
-                    href={post.creatorUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[12.5px] text-ink underline-offset-2 hover:underline"
-                  >
-                    {post.creatorName}
-                  </a>
-                ) : (
-                  <span className="text-[12.5px] text-ink">{post.creatorName}</span>
-                )}
-              </p>
+      <header className={styles.heading}>
+        <h1 className={styles.title}>{post.title || '未命名灵感'}</h1>
+        <div className={styles.byline}>
+          {post.creatorName ? <p className={styles.author}>
+            {post.creatorAvatar ? (
+              // eslint-disable-next-line @next/next/no-img-element -- Local author thumbnail.
+              <img src={post.creatorAvatar} alt="" />
             ) : null}
-          </div>
-
-          {post.description && post.description !== post.title ? (
-            <p className="text-[12.5px] leading-[1.5] text-ink-soft">{post.description}</p>
-          ) : null}
-
-          <p className="font-mono text-[11.5px] text-ink-faint">{metaLine}</p>
-
-          <div className="flex flex-col gap-3">
-            <MetaRow label="Industries" values={post.industries} />
-            <MetaRow label="Colors" values={post.colors} />
-            <MetaRow label="Styles" values={post.styles} />
-          </div>
-
-          {/* 原始出处主按钮 + 同步的原始 JSON */}
-          {post.sourceUrl ? (
-            <a
-              href={post.sourceUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center justify-center gap-2 bg-ink py-3 text-[12.5px] text-plate transition-colors hover:bg-ink/85"
-            >
-              <span aria-hidden className="size-3 shrink-0 bg-line-muse" />
-              查看原始出处
-              <ArrowUpRight className="size-4" />
-            </a>
-          ) : null}
-
-          {post.raw ? (
-            <div className="flex justify-end text-[11.5px] text-ink-soft">
-              <details className="group relative">
-                <summary className="inline-flex cursor-pointer items-center gap-1 underline-offset-2 select-none hover:text-ink hover:underline">
-                  <FileJson className="size-3.5" />
-                  同步的原始 JSON
-                </summary>
-                <pre className="absolute right-0 z-10 mt-2 max-h-96 w-[min(28rem,80vw)] overflow-auto border border-hairline bg-plate p-3 font-mono text-[11.5px] leading-[1.4] text-ink-soft">
-                  {JSON.stringify(post.raw, null, 2)}
-                </pre>
-              </details>
-            </div>
-          ) : null}
+            {post.creatorUrl ? <a href={post.creatorUrl} target="_blank" rel="noreferrer">{post.creatorName}</a> : <span>{post.creatorName}</span>}
+          </p> : <p>作者信息未提供</p>}
+          {post.category ? <Link href={listHref} className={styles.category}>{post.category}</Link> : <span>未分类</span>}
         </div>
-
-        {/* 上下件导航：钉在信息牌底缘（站牌 footer），填补短内容条目的侧栏空档 */}
-        <div className="flex items-center justify-end border-t border-hairline px-4 py-4">
-          <div className="flex gap-1.5">
-            {prev ? (
-              <Link
-                href={`/products/muse/${prev.slug}`}
-                aria-label={`上一件：${prev.title}`}
-                className={navButtonClass}
-              >
-                <ArrowLeft className="size-4" />
-              </Link>
-            ) : (
-              <span className={navButtonDisabledClass}>
-                <ArrowLeft className="size-4" />
-              </span>
-            )}
-            {next ? (
-              <Link
-                href={`/products/muse/${next.slug}`}
-                aria-label={`下一件：${next.title}`}
-                className={navButtonClass}
-              >
-                <ArrowRight className="size-4" />
-              </Link>
-            ) : (
-              <span className={navButtonDisabledClass}>
-                <ArrowRight className="size-4" />
-              </span>
-            )}
-          </div>
-        </div>
-      </aside>
+      </header>
+      {media.length ? <MuseMediaCarousel key={post.slug} media={media} /> : <div className={styles.empty}><p>这件灵感尚无可用媒体</p><p>仍可阅读作品信息与原始出处。</p></div>}
+      <div className={styles.information}>
+        <section aria-label="作品信息" className={styles.about}>
+          <h2>关于作品</h2>
+          {post.description && post.description !== post.title ? <p className={styles.description}>{post.description}</p> : null}
+          <p className={styles.meta}>{metaLine}</p>
+          {post.industries.length || post.colors.length || post.styles.length ? <div className={styles.rows}><MetaRow label="行业" values={post.industries} /><MetaRow label="颜色" values={post.colors} /><MetaRow label="风格" values={post.styles} /></div> : null}
+        </section>
+        <section className={styles.provenance} aria-label="原始信息">
+          <h2>原始信息</h2>
+          {post.sourceUrl ? <a href={post.sourceUrl} target="_blank" rel="noreferrer" className={buttonClassName({ variant:'primary' })}>查看原始出处<ArrowUpRight size={16} /></a> : <p className={styles.description}>这条内容未提供原始出处链接。</p>}
+          {post.raw ? <RawJsonDetails><pre tabIndex={0} data-detail-keys-ignore className={styles.raw}>{JSON.stringify(post.raw, null, 2)}</pre></RawJsonDetails> : <p className={styles.meta}>暂无原始 JSON</p>}
+        </section>
       </div>
-
-      <DetailKeyboardNav
-        prevHref={prev ? `/products/muse/${prev.slug}` : undefined}
-        nextHref={next ? `/products/muse/${next.slug}` : undefined}
-        hrefPattern="^/products/muse/"
-      />
+      <DetailKeyboardNav prevHref={prev ? `/products/muse/${prev.slug}` : undefined} nextHref={next ? `/products/muse/${next.slug}` : undefined} hrefPattern="^/products/muse/" />
     </main>
   );
 }

@@ -1,0 +1,38 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--control-height);
+  padding: 8px 16px;
+  border: 1px solid var(--color-hairline-strong);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-body);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), transform 100ms var(--ease-out);
+}
+.button:hover:not(:disabled):not([aria-disabled='true']) { background: var(--color-subtle); border-color: var(--color-border-hover); }
+.button:active:not(:disabled):not([aria-disabled='true']) { transform: translateY(1px); }
+.button:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
+.default { background: var(--color-paper); }
+.primary { background: var(--color-ink); border-color: transparent; color: var(--color-paper); border-radius: var(--radius-control); }
+.primary:hover:not(:disabled):not([aria-disabled='true']) { background: var(--color-accent); border-color: transparent; }
+.ghost { border-color: transparent; }
+.ghost:hover:not(:disabled):not([aria-disabled='true']) { border-color: transparent; }
+.subtle { background: var(--color-subtle); border-color: transparent; }
+.icon { flex-shrink: 0; width: var(--control-height); height: var(--control-height); padding: 0; }
+.button:disabled, .button[aria-disabled='true'] { background: var(--color-subtle); color: var(--color-ink-faint); border-color: transparent; cursor: not-allowed; transform: none; }
+@media (pointer: coarse) { .button { min-height: 44px; } .icon { width: 44px; height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .button { transition: none; } .button:active:not(:disabled) { transform: none; } }
+@media (forced-colors: active) { .button { border: 1px solid ButtonText; } .button:disabled { color: GrayText; } }
+
+.button svg { flex-shrink: 0; }
+.button[aria-pressed="true"] { background:var(--color-ink); color:var(--color-paper); border-color:var(--color-ink); }

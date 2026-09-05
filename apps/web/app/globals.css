@@ -1,253 +1,87 @@
 @import 'tailwindcss';
-
-/* data-theme 驱动的 dark 变体（不用媒体查询，跟主题切换钮走） */
 @custom-variant dark (&:where(html[data-theme='dark'] *));
 
-/*
- * 地铁导视系统（Transit wayfinding）——整站视觉世界
- * 站牌纸白底、信号黑、3px 线路带、线路色是功能色（每产品一条线）；
- * 直角（唯站环/主题钮正圆）、mono 只载数据、展示字走 Barlow Condensed。
- * 已通车段 = ink 实线；规划段 = hairline-strong 虚线。
- */
-@theme {
-  --font-sans:
-    'SF Pro Text', 'SF Pro Display', -apple-system, system-ui, 'Helvetica Neue',
-    'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  /* 展示字：刊头大字、站名、产品名（latin 走 Barlow Condensed，CJK 落系统栈）。
-   * 直接命名字体而不引用 next/font 的 var(--font-display-barlow)：自定义属性在
-   * :root 求值时该变量（挂在 body 的类上）尚未定义，整条栈会 guaranteed-invalid，
-   * display 字静默落回 sans。font-face 全局注册，按名引用即可。 */
-  --font-display:
-    'Barlow Condensed', 'Barlow Condensed Fallback', 'SF Pro Display',
-    -apple-system, system-ui, 'Helvetica Neue', 'PingFang SC',
-    'Microsoft YaHei', Arial, sans-serif;
+@font-face {
+  font-family: 'Albert Sans';
+  src: url('/fonts/AlbertSans-VariableFont_wght.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
 
+/* Source roles: OpenDesign tokens.css. Adaptations live in execution/contract.md. */
+@theme {
+  --font-sans: 'Albert Sans', -apple-system, system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-display: 'Albert Sans', -apple-system, system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --color-workspace: #ffffff;
   --color-paper: #ffffff;
-  --color-plate: #f3f4f2;
-  --color-ink: #11151b;
-  --color-ink-soft: #566070;
-  --color-ink-faint: #66707e;
-  --color-hairline: #e4e7ea;
-  --color-hairline-strong: #c8ced6;
-  /* 线路色（功能色，每产品一条线） */
+  --color-plate: #fafafa;
+  --color-body: #494949;
+  --color-ink: #202020;
+  --color-ink-soft: #5c5c5c;
+  --color-ink-faint: #5c5c5c;
+  --color-hairline: #ededed;
+  --color-hairline-strong: #dbdbdb;
+  --color-subtle: #ededed;
+  --color-border-hover: #bdbdbd;
+  --color-control-border: #848484;
+  --color-accent: #353535;
   --color-line-muse: #d23c2e;
   --color-line-layouts: #1a6fb4;
-
-  /* 动效编排：单一 expo-out 缓动 + 两档时长；
-   * Tailwind 默认 transition（transition-colors 等无显式时长的类）全站走这两个值 */
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --dur-fast: 150ms;
-  --dur-base: 300ms;
+  --dur-base: 200ms;
+  --dur-enter: 200ms;
+  --dur-exit: 140ms;
   --default-transition-duration: var(--dur-fast);
   --default-transition-timing-function: var(--ease-out);
 }
 
-/* 深色套（夜行灯箱）：覆盖同名 token，utility 全部随主题翻转 */
+:root {
+  --control-height: 44px;
+  color-scheme: light;
+  --radius-control: 4px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
+  --radius-pill: 999px;
+  --workspace-height: calc(100dvh - 88px);
+}
 html[data-theme='dark'] {
   color-scheme: dark;
-  --color-paper: #0d1015;
-  --color-plate: #161b23;
-  --color-ink: #edf1f6;
-  --color-ink-soft: #97a2b1;
-  --color-ink-faint: #7d8794;
-  --color-hairline: #242b36;
-  --color-hairline-strong: #39424f;
+  --color-workspace: #202020;
+  --color-paper: #202020;
+  --color-plate: #353535;
+  --color-body: #ededed;
+  --color-ink: #fafafa;
+  --color-ink-soft: #bdbdbd;
+  --color-ink-faint: #bdbdbd;
+  --color-hairline: #494949;
+  --color-hairline-strong: #5c5c5c;
+  --color-subtle: #494949;
+  --color-border-hover: #848484;
+  --color-control-border: #848484;
+  --color-accent: #ededed;
   --color-line-muse: #e86050;
   --color-line-layouts: #55a0e0;
 }
-
-:root {
-  color-scheme: light;
-  --background: var(--color-paper);
-  --foreground: var(--color-ink);
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
-  font-size: 12.5px;
-  line-height: 1.5;
-  min-width: 20rem;
-  text-rendering: geometricPrecision;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* 浏览器表面也从 palette 出：选区 = ink 低透明，焦点环 = ink */
-::selection {
-  background: color-mix(in srgb, var(--color-ink) 16%, transparent);
-}
-
-:focus-visible {
-  outline: 2px solid var(--color-ink);
-  outline-offset: 2px;
-}
-
-/* 滚动条 overlay 化：不占地（时间轴节点列等局部滚动条有显式覆写） */
-html {
-  scrollbar-width: none;
-}
-
-::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-/* 图版的套准十字角标（registration marks，图版拼幅的统一签名） */
-.plate-reg::before,
-.plate-reg::after,
-.plate-reg > .plate-reg-marks::before,
-.plate-reg > .plate-reg-marks::after {
-  content: '';
-  position: absolute;
-  width: 9px;
-  height: 9px;
-  pointer-events: none;
-  background:
-    linear-gradient(var(--color-ink-faint), var(--color-ink-faint)) center/9px 1px
-      no-repeat,
-    linear-gradient(var(--color-ink-faint), var(--color-ink-faint)) center/1px 9px
-      no-repeat;
-}
-
-.plate-reg::before {
-  top: -5px;
-  left: -5px;
-}
-
-.plate-reg::after {
-  top: -5px;
-  right: -5px;
-}
-
-.plate-reg > .plate-reg-marks::before {
-  bottom: -5px;
-  left: -5px;
-}
-
-.plate-reg > .plate-reg-marks::after {
-  bottom: -5px;
-  right: -5px;
-}
-
-/* ---- lifeline 时间轴 ---- */
-
-@keyframes lifeline-rail-in {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-@keyframes lifeline-node-in {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes lifeline-marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-/* 详情页入场（server component 兼容的纯 CSS 过渡，页间导航重挂载即重播） */
-@keyframes detail-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.detail-in {
-  animation: detail-in 0.5s var(--ease-out) both;
-}
-
-.detail-in-delay {
-  animation-delay: 80ms;
-}
-
-/* 详情→详情翻页进入时跳过入场动画（连翻图鉴不被强制拖节奏） */
-html[data-detail-nav='true'] .detail-in {
-  animation: none;
-}
-
-/* expo-out：首屏 rail 从左「画」出来 */
-.lifeline-rail {
-  transform-origin: left center;
-  animation: lifeline-rail-in 0.9s var(--ease-out) 0.1s both;
-}
-
-/* 规划段 rail：hairline-strong 虚线（已通车段是 ink 实线） */
-.rail-planned {
-  background-image: repeating-linear-gradient(
-    to right,
-    var(--color-hairline-strong) 0 8px,
-    transparent 8px 16px
-  );
-}
-
-.lifeline-node {
-  animation: lifeline-node-in 0.6s var(--ease-out) both;
-  animation-delay: calc(0.25s + var(--i, 0) * 90ms);
-}
-
-.lifeline-marquee {
-  animation: lifeline-marquee var(--dur, 80s) linear infinite;
-}
-
-.lifeline-marquee:hover {
-  animation-play-state: paused;
-}
-
-/* 灯箱打开时 marquee 暂停（关闭动画要飞回卡片，位置不能动） */
-[data-lightbox-open='true'] .lifeline-marquee {
-  animation-play-state: paused;
-}
-
-/* 横屏手机等矮视口：卡片收窄，两行 marquee 尽量都留在屏内（双类选择器压过 w-40/sm:w-52） */
-@media (max-height: 30rem) {
-  .lifeline-marquee > .layout-wall-card.layout-wall-card {
-    width: 7rem;
-  }
-}
-
-/* reduced-motion 时 marquee 停播，行容器改为可手动横滑 */
+html { min-width: 320px; scrollbar-color: var(--color-border-hover) var(--color-paper); scrollbar-width: thin; }
+body { margin: 0; background: var(--color-workspace); color: var(--color-body); font-family: var(--font-sans); font-size: 14px; line-height: 1.75; -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { color: var(--color-ink); letter-spacing: 0; line-height: 1.35; text-wrap: balance; }
+button, input, textarea, select { font: inherit; }
+button:not(:disabled), summary { cursor: pointer; }
+a { text-underline-offset: 3px; }
+::selection { background: color-mix(in srgb, var(--color-ink) 16%, transparent); color: var(--color-ink); }
+:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
+input, textarea { caret-color: var(--color-ink); }
+@media (max-width: 639px) { :root { --workspace-height: calc(100dvh - 72px); } }
 @media (prefers-reduced-motion: reduce) {
-  .lifeline-marquee-row {
-    overflow-x: auto;
-  }
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .lifeline-rail,
-  .lifeline-node,
-  .lifeline-marquee,
-  .detail-in {
-    animation: none;
-  }
-
-  /* 全量瞬时化：散布的 hover/active 微 transition 一并归零（0.01ms 而非 0，
-   * 保留 transitionend 事件，灯箱等依赖事件收尾的逻辑不失效） */
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0.01ms !important;
-  }
-}
+@media (forced-colors: active) { :focus-visible { outline-color: Highlight; } }

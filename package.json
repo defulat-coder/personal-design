@@ -15,5 +15,8 @@
     "typecheck": "pnpm -r typecheck",
     "sync:layouts": "pnpm --filter @personal-design/layout-compositions sync",
     "sync:inspora": "pnpm --filter @personal-design/inspora sync"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
   }
 }

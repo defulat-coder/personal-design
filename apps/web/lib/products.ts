@@ -39,7 +39,7 @@ export const products: Product[] = [
     name: '灵感集',
     tagline: '设计灵感同步库',
     description:
-      '持续同步的设计灵感集，图片与视频全部本地化存储，每条都可查看完整的原始信息与作者出处。',
+      '持续整理的设计灵感，涵盖图片与视频。每条都保留完整的原始信息与作者出处，方便回看与追溯。',
     date: '2026-09-03',
     href: '/products/muse',
     cover: '/inspora/thumbnails/54c9d760-395c-4ff7-8446-4432034d9f44.webp',

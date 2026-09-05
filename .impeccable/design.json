@@ -1,176 +1,539 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-05T00:00:00+08:00",
+  "generatedAt": "2026-09-05T02:32:44.692146+00:00",
   "title": "Design System: Personal Design 产品集",
   "extensions": {
     "colorMeta": {
-      "line-muse": {
-        "role": "primary",
-        "displayName": "灵感集线 朱红 Muse Line Red",
-        "canonical": "#d23c2e",
-        "tonalRamp": ["#40120c", "#5c1a12", "#782318", "#952c1e", "#b13426", "#d23c2e", "#e06052", "#ee968c"]
-      },
-      "line-layouts": {
-        "role": "primary",
-        "displayName": "布局参考线 蓝 Layouts Line Blue",
-        "canonical": "#1a6fb4",
-        "tonalRamp": ["#0c2238", "#113351", "#16456b", "#1a5784", "#1a6fb4", "#3d8bcd", "#6aa9dc", "#9dc8e9"]
+      "workspace": {
+        "role": "neutral",
+        "displayName": "workspace",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
       },
       "paper": {
         "role": "neutral",
-        "displayName": "站牌纸 Sign Paper",
-        "canonical": "#ffffff",
-        "tonalRamp": ["#55575c", "#777a80", "#9a9da3", "#bcbfc4", "#d6d8dc", "#e8e9ec", "#f4f4f6", "#ffffff"]
+        "displayName": "paper",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
       },
       "plate": {
         "role": "neutral",
-        "displayName": "图版底 Plate",
-        "canonical": "#f3f4f2",
-        "tonalRamp": ["#4c4f4b", "#666a65", "#818580", "#9ca19b", "#b7bbb5", "#d0d3cf", "#e2e4e1", "#f3f4f2"]
+        "displayName": "plate",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "body": {
+        "role": "neutral",
+        "displayName": "body",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
       },
       "ink": {
         "role": "neutral",
-        "displayName": "信号黑 Signal Ink",
-        "canonical": "#11151b",
-        "tonalRamp": ["#11151b", "#2a3038", "#444b55", "#5f6873", "#7b8491", "#99a1ac", "#b9bfc7", "#dadee2"]
+        "displayName": "ink",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
       },
       "ink-soft": {
         "role": "neutral",
-        "displayName": "软墨 Ink Soft",
-        "canonical": "#566070",
-        "tonalRamp": ["#1b1f26", "#2c333d", "#3d4653", "#4e5764", "#566070", "#768090", "#99a2b0", "#c3c9d3"]
+        "displayName": "ink-soft",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
       },
       "ink-faint": {
         "role": "neutral",
-        "displayName": "淡墨 Ink Faint",
-        "canonical": "#66707e",
-        "tonalRamp": ["#20242b", "#333945", "#464e5b", "#596371", "#66707e", "#858d99", "#a5abb5", "#c7cbd1"]
+        "displayName": "ink-faint",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
       },
       "hairline": {
         "role": "neutral",
-        "displayName": "细线 Hairline",
-        "canonical": "#e4e7ea",
-        "tonalRamp": ["#484c52", "#646970", "#81868d", "#9ea3a9", "#babec3", "#d0d3d7", "#dbdde0", "#e4e7ea"]
+        "displayName": "hairline",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
       },
-      "hairline-strong": {
+      "subtle": {
         "role": "neutral",
-        "displayName": "粗线 Hairline Strong",
-        "canonical": "#c8ced6",
-        "tonalRamp": ["#3f434b", "#565b64", "#6e747d", "#878d96", "#a0a6ae", "#b4b9c0", "#bfc4cb", "#c8ced6"]
+        "displayName": "subtle",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "border-hover": {
+        "role": "neutral",
+        "displayName": "border-hover",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "control-border": {
+        "role": "neutral",
+        "displayName": "control-border",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "accent",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "dark-workspace": {
+        "role": "neutral",
+        "displayName": "dark-workspace",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "dark-paper": {
+        "role": "neutral",
+        "displayName": "dark-paper",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "dark-plate": {
+        "role": "neutral",
+        "displayName": "dark-plate",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "dark-body": {
+        "role": "neutral",
+        "displayName": "dark-body",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "dark-ink": {
+        "role": "neutral",
+        "displayName": "dark-ink",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "dark-ink-soft": {
+        "role": "neutral",
+        "displayName": "dark-ink-soft",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "dark-ink-faint": {
+        "role": "neutral",
+        "displayName": "dark-ink-faint",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "dark-hairline": {
+        "role": "neutral",
+        "displayName": "dark-hairline",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "dark-subtle": {
+        "role": "neutral",
+        "displayName": "dark-subtle",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "dark-border-hover": {
+        "role": "neutral",
+        "displayName": "dark-border-hover",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "dark-control-border": {
+        "role": "neutral",
+        "displayName": "dark-control-border",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
+      },
+      "dark-accent": {
+        "role": "primary",
+        "displayName": "dark-accent",
+        "tonalRamp": [
+          "#202020",
+          "#353535",
+          "#494949",
+          "#5c5c5c",
+          "#848484",
+          "#bdbdbd",
+          "#ededed",
+          "#fafafa"
+        ]
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display（站牌大字）", "purpose": "刊头大字、站名；Barlow Condensed 600，CJK 落系统栈。" },
-      "title": { "displayName": "Title（站名标注）", "purpose": "45° 站名、产品名；15px 600 tracking 0.02em。" },
-      "label": { "displayName": "Label / 数据标注", "purpose": "站号、日期、尺寸、计数、方向标；mono 11.5px。" }
+      "display": {
+        "displayName": "首页标题",
+        "purpose": "48px/500，手机 34px。"
+      },
+      "headline": {
+        "displayName": "列表标题",
+        "purpose": "36px/600，手机 28px。"
+      },
+      "detail": {
+        "displayName": "详情标题",
+        "purpose": "32px/600，窄屏 26px。"
+      },
+      "body": {
+        "displayName": "正文",
+        "purpose": "14px/1.75，标题与正文中文零字距。"
+      },
+      "label": {
+        "displayName": "数据",
+        "purpose": "编号与原始 JSON 使用系统等宽；一般计数可为 tabular-nums。"
+      }
     },
-    "shadows": [
-      { "name": "darkroom-media", "value": "0 25px 50px -12px rgba(0,0,0,0.25)", "purpose": "灯箱暗房中媒体的投影（暗房本体，非装饰）。" }
-    ],
+    "shadows": [],
     "motion": [
-      { "name": "ease-out", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "全站唯一缓动：干线入场、节点级联、详情入场、hover 过渡。" },
-      { "name": "dur-fast", "value": "150ms", "purpose": "默认 transition 时长（transition-colors 等无显式时长的类）。" },
-      { "name": "dur-base", "value": "300ms", "purpose": "媒体 hover scale 等较慢过渡。" },
-      { "name": "rail-lerp", "value": "0.12 / frame @16.7ms", "purpose": "时间轴轨道滚动的 rAF lerp 系数（按帧间隔归一化）。" },
-      { "name": "train-lerp", "value": "0.3 / frame @16.7ms", "purpose": "列车点对进度的二次 lerp：行驶中尾随、停车滑入站位。" }
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "通用状态和灯箱缓动。"
+      },
+      {
+        "name": "base",
+        "value": "200ms",
+        "purpose": "基础过渡。"
+      },
+      {
+        "name": "enter",
+        "value": "200ms",
+        "purpose": "灯箱进入与媒体显现。"
+      },
+      {
+        "name": "exit",
+        "value": "140ms",
+        "purpose": "灯箱退出与封面离开。"
+      },
+      {
+        "name": "button-state",
+        "value": "50ms",
+        "purpose": "按钮颜色和边界。"
+      },
+      {
+        "name": "button-press",
+        "value": "100ms",
+        "purpose": "按钮按下位移。"
+      },
+      {
+        "name": "fast",
+        "value": "150ms",
+        "purpose": "可复用的快速状态 token；分类实际使用局部 100ms ease。"
+      },
+      {
+        "name": "category-state",
+        "value": "100ms ease",
+        "purpose": "分类文字与下划线的局部反馈。"
+      }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "lg", "value": "1024px" },
-      { "name": "2xl", "value": "1536px" }
+      {
+        "name": "muse-single-column",
+        "value": "359px"
+      },
+      {
+        "name": "mobile-header",
+        "value": "639px"
+      },
+      {
+        "name": "stacked-home",
+        "value": "640px"
+      },
+      {
+        "name": "two-column-grid",
+        "value": "759px"
+      },
+      {
+        "name": "compact-page-padding",
+        "value": "1100px"
+      },
+      {
+        "name": "tablet-grid",
+        "value": "1199px"
+      }
     ]
   },
   "components": [
     {
+      "name": "Default Button",
+      "kind": "button",
+      "refersTo": "button-default",
+      "description": "从共享 Button 提取的 default 变体。",
+      "html": "<button class=\"ds-default\">普通按钮</button>",
+      "css": ".ds-default{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:var(--radius-control);background:transparent;color:var(--color-body);font:500 14px/1.35 var(--font-sans);cursor:pointer;transition:background-color 50ms var(--ease-out),border-color 50ms var(--ease-out),color 50ms var(--ease-out),transform 100ms var(--ease-out);background:var(--color-paper);}.ds-default:hover:not(:disabled){background:var(--color-subtle);border-color:var(--color-border-hover);}.ds-default:active:not(:disabled){transform:translateY(1px);}.ds-default:focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}.ds-default:disabled{background:var(--color-subtle);color:var(--color-ink-faint);border-color:transparent;cursor:not-allowed;transform:none;}@media(pointer:coarse){.ds-default{min-height:44px;}}@media(prefers-reduced-motion:reduce){.ds-default{transition:none;}.ds-default:active{transform:none;}}"
+    },
+    {
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "信号黑直角主按钮，可带 12px 线路色小方块标识归属线。",
-      "html": "<button class=\"ds-btn-primary\"><span class=\"ds-btn-chip\"></span>查看原始出处</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; background: #11151b; color: #f3f4f2; padding: 12px 16px; font: 400 12.5px/1.5 -apple-system, system-ui, 'PingFang SC', sans-serif; border: none; border-radius: 0; cursor: pointer; transition: background .15s cubic-bezier(0.22,1,0.36,1), transform .1s; } .ds-btn-primary:hover { background: rgba(17,21,27,.85); } .ds-btn-primary:active { transform: scale(.97); } .ds-btn-primary:focus-visible { outline: 2px solid #11151b; outline-offset: 2px; } .ds-btn-chip { width: 12px; height: 12px; background: #d23c2e; }"
+      "description": "从共享 Button 提取的 primary 变体。",
+      "html": "<button class=\"ds-primary\">查看原始出处</button>",
+      "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:var(--radius-control);background:transparent;color:var(--color-body);font:500 14px/1.35 var(--font-sans);cursor:pointer;transition:background-color 50ms var(--ease-out),border-color 50ms var(--ease-out),color 50ms var(--ease-out),transform 100ms var(--ease-out);background:var(--color-ink);border-color:transparent;color:var(--color-paper);border-radius:var(--radius-pill);}.ds-primary:hover:not(:disabled){background:var(--color-accent);}.ds-primary:active:not(:disabled){transform:translateY(1px);}.ds-primary:focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}.ds-primary:disabled{background:var(--color-subtle);color:var(--color-ink-faint);border-color:transparent;cursor:not-allowed;transform:none;}@media(pointer:coarse){.ds-primary{min-height:44px;}}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none;}.ds-primary:active{transform:none;}}"
     },
     {
       "name": "Ghost Button",
       "kind": "button",
       "refersTo": "button-ghost",
-      "description": "细线直角次按钮：翻页箭头、关闭、次要操作。",
-      "html": "<button class=\"ds-btn-ghost\">←</button>",
-      "css": ".ds-btn-ghost { background: transparent; color: #566070; padding: 8px 16px; font: 400 12.5px/1.5 -apple-system, system-ui, 'PingFang SC', sans-serif; border: 1px solid #e4e7ea; border-radius: 0; cursor: pointer; transition: border-color .15s, color .15s; } .ds-btn-ghost:hover { border-color: #11151b; color: #11151b; } .ds-btn-ghost:focus-visible { outline: 2px solid #11151b; outline-offset: 2px; }"
+      "description": "从共享 Button 提取的 ghost 变体。",
+      "html": "<button class=\"ds-ghost\">上一件</button>",
+      "css": ".ds-ghost{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:var(--radius-control);background:transparent;color:var(--color-body);font:500 14px/1.35 var(--font-sans);cursor:pointer;transition:background-color 50ms var(--ease-out),border-color 50ms var(--ease-out),color 50ms var(--ease-out),transform 100ms var(--ease-out);border-color:transparent;}.ds-ghost:hover:not(:disabled){background:var(--color-subtle);}.ds-ghost:active:not(:disabled){transform:translateY(1px);}.ds-ghost:focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}.ds-ghost:disabled{background:var(--color-subtle);color:var(--color-ink-faint);border-color:transparent;cursor:not-allowed;transform:none;}@media(pointer:coarse){.ds-ghost{min-height:44px;}}@media(prefers-reduced-motion:reduce){.ds-ghost{transition:none;}.ds-ghost:active{transform:none;}}"
     },
     {
-      "name": "Line Badge",
-      "kind": "chip",
-      "refersTo": "line-badge",
-      "description": "线路编号牌：直角色底小方块 + mono 站号，标识内容归属哪条线。",
-      "html": "<span class=\"ds-badge ds-badge--muse\">M·01</span><span class=\"ds-badge ds-badge--layouts\">L·01</span>",
-      "css": ".ds-badge { display: inline-block; padding: 1px 6px; font: 500 10.5px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; color: #fff; border-radius: 0; } .ds-badge--muse { background: #d23c2e; } .ds-badge--layouts { background: #1a6fb4; }"
+      "name": "Subtle Button",
+      "kind": "button",
+      "refersTo": "button-subtle",
+      "description": "从共享 Button 提取的 subtle 变体。",
+      "html": "<button class=\"ds-subtle\">更多选项</button>",
+      "css": ".ds-subtle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:var(--radius-control);background:transparent;color:var(--color-body);font:500 14px/1.35 var(--font-sans);cursor:pointer;transition:background-color 50ms var(--ease-out),border-color 50ms var(--ease-out),color 50ms var(--ease-out),transform 100ms var(--ease-out);background:var(--color-subtle);border-color:transparent;}.ds-subtle:hover:not(:disabled){border-color:var(--color-border-hover);}.ds-subtle:active:not(:disabled){transform:translateY(1px);}.ds-subtle:focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}.ds-subtle:disabled{background:var(--color-subtle);color:var(--color-ink-faint);border-color:transparent;cursor:not-allowed;transform:none;}@media(pointer:coarse){.ds-subtle{min-height:44px;}}@media(prefers-reduced-motion:reduce){.ds-subtle{transition:none;}.ds-subtle:active{transform:none;}}"
     },
     {
-      "name": "Category Tab",
-      "kind": "nav",
-      "refersTo": "tab",
-      "description": "无框小字分类 tab；active = 墨色 semibold + 2px 线路色指示条。",
-      "html": "<button class=\"ds-tab ds-tab--active\">全部<span class=\"ds-tab-count\">350</span></button><button class=\"ds-tab\">网页与 UI<span class=\"ds-tab-count\">128</span></button>",
-      "css": ".ds-tab { position: relative; background: none; border: none; border-radius: 0; padding: 6px 6px; font: 400 12px/1.5 -apple-system, system-ui, 'PingFang SC', sans-serif; color: #566070; cursor: pointer; transition: color .15s; } .ds-tab:hover { color: #11151b; } .ds-tab--active { font-weight: 600; color: #11151b; } .ds-tab--active::after { content: ''; position: absolute; left: 6px; right: 6px; bottom: 0; height: 2px; background: #d23c2e; } .ds-tab-count { margin-left: 6px; font: 400 11.5px ui-monospace, Menlo, monospace; opacity: .6; }"
-    },
-    {
-      "name": "Plate Card",
-      "kind": "card",
-      "refersTo": "plate-card",
-      "description": "图版卡：细线框 + 图版底 6px 内衬 + 四角套准十字，承载图像或视频。",
-      "html": "<figure class=\"ds-plate\"><div class=\"ds-plate-media\"></div><figcaption class=\"ds-plate-cap\"><span class=\"ds-plate-no\">No.001</span> 布局参考</figcaption></figure>",
-      "css": ".ds-plate { position: relative; background: #f3f4f2; border: 1px solid #e4e7ea; border-radius: 0; padding: 6px; margin: 0; } .ds-plate::before { content: ''; position: absolute; top: -5px; left: -5px; width: 9px; height: 9px; background: linear-gradient(#66707e,#66707e) center/9px 1px no-repeat, linear-gradient(#66707e,#66707e) center/1px 9px no-repeat; } .ds-plate-media { aspect-ratio: 16/10; background: #ffffff; } .ds-plate-cap { margin-top: 10px; font: 600 15px/1.4 'Barlow Condensed', 'PingFang SC', sans-serif; letter-spacing: .02em; color: #11151b; } .ds-plate-no { font: 400 11.5px ui-monospace, Menlo, monospace; color: #11151b; margin-right: 6px; }"
-    },
-    {
-      "name": "Search Input",
+      "name": "Search",
       "kind": "input",
-      "refersTo": "input-search",
-      "description": "直角细线搜索框，focus 描边转信号黑。",
-      "html": "<input class=\"ds-input\" type=\"search\" placeholder=\"搜索名称、编号或主题…\">",
-      "css": ".ds-input { background: #f3f4f2; border: 1px solid #e4e7ea; border-radius: 0; padding: 8px 12px 8px 36px; font: 400 12.5px/1.5 -apple-system, system-ui, 'PingFang SC', sans-serif; color: #11151b; outline: none; transition: border-color .15s; } .ds-input::placeholder { color: #66707e; } .ds-input:focus { border-color: #11151b; }"
+      "description": "当前实现的 Search 组件。",
+      "html": "<input class=\"ds-search\" aria-label=\"搜索灵感\" placeholder=\"搜索灵感\" />",
+      "css": ".ds-search{min-height:44px;padding:8px 12px;border:1px solid var(--color-control-border);border-radius:var(--radius-control);background:var(--color-paper);color:var(--color-body);font:14px/1.75 var(--font-sans);}.ds-search::placeholder{color:var(--color-ink-soft);opacity:1;}.ds-search:focus-visible{outline:2px solid var(--color-ink);outline-offset:2px;}"
     },
     {
-      "name": "Station Node",
+      "name": "Header",
+      "kind": "nav",
+      "description": "仅品牌/首页链接与主题控制，不是产品菜单。",
+      "html": "<header class=\"ds-header\"><a href=\"#\">Personal Design</a><button aria-label=\"切换外观\">外观</button></header>",
+      "css": ".ds-header{display:flex;align-items:center;justify-content:space-between;min-height:88px;padding:20px 48px;background:var(--color-paper);color:var(--color-ink);}.ds-header a{font:600 17px/1.3 var(--font-sans);color:inherit;text-decoration:none;}.ds-header a:hover{text-decoration:underline;}.ds-header button{min-height:36px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:4px;background:var(--color-paper);color:var(--color-body);}.ds-header button:hover{background:var(--color-subtle);}.ds-header :focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}@media(max-width:639px){.ds-header{min-height:72px;padding:12px 20px;}}"
+    },
+    {
+      "name": "Category",
+      "kind": "chip",
+      "description": "下划线分类选择，48px 操作高度。",
+      "html": "<button class=\"ds-category\" aria-pressed=\"true\">全部 <span>24</span></button>",
+      "css": ".ds-category{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:10px 0 13px;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--color-ink-soft);font:14px/1.75 var(--font-sans);transition:color 100ms ease,border-color 100ms ease;}.ds-category[aria-pressed=true]{color:var(--color-ink);border-bottom-color:var(--color-ink);font-weight:600;}.ds-category span{font-size:11px;font-weight:400;font-variant-numeric:tabular-nums;}.ds-category:hover{color:var(--color-ink);}.ds-category:focus-visible{outline:2px solid var(--color-ink);outline-offset:-2px;}"
+    },
+    {
+      "name": "Information Section",
       "kind": "custom",
-      "refersTo": "station-ring",
-      "description": "线路图站节点：3px 干线 + 纸心墨边站环 + 45° 斜排站名标注。",
-      "html": "<div class=\"ds-station\"><div class=\"ds-station-rail\"></div><span class=\"ds-station-ring\"></span><div class=\"ds-station-label\"><span class=\"ds-badge\">M·01</span><span class=\"ds-station-name\">灵感集</span><span class=\"ds-station-date\">9 月 1 日</span></div></div>",
-      "css": ".ds-station { position: relative; width: 220px; height: 96px; } .ds-station-rail { position: absolute; left: 0; right: 0; top: 56px; height: 3px; background: #11151b; } .ds-station-ring { position: absolute; top: 50px; left: 0; width: 15px; height: 15px; border-radius: 9999px; border: 2px solid #11151b; background: #ffffff; } .ds-station-label { position: absolute; top: 24px; left: 10px; display: flex; align-items: center; gap: 6px; transform: rotate(-45deg); transform-origin: bottom left; white-space: nowrap; } .ds-station-label .ds-badge { display: inline-block; padding: 1px 6px; font: 500 10.5px/1.6 ui-monospace, Menlo, monospace; color: #fff; background: #d23c2e; } .ds-station-name { font: 600 15px/1 'Barlow Condensed', 'PingFang SC', sans-serif; letter-spacing: .02em; color: #11151b; } .ds-station-date { font: 400 10.5px ui-monospace, Menlo, monospace; color: #66707e; }"
+      "description": "详情媒体下方的开放资料区，不使用检查面板。",
+      "html": "<section class=\"ds-info\"><h2>原始信息</h2><p>作者、出处与原始内容数据</p><a href=\"#\">查看原始出处</a></section>",
+      "css": ".ds-info{padding-top:32px;border-top:1px solid var(--color-hairline);color:var(--color-body);font:14px/1.75 var(--font-sans);}.ds-info h2{color:var(--color-ink);font-size:20px;line-height:1.35;margin-bottom:16px;}.ds-info a{color:var(--color-ink);}.ds-info a:hover{text-decoration:none;}.ds-info a:focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}"
     }
   ],
   "narrative": {
-    "northStar": "地铁导视系统（Transit Wayfinding）",
-    "overview": "站点是一张正在延伸的地铁线路图：产品是车站，时间是线路，内容永远主角。语言取自真实导视系统——纸白站牌底、墨黑站牌字、3px 粗线路带、空心圆环站节点、45° 斜排站名标注、每个产品一条功能线路色。深色套是「夜行灯箱站牌」：同一套 token 换值，不新增角色。密度服务于进站浏览：图版媒体占满画面，界面退成一行行 mono 小字与一条横贯的线路。",
+    "northStar": "随手可查的设计参考（Design Within Reach）",
+    "overview": "本站采用 OpenDesign 的中性色、Albert Sans、清晰中文排印与克制控件；真实媒体承担主要视觉内容。源快照见 [OpenDesign 规范](docs/design/open-design/README.md)，采用与适配见 [rules.md](docs/design/open-design/rules.md)。本文记录 V2 当前实现，不把历史布局当作产品约束，也不把源码对齐等同于用户认可。\n\n首页本身承担产品菜单。访客从两个真实内容入口选择产品，在稳定网格中检索，直接进入详情阅读媒体和原始信息，再返回浏览现场。全站仅保留轻量品牌/首页链接与主题开关，不设置侧栏或顶部产品菜单。",
     "keyCharacteristics": [
-      "纸白底 + 信号黑站牌字，3px 粗线路带承担主干结构；明暗双套 token（深色 = 夜行灯箱）",
-      "每个产品一条功能线路色（灵感集朱红、布局参考蓝），只活在编号牌/站环 hover/3px 色带/active 指示条；干线本身用墨",
-      "直角全站，正圆只给站环、列车点、主题切换钮、作者头像",
-      "展示字 Barlow Condensed（导视 grotesque，仅 latin，CJK 落系统栈）；mono 只载数据",
-      "签名交互是横向 lifeline 线路图：站环 + 45° 站名 + 列车进度点（手写 rAF，零动画库）"
+      "白色页面与浅灰媒体衬底，深色使用同一组语义角色。",
+      "首页两个产品入口；内页以返回列表、相邻内容和首页链接提供上下文导航。",
+      "静态内容网格、单一详情去向、标题优先的自然阅读顺序。",
+      "边框留给控件和分组边界，媒体之外减少包框；组件样式归相邻 CSS Module。"
     ],
     "rules": [
-      { "name": "The Functional Line-Color Rule", "body": "线路色只出现在五处：编号牌底色、站环 hover 染色、刊头/信息牌底缘的 3px 色带、active tab 指示条、主按钮内的线路小色块。它永远标识「这条内容属于哪条线」，绝不作大面积铺底或装饰。", "section": "colors" },
-      { "name": "The Ink Trunk Rule", "body": "lifeline 干线永远是 3px ink 实线（已通车段）+ hairline-strong 虚线（规划段）；线路色不上干线。列车点也是 ink 身 + paper 边的站环造型。", "section": "colors" },
-      { "name": "The Mono Carries Data Rule", "body": "等宽字体只写编号、日期、尺寸、计数、方向标等可度量信息；一段叙述文字设成 mono 即违规。", "section": "typography" },
-      { "name": "The Display Never Narrates Rule", "body": "Barlow Condensed 只写刊头、站名、标题等「挂牌文字」；正文与摘要永远走系统栈。", "section": "typography" },
-      { "name": "The Flat Concourse Rule", "body": "容器深度只能靠描边与纸色分层表达；给卡片加投影即违规（灯箱暗房机制除外）。线路带是结构（轨道/站牌底缘），不是投影。", "section": "elevation" }
+      {
+        "name": "The Semantic Theme Rule",
+        "body": "新表面使用成套语义主题；详情灯箱保持恒定暗房与亮色焦点环。",
+        "section": "colors"
+      },
+      {
+        "name": "The Chinese Typesetting Rule",
+        "body": "中文标题字距为 0、行高 1.35，正文行高 1.75；用空间和层级组织内容，不用负字距压缩中文。",
+        "section": "typography"
+      },
+      {
+        "name": "The Open Reading Surface Rule",
+        "body": "标题、说明和出处直接落在阅读平面，边界用于分组与操作，不把每段资料套进独立面板。",
+        "section": "elevation"
+      }
     ],
     "dos": [
-      "Do 用 mono 写一切可度量的值（站号、日期、尺寸、计数、方向标）。",
-      "Do 让媒体占满图版，界面退让（细线 + 留白 + 微字号）。",
-      "Do 用 3px 色带、编号牌、站环、45° 标注延展「导视」词汇到新表面；刊头一律站牌式。",
-      "Do 新表面只用语义 token（paper/plate/ink/hairline/line-*），让它自动获得深色套。",
-      "Do 动效走全站编排：单一 expo-out 缓动（cubic-bezier(0.22,1,0.36,1)）+ 两档时长（150/300ms），reduced-motion 全量瞬时化。",
-      "Do 内容列表沿用既定呈现：灵感集 = 图版拼幅（PlateWall），布局参考 = 双向行车灵感墙（LayoutWall），不发明第三种列表样式。"
+      "**Do** 让首页承担产品选择，内页只提供上下文返回和阅读操作。",
+      "**Do** 用稳定网格、真实媒体与一个详情链接建立可预期的浏览流程。",
+      "**Do** 让详情标题在媒体之前、说明与原始信息在媒体之后自然展开。",
+      "**Do** 保留主题、可见焦点、原生视频控制、明确追加与返回现场。",
+      "**Do** 沿用源 tokens、中文排印、共享按钮和局部 CSS 归属。"
     ],
     "donts": [
-      "Don't 把线路色当装饰：铺大底、染干线、染普通强调文字都违规（The Functional Line-Color Rule）。",
-      "Don't 引入第三种线路色之外的彩色，也不引入中性色板（neutral-* 一律禁止，灯箱暗房字面量除外）。",
-      "Don't 给任何容器加圆角或卡片阴影（站环/列车点/主题钮/头像、灯箱暗房机制除外）。",
-      "Don't 用 hairline 替代 3px 线路带承担主干结构；干线与刊头底缘永远是 3px。",
-      "Don't 引入动画库——滚动驱动与列车惯性手写 rAF，全站动效从 --ease-out / --dur-* 出。",
-      "Don't 在页脚放协议/署名行——法律署名收进首页「关于」站。",
-      "Don't 在访客可见处引用数据来源站点（法律署名除外）；产品一律使用自有命名。"
+      "**Don't** 恢复全站菜单、固定侧栏、强制时间轴或自动移动内容墙。",
+      "**Don't** 将列表点击改为灯箱中转、列表自动播放或被动无限追加。",
+      "**Don't** 用固定全高媒体井、窄资料侧栏或层层面板挤压阅读。",
+      "**Don't** 因兼容 tokens 仍存在而恢复产品装饰线路色。",
+      "**Don't** 删除内容详情的缺图条目、出处或原始 JSON；首页不追加关于与许可说明。"
     ]
   }
 }

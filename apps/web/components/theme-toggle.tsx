@@ -1,11 +1,32 @@
 'use client';
 
-/**
- * 明暗主题切换钮：24×24 正圆（全站唯二圆形例外之一），fixed 右上。
- * 翻转 html[data-theme] 并写 localStorage('theme')；图标用 dark: 变体切换，
- * 不读 state，首帧即与内联初始化脚本一致（无闪烁、无水合 mismatch）。
- */
+import { useEffect } from 'react';
+import { Button } from './button';
+
 export function ThemeToggle() {
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const syncSystem = () => {
+      let saved: string | null = null;
+      try { saved = localStorage.getItem('theme'); } catch { /* Use OS preference when storage is unavailable. */ }
+      if (saved !== 'light' && saved !== 'dark') {
+        document.documentElement.dataset.theme = media.matches ? 'dark' : 'light';
+      }
+    };
+    const syncStorage = (event: StorageEvent) => {
+      if (event.key !== 'theme' && event.key !== null) return;
+      if (event.newValue === 'light' || event.newValue === 'dark') {
+        document.documentElement.dataset.theme = event.newValue;
+      } else syncSystem();
+    };
+    media.addEventListener('change', syncSystem);
+    window.addEventListener('storage', syncStorage);
+    syncSystem();
+    return () => {
+      media.removeEventListener('change', syncSystem);
+      window.removeEventListener('storage', syncStorage);
+    };
+  }, []);
   const toggle = () => {
     const next =
       document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
@@ -18,11 +39,11 @@ export function ThemeToggle() {
   };
 
   return (
-    <button
-      type="button"
+    <Button
+      icon
       onClick={toggle}
       aria-label="切换明暗主题"
-      className="fixed top-[30px] right-[30px] z-50 flex size-6 items-center justify-center rounded-full text-ink transition-colors hover:bg-plate focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+      title="切换明暗主题"
     >
       {/* 浅色下显示月亮（点它入夜） */}
       <svg
@@ -51,6 +72,6 @@ export function ThemeToggle() {
         <circle cx="12" cy="12" r="4" />
         <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
       </svg>
-    </button>
+    </Button>
   );
 }

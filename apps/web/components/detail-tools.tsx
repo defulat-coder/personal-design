@@ -1,13 +1,54 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
+import { buttonClassName } from './button';
+import styles from './detail-tools.module.css';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LightboxProvider,
   useLightbox,
   type LightboxItem,
 } from './lifeline/lightbox';
+
+// 常驻单例翻页监听：page 组件只把翻页目标写进 <html> dataset（useLayoutEffect，
+// paint 前就绪），keydown 在模块级只注册一次——详情→详情导航的过渡窗口内监听不卸，
+// 消除提交边界丢键。HMR 重载模块时用 window 标记防重复注册。
+const NAV_LISTENER_FLAG = '__detailNavListener__';
+
+let navRouter: ReturnType<typeof useRouter> | null = null;
+
+function ensureNavListener() {
+  const w = window as unknown as Record<string, boolean>;
+  if (w[NAV_LISTENER_FLAG]) return;
+  w[NAV_LISTENER_FLAG] = true;
+  window.addEventListener('keydown', (event) => {
+    // 灯箱打开时让灯箱消费方向键（灯箱翻图），不跳详情页
+    if (document.body.dataset.lightboxOpen === 'true') return;
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.repeat) return;
+    // 焦点在输入控件或局部滚动区（媒体轮播、原始 JSON pre）内时，方向键留给局部
+    const target = event.target as HTMLElement | null;
+    if (
+      target?.closest?.(
+        'input, textarea, select, button, a, [role=tab], [role=slider], [contenteditable], [data-detail-keys-ignore]',
+      )
+    ) {
+      return;
+    }
+    const { detailPrev, detailNext } = document.documentElement.dataset;
+    if (event.key === 'ArrowLeft' && detailPrev) {
+      event.preventDefault();
+      try { sessionStorage.setItem('detail-nav', detailPrev); } catch {}
+      navRouter?.push(detailPrev);
+    } else if (event.key === 'ArrowRight' && detailNext) {
+      event.preventDefault();
+      try { sessionStorage.setItem('detail-nav', detailNext); } catch {}
+      navRouter?.push(detailNext);
+    }
+  });
+}
 
 /** 详情页主图：点击进入灯箱（FLIP 放大，siblings = 同二级主题） */
 export function DetailMainImage(props: {
@@ -41,33 +82,22 @@ function MainImageButton({
   index: number;
 }) {
   const lightbox = useLightbox();
-  return (
-    <button
-      type="button"
-      aria-label={`放大查看 ${alt}`}
-      className="relative block h-full w-full cursor-zoom-in"
-      onClick={(event) =>
-        lightbox?.open(
-          { src, thumb, alt, serial },
-          {
-            rect: event.currentTarget.getBoundingClientRect(),
-            sourceEl: event.currentTarget,
-            siblings,
-            index,
-          },
-        )
-      }
-    >
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        priority
-        sizes="(min-width: 1024px) 60vw, 100vw"
-        className="object-contain"
-      />
+  const [state, setState] = useState<'loading' | 'ready' | 'fallback'>('loading');
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setState((value) => value === 'loading' ? 'fallback' : value), 12000);
+    return () => window.clearTimeout(timeout);
+  }, [src]);
+  return <div className={styles.imageWrap}>
+    <button type="button" aria-label={`放大查看 ${alt}`} className={styles.imageButton}
+      onClick={(event) => lightbox?.open({ src, thumb, alt, serial }, {
+        rect: event.currentTarget.getBoundingClientRect(), sourceEl: event.currentTarget, siblings, index,
+      })}>
+      <Image src={thumb} alt={alt} fill priority sizes="(min-width: 1024px) 60vw, 100vw" className="object-contain" />
+      {state !== 'fallback' && <Image src={src} alt="" fill priority sizes="(min-width: 1024px) 60vw, 100vw" className={styles.fullImage} style={{ opacity: state === 'ready' ? 1 : 0 }} onLoad={() => setState('ready')} onError={() => setState('fallback')} />}
+      <span className={styles.zoomHint}>点击放大</span>
     </button>
-  );
+    {state !== 'ready' && <p className={styles.status} role="status">{state === 'loading' ? '正在载入高清图，先显示预览' : '高清图暂不可用，已显示预览；可点击放大后重试'}</p>}
+  </div>;
 }
 
 /** 详情页键盘 ←/→ 翻页（与灯箱翻图心智一致）；并负责 detail-in 翻页跳过标记 */
@@ -89,9 +119,10 @@ export function DetailKeyboardNav({
   // StrictMode 双跑 effect，已消费过的实例不能走 else 删除分支）
   const consumedNavRef = useRef(false);
   useEffect(() => {
-    const target = sessionStorage.getItem('detail-nav');
+    let target: string | null = null;
+    try { target = sessionStorage.getItem('detail-nav'); } catch {}
     if (target && target === pathname) {
-      sessionStorage.removeItem('detail-nav');
+      try { sessionStorage.removeItem('detail-nav'); } catch {}
       consumedNavRef.current = true;
       document.documentElement.dataset.detailNav = 'true';
     } else if (!target && !consumedNavRef.current) {
@@ -102,32 +133,46 @@ export function DetailKeyboardNav({
   useEffect(() => {
     const pattern = new RegExp(hrefPattern);
     const onClickCapture = (event: MouseEvent) => {
+      if (event.button !== 0 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
       const anchor = (event.target as Element).closest?.('a[href]');
       const href = anchor?.getAttribute('href') ?? '';
       if (pattern.test(href)) {
-        sessionStorage.setItem('detail-nav', href);
+        try { sessionStorage.setItem('detail-nav', href); } catch {}
       }
     };
     document.addEventListener('click', onClickCapture, true);
     return () => document.removeEventListener('click', onClickCapture, true);
   }, [hrefPattern]);
 
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      // 灯箱打开时让灯箱消费方向键（灯箱翻图），不跳详情页
-      if (document.body.dataset.lightboxOpen === 'true') return;
-      if (event.key === 'ArrowLeft' && prevHref) {
-        event.preventDefault();
-        sessionStorage.setItem('detail-nav', prevHref);
-        router.push(prevHref);
-      } else if (event.key === 'ArrowRight' && nextHref) {
-        event.preventDefault();
-        sessionStorage.setItem('detail-nav', nextHref);
-        router.push(nextHref);
-      }
+  // 翻页目标写进 <html> dataset（paint 前就绪），常驻单例监听读它导航；
+  // 卸载时清理，避免离开详情页后误导航
+  useLayoutEffect(() => {
+    navRouter = router;
+    ensureNavListener();
+    const root = document.documentElement;
+    if (prevHref) root.dataset.detailPrev = prevHref;
+    else delete root.dataset.detailPrev;
+    if (nextHref) root.dataset.detailNext = nextHref;
+    else delete root.dataset.detailNext;
+    return () => {
+      delete root.dataset.detailPrev;
+      delete root.dataset.detailNext;
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
   }, [router, prevHref, nextHref]);
   return null;
+}
+
+/** Return to the actual list query and position; direct entry has a deterministic fallback. */
+export function LayoutReturnLink() {
+  const [href, setHref] = useState('/products/layout-compositions');
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      try {
+        const saved = JSON.parse(sessionStorage.getItem('layouts-browse') || 'null') as { url?: string } | null;
+        if (saved?.url && /^\/products\/layout-compositions(?:\?|$)/.test(saved.url)) setHref(saved.url);
+      } catch { /* Fall back to the full archive. */ }
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
+  return <Link href={href} scroll={false} className={buttonClassName({ variant: 'ghost' })}><ArrowLeft aria-hidden size={16} />返回图鉴</Link>;
 }

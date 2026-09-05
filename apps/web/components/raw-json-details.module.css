@@ -1,0 +1,4 @@
+.root { min-width:0; }
+.trigger { list-style:none; }
+.trigger::-webkit-details-marker { display:none; }
+.root[open] .trigger { background:var(--color-subtle); color:var(--color-ink); }

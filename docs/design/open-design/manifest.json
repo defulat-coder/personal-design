@@ -1,0 +1,109 @@
+{
+  "sourceRepository": "open-design",
+  "localSource": "/Users/xbjt/Documents/myself/open-design",
+  "commit": "d4138ea81832c792f28cb69f2637a35e52f20f5a",
+  "capturedAt": "2026-09-05",
+  "purpose": "Design specification source snapshots; not runtime imports or active agent instructions",
+  "files": [
+    {
+      "path": "CLAUDE.md",
+      "sha256": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "e558726c4eea4fec03345dcbf5d45355a52c4debc19cb6d108eb2aed7a77544a"
+    },
+    {
+      "path": "apps/AGENTS.md",
+      "sha256": "c07dee3543a15f1c1079d91fcb41733810fcff20ae735778e7c519987f749bd1"
+    },
+    {
+      "path": "apps/web/src/styles/tokens.css",
+      "sha256": "0cf1a0be5011c8dc2702e4fda61e5c6987f30247646f4fbdbf4347115b3a0729"
+    },
+    {
+      "path": "apps/web/src/styles/base.css",
+      "sha256": "740e7a31dfe7a92449f7af8a4410301fe5efb5675439bd2adc90a272578b38e9"
+    },
+    {
+      "path": "apps/web/src/styles/material.css",
+      "sha256": "aced4cdfce068c3d35c090c77eace6c39b2b1d02f57063f8e36728baec4ffa9c"
+    },
+    {
+      "path": "packages/components/src/button.module.css",
+      "sha256": "8efc0a3540c76579abb680b1ef6df8607fd9d913422b292f64747c0cb17786b7"
+    },
+    {
+      "path": "packages/components/src/button.tsx",
+      "sha256": "9a63547513788a75932c995e6711d3620b0fe0e6abf39622dc6015d20d57a1c4"
+    },
+    {
+      "path": "packages/components/src/dialog.module.css",
+      "sha256": "03dca56fe3b6e18d120593d23e693c34dc7b9a17954858bf3b39681c70f3e84f"
+    },
+    {
+      "path": "packages/components/src/form-controls.module.css",
+      "sha256": "9e38fd285b44edb2ca9ad7e92370bb0018d98f432c31cf307025ca3d8a069aaa"
+    },
+    {
+      "path": "docs/design-systems.md",
+      "sha256": "b925218bb7f0ec1b07f74c7f30fa0bec08f0f5aae285740b7a1cee3d28c6c50b"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "9d95806a26532623360eb84bb17d298f394b55ef73fb4c0796d99b4319b2b0da"
+    },
+    {
+      "path": "craft/typography-hierarchy-editorial.md",
+      "sha256": "df5beddb8cd3c2b8f15e74f57ada607f7a89ce9112aaa8f8fad22d89e452bea4"
+    },
+    {
+      "path": "craft/accessibility-baseline.md",
+      "sha256": "ef6c5f670d114ceb4c347681bcf3be8637e5d1186165a9c79ca265f316c72d11"
+    },
+    {
+      "path": "craft/rtl-and-bidi.md",
+      "sha256": "713abc3707eb056ed1d40ca8f3e91c04afc4003251b9ed266650fd267cbf4391"
+    },
+    {
+      "path": "craft/typography-hierarchy.md",
+      "sha256": "e247ca0358dcbdc3921f2148cc44c6ddcc325429b8082f6ad033792b79e39e06"
+    },
+    {
+      "path": "craft/anti-ai-slop.md",
+      "sha256": "d0f57d3064451663f9dca81af170fc754acc4b1e77280fd5cfb3a04afeef9a5c"
+    },
+    {
+      "path": "craft/form-validation.md",
+      "sha256": "a31410ce6ba8b7a762c2975386f2e93ae97b59a8bc85169aa58457927b0a88e6"
+    },
+    {
+      "path": "craft/README.md",
+      "sha256": "7b18e690c995226706c7f8f50229a9f9e170ad3b6675bd031c8d8751682c3c46"
+    },
+    {
+      "path": "craft/color.md",
+      "sha256": "fb45b59fa3055f13d6549f45ae52e88cd09d3facd0e5aaab63600e7fb024db6d"
+    },
+    {
+      "path": "craft/animation-discipline.md",
+      "sha256": "075273e8404f7931adfe196d508461efdd303b54e0d9a9ef3f642a682c12a760"
+    },
+    {
+      "path": "craft/state-coverage.md",
+      "sha256": "79bda732b55b0f0e4a366ba934f4a01518d3576091422047690e269222f2b682"
+    },
+    {
+      "path": "craft/typography.md",
+      "sha256": "5f8e634b35c6b27a5e86f748825da17efe6a0d2e96f68dc35f57f406420049a6"
+    },
+    {
+      "path": "craft/FUTURE_SECTIONS.md",
+      "sha256": "e95ccf61e166cfc3dc7266bfaaabb3e8cec1dc9c8d134eb63ad064343aa7d9bc"
+    },
+    {
+      "path": "craft/laws-of-ux.md",
+      "sha256": "9a4db0fe294a240920921111d43a6af5ea0c4df1bf979f6e780610a36a9c6d1c"
+    }
+  ]
+}

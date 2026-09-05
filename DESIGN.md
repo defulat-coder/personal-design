@@ -1,219 +1,261 @@
 ---
 name: Personal Design 产品集
-description: 地铁导视系统——站点是一张正在延伸的线路图，产品是车站，时间是线路
+description: OpenDesign 中性视觉语言下的设计参考门户，首页选产品、静态检索、直接阅读与内容溯源
 colors:
-  paper: "#ffffff / #0d1015 (dark)"
-  plate: "#f3f4f2 / #161b23 (dark)"
-  ink: "#11151b / #edf1f6 (dark)"
-  ink-soft: "#566070 / #97a2b1 (dark)"
-  ink-faint: "#66707e / #7d8794 (dark)"
-  hairline: "#e4e7ea / #242b36 (dark)"
-  hairline-strong: "#c8ced6 / #39424f (dark)"
-  line-muse: "#d23c2e / #e86050 (dark)"
-  line-layouts: "#1a6fb4 / #55a0e0 (dark)"
+  workspace: "#ffffff"
+  paper: "#ffffff"
+  plate: "#fafafa"
+  body: "#494949"
+  ink: "#202020"
+  ink-soft: "#5c5c5c"
+  ink-faint: "#5c5c5c"
+  hairline: "#ededed"
+  hairline-strong: "#dbdbdb"
+  subtle: "#ededed"
+  border-hover: "#bdbdbd"
+  control-border: "#848484"
+  accent: "#353535"
+  dark-workspace: "#202020"
+  dark-paper: "#202020"
+  dark-plate: "#353535"
+  dark-body: "#ededed"
+  dark-ink: "#fafafa"
+  dark-ink-soft: "#bdbdbd"
+  dark-ink-faint: "#bdbdbd"
+  dark-hairline: "#494949"
+  dark-hairline-strong: "#5c5c5c"
+  dark-subtle: "#494949"
+  dark-border-hover: "#848484"
+  dark-control-border: "#848484"
+  dark-accent: "#ededed"
 typography:
   display:
-    fontFamily: "'Barlow Condensed', 'Barlow Condensed Fallback', 'SF Pro Display', -apple-system, system-ui, 'PingFang SC', sans-serif"
-    fontSize: "30px"
-    fontWeight: 600
-    lineHeight: 1
+    fontFamily: "'Albert Sans', -apple-system, system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif"
+    fontSize: "48px"
+    fontWeight: 500
+    lineHeight: 1.35
   headline:
-    fontFamily: "'Barlow Condensed', 'Barlow Condensed Fallback', 'SF Pro Display', -apple-system, system-ui, 'PingFang SC', sans-serif"
-    fontSize: "26px"
+    fontFamily: "'Albert Sans', -apple-system, system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif"
+    fontSize: "36px"
     fontWeight: 600
-    lineHeight: 1.05
-  title:
-    fontFamily: "'Barlow Condensed', 'Barlow Condensed Fallback', 'SF Pro Display', -apple-system, system-ui, 'PingFang SC', sans-serif"
-    fontSize: "15px"
+    lineHeight: 1.35
+  body: "#494949"
+  ink: "#202020"
+  ink-soft: "#5c5c5c"
+  ink-faint: "#5c5c5c"
+  hairline: "#ededed"
+  hairline-strong: "#dbdbdb"
+  subtle: "#ededed"
+  border-hover: "#bdbdbd"
+  control-border: "#848484"
+  accent: "#353535"
+  dark-workspace: "#202020"
+  dark-paper: "#202020"
+  dark-plate: "#353535"
+  dark-body: "#ededed"
+  dark-ink: "#fafafa"
+  dark-ink-soft: "#bdbdbd"
+  dark-ink-faint: "#bdbdbd"
+  dark-hairline: "#494949"
+  dark-hairline-strong: "#5c5c5c"
+  dark-subtle: "#494949"
+  dark-border-hover: "#848484"
+  dark-control-border: "#848484"
+  dark-accent: "#ededed"
+typography:
+  display:
+    fontFamily: "'Albert Sans', -apple-system, system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif"
+    fontSize: "48px"
+    fontWeight: 500
+    lineHeight: 1.35
+  headline:
+    fontFamily: "'Albert Sans', -apple-system, system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif"
+    fontSize: "36px"
     fontWeight: 600
-    letterSpacing: "0.02em"
+    lineHeight: 1.35
+  detail:
+    fontFamily: "'Albert Sans', -apple-system, system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif"
+    fontSize: "20px"
+    fontWeight: 600
+    lineHeight: 1.35
   body:
-    fontFamily: "'SF Pro Text', 'SF Pro Display', -apple-system, system-ui, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif"
-    fontSize: "12.5px"
+    fontFamily: "'Albert Sans', -apple-system, system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif"
+    fontSize: "14px"
     fontWeight: 400
-    lineHeight: 1.5
+    lineHeight: 1.75
   label:
     fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
-    fontSize: "11.5px"
+    fontSize: "12px"
     fontWeight: 400
+    lineHeight: 1.5
 rounded:
-  none: "0"
-  station: "9999px"
-  avatar: "9999px"
-  theme-toggle: "9999px"
+  xs: "2px"
+  control: "4px"
+  media: "8px"
+  card: "12px"
+  panel: "16px"
+  pill: "999px"
+  circle: "50%"
 spacing:
-  page-x: "24px"
-  page-x-sm: "40px"
+  page-x: "48px"
+  page-x-compact: "24px"
+  page-x-mobile: "20px"
 components:
+  button-default:
+    backgroundColor: "{colors.paper}"
+    textColor: "{colors.body}"
+    rounded: "{rounded.control}"
+    padding: "8px 16px"
   button-primary:
     backgroundColor: "{colors.ink}"
-    textColor: "{colors.plate}"
-    rounded: "{rounded.none}"
+    textColor: "{colors.paper}"
+    rounded: "{rounded.pill}"
     padding: "8px 16px"
   button-primary-hover:
-    backgroundColor: "{colors.ink} @ 85%"
+    backgroundColor: "{colors.accent}"
   button-ghost:
     backgroundColor: "transparent"
-    textColor: "{colors.ink-soft}"
-    rounded: "{rounded.none}"
-    padding: "8px 16px"
-  line-badge:
-    backgroundColor: "{colors.line-muse}"
-    textColor: "#ffffff / {colors.paper} (dark)"
-    typography: "{typography.label}"
-    rounded: "{rounded.none}"
-    padding: "1px 6px"
-  tab:
-    textColor: "{colors.ink-soft}"
-    rounded: "{rounded.none}"
-    padding: "6px 6px"
-  tab-active:
-    textColor: "{colors.ink}"
-    rounded: "{rounded.none}"
-    padding: "6px 6px"
-  plate-card:
+    textColor: "{colors.body}"
+    rounded: "{rounded.control}"
+  button-subtle:
+    backgroundColor: "{colors.subtle}"
+    textColor: "{colors.body}"
+    rounded: "{rounded.control}"
+  gallery-card:
     backgroundColor: "{colors.plate}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.none}"
-    padding: "6px"
-  station-ring:
-    backgroundColor: "{colors.paper}"
-    rounded: "{rounded.station}"
-    size: "15px"
+    rounded: "{rounded.media}"
 ---
 
 # Design System: Personal Design 产品集
 
 ## Overview
 
-**Creative North Star: "地铁导视系统（Transit Wayfinding）"**
+**Creative North Star: "随手可查的设计参考（Design Within Reach）"**
 
-站点是一张正在延伸的地铁线路图：产品是车站，时间是线路，内容永远主角。语言取自真实导视系统——纸白站牌底、墨黑站牌字、3px 粗线路带、空心圆环站节点、45° 斜排站名标注、每个产品一条功能线路色。深色套是「夜行灯箱站牌」：同一套 token 换值，不新增角色。密度服务于进站浏览：图版媒体占满画面，界面退成一行行 mono 小字与一条横贯的线路。
+本站采用 OpenDesign 的中性色、Albert Sans、清晰中文排印与克制控件；真实媒体承担主要视觉内容。源快照见 [OpenDesign 规范](docs/design/open-design/README.md)，采用与适配见 [rules.md](docs/design/open-design/rules.md)。本文记录 V2 当前实现，不把历史布局当作产品约束，也不把源码对齐等同于用户认可。
+
+首页本身承担产品菜单。访客从两个真实内容入口选择产品，在稳定网格中检索，直接进入详情阅读媒体和原始信息，再返回浏览现场。全站仅保留轻量品牌/首页链接与主题开关，不设置侧栏或顶部产品菜单。
 
 **Key Characteristics:**
-- 纸白底 + 信号黑站牌字，3px 粗线路带承担主干结构；明暗双套 token（`html[data-theme='dark']`，深色 = 夜行灯箱）
-- 每个产品一条功能线路色（灵感集朱红、布局参考蓝），只活在编号牌/站环 hover/3px 色带/active 指示条；干线本身用墨
-- 直角全站，正圆只给站环、列车点、主题切换钮、作者头像
-- 展示字 Barlow Condensed（导视 grotesque，next/font 仅 latin 字重 500/600/700，CJK 落系统栈）；mono 只载数据
-- 签名交互是横向 lifeline 线路图：站环 + 45° 站名 + 列车进度点（手写 rAF，零动画库）
+- 白色页面与浅灰媒体衬底，深色使用同一组语义角色。
+- 首页两个产品入口；内页以返回列表、相邻内容和首页链接提供上下文导航。
+- 静态内容网格、单一详情去向、标题优先的自然阅读顺序。
+- 边框留给控件和分组边界，媒体之外减少包框；组件样式归相邻 CSS Module。
 
 ## Colors
 
-纸、墨、两级 hairline 构成中性骨架；两条线路色是全站仅有的彩色，且都是功能色。全部颜色是语义 token，明暗两套同义互换——深色只改值，不改角色。
+界面采用中性层次，媒体自身的颜色成为视觉重心。前置 `dark-*` 记录运行时主题覆盖；组件始终引用同名 CSS 语义变量。
 
 ### Primary
-- **灵感集线 朱红（line-muse）**（#d23c2e / 深 #e86050）：灵感集产品的线路色——M·01 编号牌底、灵感集刊头与详情信息牌的 3px 色带、图版拼幅 active tab 指示条、主按钮内的线路小色块。
-- **布局参考线 蓝（line-layouts）**（#1a6fb4 / 深 #55a0e0）：布局参考产品的线路色，用法同上（L·01 编号牌、灵感墙刊头色带、双向行车卡片的 focus 环）。
+
+- **普通强调（accent）**：主按钮的中性悬停表面。
+- 产品身份用名称与实际媒体表达。CSS 中仍保留 `line-muse` / `line-layouts` 明暗变量及产品注册字段，但 V2 页面未使用，不属于当前可见识别系统，也不要求新产品增加装饰线路色。
 
 ### Neutral
-- **站牌纸（paper）**（#ffffff / 深 #0d1015）：页面 ground，所有表面的底；站环的纸色心。
-- **图版底（plate）**（#f3f4f2 / 深 #161b23）：图版、信息牌、浮层的衬底，与 paper 半度之差。
-- **信号黑（ink）**（#11151b / 深 #edf1f6）：正文、标题、已通车干线、active 态、主按钮底。
-- **软墨（ink-soft）**（#566070 / 深 #97a2b1）：摘要、次级文字、非 active 控件。
-- **淡墨（ink-faint）**（#66707e / 深 #7d8794）：mono 数据、占位、方向标、套准十字。
-- **细线（hairline）**（#e4e7ea / 深 #242b36）：卡片框、分隔线、chips 描边。
-- **粗线（hairline-strong）**（#c8ced6 / 深 #39424f）：规划段虚线、灵感墙卡片框、缺失媒体占位。
 
-### 例外表面
-灯箱是恒定暗房，不随主题翻转：遮罩 `#0d1015`/70 + 毛玻璃、内部控件白/10→白/20，色值取暗色 palette 原值字面量而非 token——暗房属于产品内容，不属于皮肤。
+- **工作区 / 普通底（workspace / paper）**：页面、普通按钮与信息背景。
+- **次级表面（plate）**：媒体衬底、失败占位与原始数据区。
+- **正文 / 强文字（body / ink）**：正文与标题分工；ink 同时承担主按钮和选中下划线。
+- **辅助文字（ink-soft / ink-faint）**：说明与元数据；当前同值是小字可读性适配。
+- **软边界 / 普通边界（hairline / hairline-strong）**：资料区分隔和筛选组边界。
+- **状态表面 / 悬停边界（subtle / border-hover）**：共享按钮的交互反馈。
+- **输入边界（control-border）**：搜索框与原生主题选择框的可辨识边界。
 
-### Named Rules
-**The Functional Line-Color Rule（线路色是功能色规则）.** 线路色只出现在五处：编号牌底色、站环 hover 染色、刊头/信息牌底缘的 3px 色带、active tab 指示条、主按钮内的线路小色块。它永远标识「这条内容属于哪条线」，绝不作大面积铺底或装饰。新增产品 = 新增一条 `--color-line-*`，不在现有色之外发明彩色。
-**The Ink Trunk Rule（干线用墨规则）.** lifeline 干线永远是 3px ink 实线（已通车段）+ hairline-strong 虚线（规划段）；线路色不上干线。列车点也是 ink 身 + paper 边的站环造型。
+**The Semantic Theme Rule.** 新表面使用成套语义主题；详情灯箱保持恒定暗房与亮色焦点环。
 
 ## Typography
 
-**Display Font:** Barlow Condensed（next/font/google，weight 500/600/700，subsets latin，`display: swap`）——刊头大字、站名、详情 h1；CJK 无字重，落系统栈兜底。
-**Body Font:** 系统栈（`'SF Pro Text','SF Pro Display',-apple-system,system-ui,'Helvetica Neue','PingFang SC','Microsoft YaHei',Arial`）。
-**Label/Mono Font:** 系统等宽栈（`ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas`）。
+**Display Font / Body Font:** 本地 Albert Sans 可变字体（100–900），中文回退 PingFang SC / Microsoft YaHei；字体及 OFL 位于 `apps/web/public/fonts/`。
+**Label/Mono Font:** 系统等宽栈，用于编号与原始 JSON 等数据；一般计数可使用 tabular-nums，不要求所有元数据都等宽。
 
-body 基准 12.5px / 1.5，`text-rendering: geometricPrecision`，`min-width: 20rem`；页面滚动条 overlay 化（节点列等局部滚动条有显式覆写）。`--font-display` 直接命名字体而不引用 next/font 的 CSS 变量（`:root` 求值时变量未定义会静默落回 sans）。
+### Hierarchy
 
-**Character:** Barlow Condensed 的窄身 grotesque 是站牌的声音；系统栈承担一切叙述；mono 是图上的「手写标注」，只写数据。
+- **Display:** 首页主标题，手机 34px；首页产品名 26px/500，简短用途 16px。
+- **Headline:** 列表标题，手机 28px；说明 15px，手机 14px。
+- **Detail:** 详情标题，窄屏 26px；资料分组标题 20px，相关内容标题可为 24px。
+- **Body:** 正文 14px/1.75，长段控制为约 65–68ch；标题下辅助信息通常 13/14px。
+- **Label:** 编号与原始数据主要 12px；分类计数为 11px 的辅助数字，不作为可交互文字或正文尺度模板。
 
-### Hierarchy（根 16px）
-- **Display**（600, 30px, leading-none）：站牌式刊头大字（「产品集」「灵感集」「布局参考」）；404 用 42/56px。
-- **Headline**（600, 26px, 1.05, text-balance）：详情页 h1。
-- **Title**（600, 15px, tracking 0.02em）：45° 站名标注、产品名。
-- **Body**（400, 12.5px, 1.5, ink / ink-soft）：正文与摘要。
-- **Tab/Nav**（400→600, 12px）：active 转 semibold + 2px 线路色指示条。
-- **Label**（mono, 400, 11.5px, ink-faint / ink-soft）：站号（M·01）、日期、尺寸、计数、方向标（上行 UP / 下行 DOWN）、404 坐标。
-
-### Named Rules
-**The Mono Carries Data Rule（Mono 只载数据规则）.** 等宽字体只写编号、日期、尺寸、计数、方向标等可度量信息；一段叙述文字设成 mono 即违规。
-**The Display Never Narrates Rule（展示字不叙述规则）.** Barlow Condensed 只写刊头、站名、标题等「挂牌文字」；正文与摘要永远走系统栈。
+**The Chinese Typesetting Rule.** 中文标题字距为 0、行高 1.35，正文行高 1.75；用空间和层级组织内容，不用负字距压缩中文。
 
 ## Layout
 
-页面横向 padding 24px（sm 40px）。所有刊头是同一「站牌式」：左 = 返回链接 + 线路编号牌 + Display 大字站名，右 = mono 数据行（在营数/收录数/最近日期），底缘一条 3px 色带（首页用 ink 干线色，产品页用线路色）。**首页**是横向线路图：3px ink 干线横贯（右端接规划段虚线），站环骑线、45° 站名、内容列垂直滚动，列车进度点随滚动沿线移动。**产品列表页**：灵感集用图版拼幅（分类 tab + CSS columns 大图，2/3/4 列随断点，滚动按批追加）；布局参考用灵感墙（两行反向慢速 marquee「双向行车」，行首 mono 方向标，悬停暂停、点击灯箱，分类 tab 点击 key 重挂载重发两行）。**详情页**：左媒体 + 右信息牌侧栏（侧栏顶一条 3px 线路归属带，全页只此一条）；灵感集详情为 snap 轮播 + 固定宽侧栏（clamp 360–510px），布局参考详情为 3:2 网格 + 同主题翻页/推荐。移动端一律纵向堆叠，时间轴回退原生横滑（scroll-snap 对齐站）。页脚不放协议/署名行；法律署名收进首页「关于」站。
+外壳仅提供自然文档流页头：最大宽度 1440px，桌面最小高度 88px、内边距 20px 48px；1100px 以下横向 24px；639px 以下最小高度 72px、内边距 12px 20px。页头仅品牌/首页链接和主题开关。高度变量相应扣除 88/72px，它不是所有页面固定全高的要求。
+
+首页最大宽度 1280px，两个产品媒体入口桌面并排、640px 以下纵排，页面到产品入口结束，不追加关于或来源许可说明。内容入口预览比例为 16:10；媒体、产品名、用途与“开始浏览”在同一个链接内。
+
+列表最大宽度 1440px，标题、分类与检索、结果计数和网格顺序清晰。灵感网格为桌面 4 列、1199px 以下 3 列、759px 以下 2 列、359px 以下 1 列；媒体统一 4:3、object-contain，静态海报预览视频。布局网格为 5 / 4 / 2 列（断点 1199 / 759px），图鉴保持 3:4。分类横向可滚动，检索工具窄屏重排。
+
+详情按返回/相邻内容、标题/作者/分类、媒体、说明与出处的自然顺序排列。灵感详情最大宽度 1200px；资料区位于媒体下方，桌面两列、759px 以下一列。布局详情大图最大宽度 720px（较窄桌面 640px），保持可读大图；相关内容在下方。没有固定媒体空井或全高资料侧栏。
 
 ## Elevation & Depth
 
-无卡片阴影。深度由 hairline 描边 + paper/plate 半度分层构成；3px 粗线路带替代细线承担主干结构（干线、刊头底缘、信息牌归属带）。仅有的阴影与毛玻璃属于灯箱暗房——它是「暗房」的本体，不是装饰性浮层。
+页面通过留白、排印和少量分隔建立层级，媒体使用浅灰衬底与裁切。普通内容没有装饰投影或毛玻璃；详情灯箱使用高不透明暗色遮罩，保持媒体与控制的对比。
 
-### Named Rules
-**The Flat Concourse Rule（站厅无浮层规则）.** 容器深度只能靠描边与纸色分层表达；给卡片加投影即违规（灯箱暗房机制除外）。线路带是结构（轨道/站牌底缘），不是投影。
+**The Open Reading Surface Rule.** 标题、说明和出处直接落在阅读平面，边界用于分组与操作，不把每段资料套进独立面板。
 
 ## Shapes
 
-直角（0 radius）贯穿全部界面元素：按钮、卡片、chips、tab、编号牌、输入框。正圆只给四处：站环（15px，2px ink 边 + paper 心，骑在干线上）、列车进度点（13px，3px paper 边 + ink 身）、明暗主题切换钮（24×24）、作者头像。规划站用虚线环 + 虚线段，与已通车站的实线环形成「未来/现在」的一对。反复出现的几何签名：图版四角的套准十字（`.plate-reg`，9px ink-faint 十字）、45° 斜排站名标注。
+共享普通/图标按钮、搜索框、原生选择框采用 4px；主按钮同样采用 4px。列表及详情媒体主要为 8px；首页预览为 12px；头像保留圆形。16px 面板 token 仍在基础表中，但 V2 不以大面板包裹页面或资料区。
+
+Tailwind xs/sm/md/lg/xl/2xl 的兼容映射为 2/4/8/8/12/16px。组件优先引用语义 radius，避免因别名相同误用上游不同档位。
 
 ## Components
 
 ### Buttons
-- **Shape:** 直角（0）。
-- **Primary:** 墨底（ink）+ 图版底文字（plate），8–12px × 16px padding，内部可带一块 12px 线路色小方块标识归属线（「查看原始出处」「下载高清图」）。
-- **Hover / Focus:** hover 降为 ink/85；active scale(0.97–0.98)；focus-visible 全站统一 2px ink 描边 + 2px offset。
-- **Ghost:** hairline 描边 + 软墨文字，hover 描边转 ink（翻页箭头、关闭、次链接）。
-- **Theme Toggle:** 24×24 正圆，fixed 右上（30px），日/月 SVG 用 `dark:` 变体切换（不读 state，首帧与内联初始化脚本一致），hover 底 plate。
 
-### Tabs
-- **Style:** 无框小字（ink-soft 12px），直角；计数用 mono 11.5px opacity-60。
-- **State:** active = ink semibold + 底部 2px 线路色指示条（absolute），无底色反转。
+共享 `Button` / `buttonClassName` 提供 default、primary、ghost、subtle 与 icon，保留原生 button/link 语义。普通与图标按钮统一最小 44px，14px/500、8px 图标间距、8px 16px 内边距。搜索组内提交按钮采用 34px 紧凑高度，外层输入框仍为 44px。
 
-### Cards / Containers（图版）
-- **Corner Style:** 直角。
-- **Background:** 图版底（plate）衬底 + 6px 内衬，媒体置于其上；hover 媒体 scale(1.02)。
-- **Border:** 1px hairline（灵感墙卡片用 hairline-strong）。
-- **Signature:** 四角套准十字（`.plate-reg`）。
-- **Shadow Strategy:** 无（见 The Flat Concourse Rule）。
+颜色和边界反馈 150ms，按下位移 100ms、translateY(1px)；主按钮悬停转 accent。禁用态无位移且有语义；焦点默认 2px、offset 3px，局部按空间增加或内收 offset。reduced-motion 移除空间反馈。
+
+### Categories / Filters
+
+分类复用共享 Button，44px 高、4px 圆角，选中项为 ink 底色与 paper 文字；横向单行溢出可滚动，`aria-pressed` 表达选中。
+
+灵感集提供分类与关键词；布局参考提供分类、主题原生 select 和关键词。结果区说明命中与筛选状态，清除操作可恢复完整列表。主题必须属于当前分类，无效参数通过既有 URL 规则归一。
+
+### Content Links
+
+列表每张内容卡片是一个原生详情链接；媒体、标题与作者共同构成入口，不在卡内再嵌套重复链接。悬停标题下划线，键盘焦点有完整外框。列表不打开灯箱、不自动播放视频、不自动滚动，也不因滚到末尾被动追加。
+
+灵感集明确点击“加载更多灵感”追加下一批；返回详情前的筛选、已加载数量和位置由列表恢复机制保留。布局参考静态呈现所有符合筛选的 catalog 条目，包括缺图条目；缺图用名称与说明表达，不伪造媒体。
 
 ### Inputs / Fields
-- **Style:** 直角，hairline 描边，图版底，左侧搜索图标淡墨。
-- **Focus:** 描边转 ink，无发光。
 
-### Links
-- 文本链接 hover：转 ink；外链/卡片入口用 ArrowUpRight，hover 时箭头向右上挪 2px。
+搜索与主题选择框共用 field.module.css 的边界、焦点与交互状态。搜索采用 4px 圆角、control-border 边界、14px 字体与明确标签；占位文字 ink-soft、opacity 1。灵感搜索框最小高度 44px，布局搜索组有显式搜索按钮，主题使用原生 select。焦点始终可见，不以悬停替代。
 
-### Navigation
-- 面包屑：淡墨 11.5px + ChevronRight 3.5px 分隔，产品层级带线路编号牌。
-- 线路编号牌（LineBadge）：直角色底小方块 + mono 字（`M·01` / `L·01`），浅色下白字、深色下字翻 paper 保对比度。
-- 上下件翻页：钉在信息牌底缘（站牌 footer），ghost 方钮，禁用态 hairline-strong。
+### Header / Context Navigation
 
-### 签名组件：线路图（LifelineTimeline）
-3px ink 干线横贯（入场时从左「画」出，expo-out 0.9s），右端接规划段虚线；站环骑线（hover 染线路色），45° 斜排站名 = 编号牌 + 站名 + mono 日期；列车进度点（ink 身 paper 边的正圆）随滚动沿线移动——对进度做二次 lerp（TRAIN_LERP 0.3），行驶中尾随、停车时滑入站位。滚动驱动为手写 rAF（轨道 lerp 0.12，按帧间隔归一化，120Hz 与 60Hz 手感一致），支持滚轮/触控板映射、鼠标拖拽（松手惯性）、方向键、焦点跟随；移动端回退原生横滑 + scroll-snap。节点级联入场（90ms/站）。
+页头只含品牌/返回首页链接与主题控制；首页即产品菜单。内页提供返回列表和上一件/下一件，边界处给出禁用或首尾提示。跳至内容链接在聚焦时显示。不在页头、侧栏或详情中恢复全站产品菜单。
 
-### 签名组件：双向行车灵感墙（LayoutWall）
-两行反向慢速 marquee（75s / 95s，悬停暂停），行首挂 mono 方向标（上行 UP / 下行 DOWN）；分类 tab 点击 key 重挂载重发两行；灯箱打开时 marquee 暂停（关闭动画要飞回卡片）。矮视口（max-height 30rem）卡片收窄保两行在屏。
+### Media Reading
 
-### 签名组件：灯箱暗房（Lightbox）
-恒定暗房表面（见 Colors 例外表面）：FLIP 从触发卡片飞出/飞回，缩略图先显、高清后替，同组 crossfade 切换 + 相邻预取；reduced-motion 瞬时显隐。
+灵感详情先展示标题、作者与分类，再显示媒体。图片按实际比例、object-contain，默认高度上限约 70dvh（手机 65dvh），保留大图阅读；多媒体可横向 snap 并有页数和直接切换操作。
+
+仅视频使用剩余视口测量：按媒体文档位置、视口高度及工具条高度计算可用高度（最小 240px），为原生播放控制与媒体工具条留空间；普通滚动不改变视频尺寸。长标题、矮屏或恢复提示仍允许自然页面滚动，不把“控件同屏”变成任意视口下强制缩小图片的规则。
+
+详情图片提供放大与原图入口；视频保留原生控制，由用户主动播放。加载与失败在媒体位置给出反馈，失败可重试或使用可用原文件操作。布局缺图详情保持真实名称、主题与返回路径。
+
+### Detail Lightbox / Motion
+
+灯箱只作为详情内的放大工具：触发媒体 FLIP 进入 200ms、退出 140ms，采用 `cubic-bezier(0.23, 1, 0.32, 1)`，保留焦点回归与退出控制。通用快速状态 150ms、基础 200ms；首页入口箭头采用进入/退出 200/140ms，reduced-motion 去除位移。首页布局预览以三张图鉴展开构图，灵感预览用三张真实作品横向切换；进入视野时播放一次，离开视野暂停，悬停与键盘聚焦提供预览反馈。reduced-motion 下保留静态构图。
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** 用 mono 写一切可度量的值（站号、日期、尺寸、计数、方向标）。
-- **Do** 让媒体占满图版，界面退让（细线 + 留白 + 微字号）。
-- **Do** 用 3px 色带、编号牌、站环、45° 标注延展「导视」词汇到新表面；刊头一律站牌式。
-- **Do** 新表面只用语义 token（paper/plate/ink/hairline/line-*），让它自动获得深色套。
-- **Do** 动效走全站编排：单一 expo-out 缓动（cubic-bezier(0.22,1,0.36,1)）+ 两档时长（150/300ms），reduced-motion 全量瞬时化。
-- **Do** 内容列表沿用既定呈现：灵感集 = 图版拼幅（PlateWall），布局参考 = 双向行车灵感墙（LayoutWall），不发明第三种列表样式。
+
+- **Do** 让首页承担产品选择，内页只提供上下文返回和阅读操作。
+- **Do** 用稳定网格、真实媒体与一个详情链接建立可预期的浏览流程。
+- **Do** 让详情标题在媒体之前、说明与原始信息在媒体之后自然展开。
+- **Do** 保留主题、可见焦点、原生视频控制、明确追加与返回现场。
+- **Do** 沿用源 tokens、中文排印、共享按钮和局部 CSS 归属。
 
 ### Don't:
-- **Don't** 把线路色当装饰：铺大底、染干线、染普通强调文字都违规（The Functional Line-Color Rule）。
-- **Don't** 引入第三种线路色之外的彩色，也不引入中性色板（neutral-* 一律禁止，灯箱暗房字面量除外）。
-- **Don't** 给任何容器加圆角或卡片阴影（站环/列车点/主题钮/头像、灯箱暗房机制除外）。
-- **Don't** 用 hairline 替代 3px 线路带承担主干结构；干线与刊头底缘永远是 3px。
-- **Don't** 引入动画库——滚动驱动与列车惯性手写 rAF，全站动效从 --ease-out / --dur-* 出。
-- **Don't** 在页脚放协议/署名行——法律署名收进首页「关于」站。
-- **Don't** 在访客可见处引用数据来源站点（法律署名除外）；产品一律使用自有命名。
+
+- **Don't** 恢复全站菜单、固定侧栏、强制时间轴或自动移动内容墙。
+- **Don't** 将列表点击改为灯箱中转、列表自动播放或被动无限追加。
+- **Don't** 用固定全高媒体井、窄资料侧栏或层层面板挤压阅读。
+- **Don't** 因兼容 tokens 仍存在而恢复产品装饰线路色。
+- **Don't** 删除缺图条目、出处、原始 JSON 。首页不添加关于或许可说明，也不另建说明文档。
+
+用户最新约束：首页只保留“产品集”标题、真实产品入口和一句用途；不添加宣传段落、重复统计或与操作无关的说明。

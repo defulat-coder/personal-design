@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { buttonClassName } from '../button';
+import styles from './lightbox.module.css';
 import { createPortal } from 'react-dom';
 import { ArrowUpRight, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import {
@@ -52,9 +54,10 @@ export function useLightbox() {
   return useContext(LightboxContext);
 }
 
-// 与 globals.css 的 --ease-out 同源（内联 style 里的 var() 从 :root 解析）
+// Shared 200ms enter / 140ms exit; FLIP keeps the trigger-to-media relationship.
 const EASE = 'var(--ease-out)';
-const DURATION = 450;
+const DURATION = 200;
+const EXIT_DURATION = 140;
 
 interface ActiveImage {
   item: LightboxItem;
@@ -73,23 +76,27 @@ interface Frame {
 
 /**
  * 灯箱：transform 版 FLIP（不触发布局）、显式关闭按钮、图注 + 详情入口、
- * 同组左右切换（crossfade + 计数 + 相邻预取）、遮罩毛玻璃、reduced-motion 瞬时显隐。
+ * 同组左右切换（缩略图 + 计数 + 相邻预取）、实色暗房、reduced-motion 瞬时显隐。
  * 卸载走「closing 标志 + transitionend + 超时」三保险，RM 下直接状态卸载。
  */
 export function LightboxProvider({ children }: { children: ReactNode }) {
   const [active, setActive] = useState<ActiveImage | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [fullReady, setFullReady] = useState(false);
-  const [outgoing, setOutgoing] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState(false);
+  const [thumbError, setThumbError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const [closeRect, setCloseRect] = useState<Rect | null>(null);
   const [frame, setFrame] = useState<Frame | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<Element | null>(null);
+  const wasOpenRef = useRef(false);
   const closeTimerRef = useRef(0);
   const closingRef = useRef(false);
   const swipeRef = useRef<HTMLDivElement>(null);
+  const suppressSwipeClick = useRef(false);
   const swipeStateRef = useRef<{
     startX: number;
     startY: number;
@@ -109,6 +116,9 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
     return () => mq.removeEventListener('change', update);
   }, []);
 
+  // 卸载兜底：关闭动画的兜底定时器不遗留（回调是 setActive(null)，纯洁癖）
+  useEffect(() => () => clearTimeout(closeTimerRef.current), []);
+
   const open = useCallback((item: LightboxItem, options: OpenOptions) => {
     clearTimeout(closeTimerRef.current);
     closingRef.current = false;
@@ -121,7 +131,8 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
     });
     setCloseRect(null);
     setFullReady(false);
-    setOutgoing(null);
+    setLoadError(false);
+    setThumbError(false);
     setExpanded(false);
   }, []);
 
@@ -149,16 +160,16 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
     clearTimeout(closeTimerRef.current);
     closeTimerRef.current = window.setTimeout(
       () => setActive(null),
-      DURATION + 80,
+      EXIT_DURATION + 80,
     );
   }, [reducedMotion]);
 
   const go = useCallback((dir: 1 | -1) => {
     // 关闭动画期间按方向键：取消卸载倒计时，灯箱恢复展开（修闪没竞态）
+    const current = activeRef.current;
+    if (!current || current.siblings.length < 2) return;
     clearTimeout(closeTimerRef.current);
     closingRef.current = false;
-    const current = activeRef.current;
-    if (current) setOutgoing(current.item.src);
     setExpanded(true);
     setActive((cur) => {
       if (!cur || cur.siblings.length === 0) return cur;
@@ -169,30 +180,62 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
       return item ? { ...cur, item, index: next, sourceEl: null } : cur;
     });
     setFullReady(false);
+    setLoadError(false);
+    setThumbError(false);
   }, []);
 
-  // 打开后双帧展开；锁背景滚动；body 挂标记（暂停灵感墙 marquee）；记下之前焦点
   useEffect(() => {
-    if (!active) return;
-    previousFocusRef.current = document.activeElement;
-    const raf = requestAnimationFrame(() =>
-      requestAnimationFrame(() => setExpanded(true)),
-    );
+    if (!active || fullReady || loadError) return;
+    const timer = window.setTimeout(() => { setLoadError(true); }, 12000);
+    return () => clearTimeout(timer);
+  }, [active, attempt, fullReady, loadError]);
+
+  const isOpen = active !== null;
+  const dialogReady = isOpen && frame !== null;
+
+  // 打开后双帧展开；锁背景滚动；body 挂标记（暂停灵感墙 marquee）
+  useEffect(() => {
+    if (!isOpen) {
+      wasOpenRef.current = false;
+      return;
+    }
+    // 只在「关闭 → 打开」时记下之前焦点：go() 翻图也更新 active，
+    // 无守卫会把 ref 覆盖成灯箱内部焦点，关闭后焦点丢失到 body
+    if (!wasOpenRef.current) {
+      previousFocusRef.current = document.activeElement;
+      wasOpenRef.current = true;
+    }
+    let inner = 0;
+    const raf = requestAnimationFrame(() => {
+      inner = requestAnimationFrame(() => { if (!closingRef.current) setExpanded(true); });
+    });
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     document.body.dataset.lightboxOpen = 'true';
     return () => {
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(inner);
       document.body.style.overflow = previousOverflow;
       delete document.body.dataset.lightboxOpen;
     };
-  }, [active]);
+  }, [isOpen]);
 
   // dialog 挂载（frame 就绪）后初始聚焦到关闭按钮——frame 为 null 时 dialog 不存在，
   // 在 [active] effect 里 focus 会静默落空（aria-modal 名副其实的第一步）
   useEffect(() => {
-    if (active && frame) closeButtonRef.current?.focus();
-  }, [active, frame]);
+    if (dialogReady) closeButtonRef.current?.focus();
+  }, [dialogReady]);
+
+  // Keep background controls out of pointer and assistive-technology navigation.
+  useEffect(() => {
+    if (!dialogReady) return;
+    const background = Array.from(document.body.children).filter(
+      (element): element is HTMLElement => element instanceof HTMLElement && element !== dialogRef.current,
+    );
+    const previous = background.map((element) => element.inert);
+    background.forEach((element) => { element.inert = true; });
+    return () => background.forEach((element, index) => { element.inert = previous[index] ?? false; });
+  }, [dialogReady]);
 
   // 关闭后焦点还源到触发元素
   useEffect(() => {
@@ -209,6 +252,8 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
       if (event.key === 'Escape') {
         event.preventDefault();
         close();
+      } else if (event.defaultPrevented || (event.target instanceof HTMLElement && event.target.closest('input, textarea, select, [contenteditable=true]'))) {
+        return;
       } else if (event.key === 'ArrowLeft') {
         event.preventDefault();
         go(-1);
@@ -237,23 +282,13 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
     }
   }, [active, expanded]);
 
-  // crossfade 收尾：新图就绪后旧图淡出完毕再移除
-  useEffect(() => {
-    if (!fullReady || !outgoing) return;
-    const timer = window.setTimeout(
-      () => setOutgoing(null),
-      reducedMotion ? 0 : DURATION + 80,
-    );
-    return () => clearTimeout(timer);
-  }, [fullReady, outgoing, reducedMotion]);
-
   // 目标框：按源 rect 纵横比适配视口，resize 时重算
   useLayoutEffect(() => {
     if (!active) return;
     const compute = () => {
-      const aspect = active.initialRect.width / active.initialRect.height;
-      const maxW = window.innerWidth * 0.88;
-      const maxH = window.innerHeight * 0.78;
+      const aspect = active.initialRect.width > 0 && active.initialRect.height > 0 ? active.initialRect.width / active.initialRect.height : 1;
+      const maxW = Math.max(1, window.innerWidth - (window.innerWidth < 640 ? 32 : 144));
+      const maxH = Math.max(1, window.innerHeight - 210);
       let width = maxW;
       let height = width / aspect;
       if (height > maxH) {
@@ -288,7 +323,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
 
   const transition = reducedMotion
     ? 'none'
-    : `transform ${DURATION}ms ${EASE}, opacity ${DURATION}ms ${EASE}`;
+    : `transform ${expanded ? DURATION : EXIT_DURATION}ms ${EASE}, opacity ${expanded ? DURATION : EXIT_DURATION}ms ${EASE}`;
   const hasSiblings = (active?.siblings.length ?? 0) > 1;
   // 关闭动画是否有回飞目标（无目标时 thumb 也要淡出，否则结尾硬切）
   const hasOrigin = Boolean(
@@ -297,7 +332,8 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
 
   // 移动端 swipe 翻图（手写 pointer，零依赖；纵向手势不拦截）
   const onSwipeStart = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === 'mouse' || !hasSiblings || !expanded) return;
+    if (event.pointerType === 'mouse' || !hasSiblings || !expanded || (event.target instanceof Element && event.target.closest('button, a'))) return;
+    suppressSwipeClick.current = false;
     // 清掉上一次回弹残留的 transition（否则后续拖拽全程慢半拍）
     if (swipeRef.current) swipeRef.current.style.transition = 'none';
     swipeStateRef.current = {
@@ -331,7 +367,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
         s.lastX = event.clientX;
         s.lastT = event.timeStamp;
       }
-      el.style.transform = `translate3d(${dx * 0.9}px, 0, 0)`;
+      if (!reducedMotion) el.style.transform = `translate3d(${dx * 0.9}px, 0, 0)`;
     }
   };
   const onSwipeEnd = () => {
@@ -340,6 +376,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
     swipeStateRef.current = null;
     if (!s || !el) return;
     if (s.active) {
+      suppressSwipeClick.current = true;
       if (Math.abs(s.dx) > 64 || Math.abs(s.velocity) > 0.5) {
         // 触发翻图：位移直接复位（crossfade 接管视觉连续性）
         el.style.transition = 'none';
@@ -350,7 +387,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
       // 未达到阈值：回弹
       el.style.transition = reducedMotion
         ? 'none'
-        : `transform 200ms ${EASE}`;
+        : `transform 150ms ${EASE}`;
       el.style.transform = '';
     }
   };
@@ -394,14 +431,14 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
               aria-modal="true"
               aria-label={active.item.alt}
               tabIndex={-1}
-              className="fixed inset-0 z-[80] outline-none"
+              className={styles.surface}
               onKeyDown={onDialogKeyDown}
             >
           {/* 遮罩：毛玻璃 + 加深，明暗两种背景下都能分离层次。
              灯箱是恒定暗房表面（不随主题翻转），色值取自暗色 palette 原值而非 token */}
           <div
             aria-hidden
-            className="absolute inset-0 bg-[#0d1015]/70 backdrop-blur-sm"
+            className={styles.backdrop}
             style={{
               opacity: expanded ? 1 : 0,
               transition: reducedMotion
@@ -418,48 +455,37 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
             onPointerDown={onSwipeStart}
             onPointerMove={onSwipeMove}
             onPointerUp={onSwipeEnd}
-            onPointerCancel={onSwipeEnd}
+            onPointerCancel={() => { swipeStateRef.current = null; if (swipeRef.current) swipeRef.current.style.transform = ''; }}
+            onClick={(event) => {
+              if (suppressSwipeClick.current) { suppressSwipeClick.current = false; return; }
+              if (event.target === event.currentTarget) close();
+            }}
           >
             {/* thumb 打底（首屏/新图未就绪时可见） */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
+              key={`thumb-${active.item.src}`}
+              onError={() => setThumbError(true)}
               src={active.item.thumb ?? active.item.src}
               alt=""
               aria-hidden
               draggable={false}
-              className="absolute object-cover"
+              className="absolute object-contain"
               style={{
                 ...frame,
                 transform: expanded ? 'none' : startTransform,
-                opacity: expanded ? 1 : hasOrigin ? 0.99 : 0,
+                opacity: thumbError ? 0 : expanded ? 1 : hasOrigin ? 0.99 : 0,
                 transition,
               }}
             />
-            {/* crossfade：旧高清图保留到新图就绪 */}
-            {outgoing ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={outgoing}
-                alt=""
-                aria-hidden
-                draggable={false}
-                className="absolute object-cover"
-                style={{
-                  ...frame,
-                  opacity: fullReady ? 0 : 1,
-                  transition: reducedMotion
-                    ? 'none'
-                    : `opacity ${DURATION}ms ${EASE}`,
-                }}
-              />
-            ) : null}
             {/* 当前高清图 */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
+              key={`${active.item.src}-${attempt}`}
               src={active.item.src}
               alt={active.item.alt}
               draggable={false}
-              className="absolute object-cover ring-1 ring-white/10"
+              className="absolute object-contain"
               style={{
                 ...frame,
                 transform: expanded ? 'none' : startTransform,
@@ -470,7 +496,8 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
                 // 缓存图可能在监听挂载前就加载完，onLoad 不会触发，挂载时补检
                 if (el?.complete && el.naturalWidth > 0) setFullReady(true);
               }}
-              onLoad={() => setFullReady(true)}
+              onError={() => { setLoadError(true); }}
+              onLoad={() => { setFullReady(true); setLoadError(false); }}
               onTransitionEnd={(event) => {
               if (event.propertyName === 'transform' && closingRef.current) {
                 clearTimeout(closeTimerRef.current);
@@ -479,13 +506,17 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
             }}
           />
 
+          {!fullReady && expanded ? <div className={styles.status} role="status">
+            <span>{loadError ? (active.item.thumb && !thumbError ? '高清图暂时无法加载，当前显示预览图。' : '图片暂时无法加载。') : '正在加载高清图…'}</span>
+            {loadError ? <button type="button" className={buttonClassName({ className: styles.control })} onClick={() => { setLoadError(false); setFullReady(false); setAttempt((value) => value + 1); }}>重新加载</button> : null}
+          </div> : null}
           {/* 图注：编号 + 名称 + 计数 + 详情入口（移动端切换按钮并入此栏） */}
           <div
-            className="absolute flex items-center justify-between gap-4 text-sm [text-shadow:0_1px_8px_rgba(0,0,0,0.8)]"
+            className={styles.caption}
             style={{
-              left: frame.left,
+              left: window.innerWidth < 640 ? 16 : 72,
               top: frame.top + frame.height + 12,
-              width: frame.width,
+              width: window.innerWidth - (window.innerWidth < 640 ? 32 : 144),
               opacity: expanded ? 1 : 0,
               transition: reducedMotion
                 ? 'none'
@@ -499,7 +530,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
                     type="button"
                     aria-label="上一张"
                     onClick={() => go(-1)}
-                    className="flex size-7 items-center justify-center bg-white/10 text-white transition active:scale-95"
+                    className={buttonClassName({ icon: true, className: styles.control })}
                   >
                     <ChevronLeft className="size-4" />
                   </button>
@@ -507,14 +538,14 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
                     type="button"
                     aria-label="下一张"
                     onClick={() => go(1)}
-                    className="flex size-7 items-center justify-center bg-white/10 text-white transition active:scale-95"
+                    className={buttonClassName({ icon: true, className: styles.control })}
                   >
                     <ChevronRight className="size-4" />
                   </button>
                 </span>
               ) : null}
               {active.item.serial ? (
-                <span className="mr-2 shrink-0 font-mono text-xs text-[#97a2b1]">
+                <span className="mr-2 shrink-0 font-mono text-xs text-[#bdbdbd]">
                   {active.item.serial}
                 </span>
               ) : null}
@@ -522,13 +553,14 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
             </p>
             <span className="flex shrink-0 items-center gap-3">
               {hasSiblings ? (
-                <span className="font-mono text-xs text-[#97a2b1]">
+                <span className="font-mono text-xs text-[#bdbdbd]">
                   {active.index + 1} / {active.siblings.length}
                 </span>
               ) : null}
               {active.item.href ? (
                 <Link
                   href={active.item.href}
+                  onClick={() => { clearTimeout(closeTimerRef.current); setActive(null); }}
                   className="inline-flex items-center gap-1 text-[#c3ccd8] underline-offset-4 transition-colors hover:text-white hover:underline"
                 >
                   查看详情
@@ -545,7 +577,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
             type="button"
             aria-label="关闭"
             onClick={close}
-            className="absolute top-4 right-4 flex size-10 items-center justify-center bg-white/10 text-white backdrop-blur-sm transition active:scale-95 hover:bg-white/20"
+            className={buttonClassName({ icon: true, className: `${styles.control} ${styles.close}` })}
           >
             <X className="size-5" />
           </button>
@@ -557,7 +589,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
                 type="button"
                 aria-label="上一张"
                 onClick={() => go(-1)}
-                className="absolute top-1/2 left-5 hidden size-10 -translate-y-1/2 items-center justify-center bg-white/10 text-white backdrop-blur-sm transition active:scale-95 hover:bg-white/20 sm:flex"
+                className={buttonClassName({ icon: true, className: `${styles.control} ${styles.previous}` })}
               >
                 <ChevronLeft className="size-5" />
               </button>
@@ -565,7 +597,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
                 type="button"
                 aria-label="下一张"
                 onClick={() => go(1)}
-                className="absolute top-1/2 right-5 hidden size-10 -translate-y-1/2 items-center justify-center bg-white/10 text-white backdrop-blur-sm transition active:scale-95 hover:bg-white/20 sm:flex"
+                className={buttonClassName({ icon: true, className: `${styles.control} ${styles.next}` })}
               >
                 <ChevronRight className="size-5" />
               </button>
