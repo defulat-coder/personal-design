@@ -1,0 +1,266 @@
+[
+  {
+    "name": "home",
+    "device": "desktop",
+    "route": "/",
+    "file": "home-desktop.png",
+    "status": 200,
+    "metrics": {
+      "width": 1440,
+      "documentWidth": 1440,
+      "height": 900
+    },
+    "errors": []
+  },
+  {
+    "name": "muse",
+    "device": "desktop",
+    "route": "/products/muse",
+    "file": "muse-desktop.png",
+    "status": 200,
+    "metrics": {
+      "width": 1440,
+      "documentWidth": 1440,
+      "height": 3663
+    },
+    "errors": []
+  },
+  {
+    "name": "layouts",
+    "device": "desktop",
+    "route": "/products/layout-compositions",
+    "file": "layouts-desktop.png",
+    "status": 200,
+    "metrics": {
+      "width": 1440,
+      "documentWidth": 1440,
+      "height": 1062
+    },
+    "errors": []
+  },
+  {
+    "name": "muse-detail",
+    "device": "desktop",
+    "route": "/products/muse/file-management-dashboard",
+    "file": "muse-detail-desktop.png",
+    "status": 200,
+    "metrics": {
+      "width": 1440,
+      "documentWidth": 1440,
+      "height": 900
+    },
+    "errors": []
+  },
+  {
+    "name": "layout-detail",
+    "device": "desktop",
+    "route": "/products/layout-compositions/001",
+    "file": "layout-detail-desktop.png",
+    "status": 200,
+    "metrics": {
+      "width": 1440,
+      "documentWidth": 1440,
+      "height": 1073
+    },
+    "errors": []
+  },
+  {
+    "name": "404",
+    "device": "desktop",
+    "route": "/does-not-exist",
+    "file": "404-desktop.png",
+    "status": 404,
+    "metrics": {
+      "width": 1440,
+      "documentWidth": 1440,
+      "height": 900
+    },
+    "errors": []
+  },
+  {
+    "name": "home",
+    "device": "tablet",
+    "route": "/",
+    "file": "home-tablet.png",
+    "status": 200,
+    "metrics": {
+      "width": 1024,
+      "documentWidth": 1024,
+      "height": 768
+    },
+    "errors": []
+  },
+  {
+    "name": "muse",
+    "device": "tablet",
+    "route": "/products/muse",
+    "file": "muse-tablet.png",
+    "status": 200,
+    "metrics": {
+      "width": 1024,
+      "documentWidth": 1024,
+      "height": 5199
+    },
+    "errors": []
+  },
+  {
+    "name": "layouts",
+    "device": "tablet",
+    "route": "/products/layout-compositions",
+    "file": "layouts-tablet.png",
+    "status": 200,
+    "metrics": {
+      "width": 1024,
+      "documentWidth": 1024,
+      "height": 1058
+    },
+    "errors": []
+  },
+  {
+    "name": "muse-detail",
+    "device": "tablet",
+    "route": "/products/muse/file-management-dashboard",
+    "file": "muse-detail-tablet.png",
+    "status": 200,
+    "metrics": {
+      "width": 1024,
+      "documentWidth": 1024,
+      "height": 1109
+    },
+    "errors": []
+  },
+  {
+    "name": "layout-detail",
+    "device": "tablet",
+    "route": "/products/layout-compositions/001",
+    "file": "layout-detail-tablet.png",
+    "status": 200,
+    "metrics": {
+      "width": 1024,
+      "documentWidth": 1024,
+      "height": 1009
+    },
+    "errors": []
+  },
+  {
+    "name": "404",
+    "device": "tablet",
+    "route": "/does-not-exist",
+    "file": "404-tablet.png",
+    "status": 404,
+    "metrics": {
+      "width": 1024,
+      "documentWidth": 1024,
+      "height": 768
+    },
+    "errors": []
+  },
+  {
+    "name": "home",
+    "device": "mobile",
+    "route": "/",
+    "file": "home-mobile.png",
+    "status": 200,
+    "metrics": {
+      "width": 390,
+      "documentWidth": 390,
+      "height": 1004
+    },
+    "errors": []
+  },
+  {
+    "name": "muse",
+    "device": "mobile",
+    "route": "/products/muse",
+    "file": "muse-mobile.png",
+    "status": 200,
+    "metrics": {
+      "width": 390,
+      "documentWidth": 390,
+      "height": 3522
+    },
+    "errors": []
+  },
+  {
+    "name": "layouts",
+    "device": "mobile",
+    "route": "/products/layout-compositions",
+    "file": "layouts-mobile.png",
+    "status": 200,
+    "metrics": {
+      "width": 390,
+      "documentWidth": 390,
+      "height": 1253
+    },
+    "errors": []
+  },
+  {
+    "name": "muse-detail",
+    "device": "mobile",
+    "route": "/products/muse/file-management-dashboard",
+    "file": "muse-detail-mobile.png",
+    "status": 200,
+    "metrics": {
+      "width": 390,
+      "documentWidth": 390,
+      "height": 1284
+    },
+    "errors": []
+  },
+  {
+    "name": "layout-detail",
+    "device": "mobile",
+    "route": "/products/layout-compositions/001",
+    "file": "layout-detail-mobile.png",
+    "status": 200,
+    "metrics": {
+      "width": 390,
+      "documentWidth": 390,
+      "height": 1603
+    },
+    "errors": []
+  },
+  {
+    "name": "404",
+    "device": "mobile",
+    "route": "/does-not-exist",
+    "file": "404-mobile.png",
+    "status": 404,
+    "metrics": {
+      "width": 390,
+      "documentWidth": 390,
+      "height": 844
+    },
+    "errors": []
+  },
+  {
+    "name": "home",
+    "device": "dark",
+    "file": "home-dark.png",
+    "route": "/"
+  },
+  {
+    "name": "muse",
+    "device": "dark",
+    "file": "muse-dark.png",
+    "route": "/products/muse"
+  },
+  {
+    "name": "layouts",
+    "device": "dark",
+    "file": "layouts-dark.png",
+    "route": "/products/layout-compositions"
+  },
+  {
+    "name": "muse-detail",
+    "device": "dark",
+    "file": "muse-detail-dark.png",
+    "route": "/products/muse/file-management-dashboard"
+  },
+  {
+    "name": "layout-detail",
+    "device": "dark",
+    "file": "layout-detail-dark.png",
+    "route": "/products/layout-compositions/001"
+  }
+]

@@ -1,0 +1,48 @@
+{
+  "baseURL": "http://localhost:3001",
+  "checks": {
+    "desktopChoices": {
+      "layoutBox": {
+        "x": 128,
+        "y": 304.796875,
+        "width": 572,
+        "height": 530.09375
+      },
+      "museBox": {
+        "x": 740,
+        "y": 304.796875,
+        "width": 572,
+        "height": 554.59375
+      }
+    },
+    "loadedImages": 4,
+    "keyboardLayout": "/products/layout-compositions",
+    "mouseMuse": "/products/muse",
+    "viewports": [
+      {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "stacked": false
+      },
+      {
+        "width": 1024,
+        "scrollWidth": 1024,
+        "stacked": false
+      },
+      {
+        "width": 390,
+        "scrollWidth": 390,
+        "stacked": true
+      },
+      {
+        "width": 320,
+        "scrollWidth": 320,
+        "stacked": true
+      }
+    ],
+    "darkReducedMotion": true,
+    "failedImages": 4
+  },
+  "errors": [],
+  "passed": true
+}

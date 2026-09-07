@@ -37,9 +37,9 @@ export const products: Product[] = [
   {
     slug: 'muse',
     name: '灵感集',
-    tagline: '设计灵感同步库',
+    tagline: '图像、界面与动效灵感',
     description:
-      '持续整理的设计灵感，涵盖图片与视频。每条都保留完整的原始信息与作者出处，方便回看与追溯。',
+      '浏览图像、界面与动效，发现值得参考的设计与创作者。',
     date: '2026-09-03',
     href: '/products/muse',
     cover: '/inspora/thumbnails/54c9d760-395c-4ff7-8446-4432034d9f44.webp',

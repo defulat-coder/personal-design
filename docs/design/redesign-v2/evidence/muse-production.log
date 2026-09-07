@@ -1,0 +1,6 @@
+PASS static single-link gallery, explicit append, keyboard detail, return batch/scroll/focus
+PASS combined filters, invalid category, reload, browser history, empty recovery, direct native video
+PASS title-first natural media, multi controls, enlargement/Escape/focus, source and raw JSON
+PASS dark/reduced-motion list and title-first detail at 1024/390/320, last boundary
+PASS bounded image failure with thumbnail, retry/original file
+PASS metadata-only video stall remains bounded; zero page errors

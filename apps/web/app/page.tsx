@@ -8,10 +8,13 @@ export default function HomePage() {
     const item = catalog.find(item => item.category_slug === category.slug && hasImage(item));
     return item ? [{ src: thumbnailUrl(item), alt: item.name }] : [];
   });
-  const musePreviews = listPosts().flatMap(post => {
+  const musePreviews: { src: string; alt: string; videoSrc?: string }[] = listPosts().flatMap(post => {
     const media = post.media[0];
     const src = media?.thumb ?? media?.poster;
     return src ? [{ src, alt: post.title }] : [];
   }).slice(0, 3);
+  const motionPost = listPosts().find(post => post.media[0]?.type === 'video' && post.media[0]?.src);
+  const motionMedia = motionPost?.media[0];
+  if (motionMedia?.src) musePreviews.unshift({ src: motionMedia.thumb ?? motionMedia.poster ?? '', alt: motionPost!.title, videoSrc: motionMedia.src });
   return <HomeView products={products} layoutPreviews={layoutPreviews} musePreviews={musePreviews} />;
 }

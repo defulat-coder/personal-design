@@ -1,0 +1,26 @@
+// Run: node scripts/design-checks/shared-autoplay.cjs (no browser/server required).
+const fs = require('node:fs');
+const vm = require('node:vm');
+const assert = require('node:assert/strict');
+const path = require('node:path');
+const { createRequire } = require('node:module');
+const root = path.resolve(__dirname, '../..');
+const ts = createRequire(path.join(root, 'apps/web/package.json'))('typescript');
+const listeners = {};
+let observe, cleanup, plays = 0, pauses = 0;
+const motion = {matches:false, addEventListener:(_,fn)=>listeners.motion=fn, removeEventListener:()=>delete listeners.motion};
+const document = {hidden:false, addEventListener:(_,fn)=>listeners.visibility=fn, removeEventListener:()=>delete listeners.visibility};
+const video = {play:()=>{plays++;return Promise.resolve()},pause:()=>pauses++};
+const code = ts.transpileModule(fs.readFileSync(path.join(root, 'apps/web/lib/use-autoplay-video.ts'),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;
+const sandbox = {exports:{},document,window:{matchMedia:()=>motion},require:()=>({useRef:()=>({current:video}),useEffect:fn=>cleanup=fn()}),IntersectionObserver:class {constructor(fn){observe=fn} observe(){} disconnect(){}}};
+vm.runInNewContext(code,sandbox);
+sandbox.exports.useAutoplayVideo();
+observe([{isIntersecting:true,intersectionRatio:0.1}]); assert.equal(plays,0);
+observe([{isIntersecting:true,intersectionRatio:0.5}]); assert.equal(plays,1);
+document.hidden=true; listeners.visibility(); assert.ok(pauses>=2);
+document.hidden=false; listeners.visibility(); assert.equal(plays,2);
+motion.matches=true; listeners.motion(); const before=plays;
+observe([{isIntersecting:true,intersectionRatio:1}]); assert.equal(plays,before);
+motion.matches=false; listeners.motion(); assert.equal(plays,before+1);
+cleanup(); assert.equal(Object.keys(listeners).length,0);
+Promise.resolve().then(()=>{assert.ok(pauses>=6); console.log('PASS autoplay: threshold, visibility pause/resume, dynamic reduced motion, cleanup and pending-play race');});

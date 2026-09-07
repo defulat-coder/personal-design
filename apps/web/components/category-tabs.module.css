@@ -1,4 +1,6 @@
-.tabs { display:flex; gap:8px; overflow-x:auto; min-width:0; max-width:100%; scrollbar-width:thin; padding:4px 2px 12px; }
-.tab { position:relative; gap:8px; }
-.tab:focus-visible { outline-offset:-3px; }
-.count { font-size:12px; font-variant-numeric:tabular-nums; font-weight:400; opacity:.8; }
+.tabs { display:flex; flex-wrap:wrap; align-items:center; gap:4px 22px; min-width:0; max-width:100%; padding:0; margin-bottom:24px; }
+.tab { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:8px 0; border:0; border-bottom:2px solid transparent; border-radius:0; background:transparent; font-size:14px; line-height:20px; color:var(--color-ink-soft); white-space:nowrap; cursor:pointer; transition:color 150ms ease-out,border-color 150ms ease-out; }
+.tab:hover { color:var(--color-ink); border-bottom-color:var(--color-hairline-strong); }
+.tab[aria-pressed=true] { color:var(--color-ink); border-bottom-color:var(--color-ink); font-weight:500; }
+.tab:focus-visible { outline:2px solid var(--color-ink); outline-offset:4px; }
+@media(prefers-reduced-motion:reduce) { .tab { transition:none; } }

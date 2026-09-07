@@ -29,17 +29,12 @@ const tabs = categories.map((category) => ({
   count: items.filter((item) => item.category === category.name).length,
 }));
 
-const themeCount = categories.reduce(
-  (sum, category) => sum + category.subcategories.length,
-  0,
-);
-
 export default function LayoutCompositionsPage() {
   return (
     <main >
       {/* LayoutWall 内用 useSearchParams 读分类，需要 Suspense 边界 */}
       <Suspense fallback={<p className="p-6 text-ink-soft" role="status">正在加载布局图鉴…</p>}>
-        <LayoutWall categories={tabs} items={items} themeCount={themeCount} />
+        <LayoutWall categories={tabs} items={items} />
       </Suspense>
     </main>
   );

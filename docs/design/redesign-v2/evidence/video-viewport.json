@@ -1,0 +1,27 @@
+{
+  "base": "http://localhost:3001",
+  "script": "scripts/design-checks/v2-muse-video-viewport.mjs",
+  "passed": true,
+  "checks": [
+    {
+      "width": 1440,
+      "height": 900,
+      "videoBottom": 835,
+      "toolbarBottom": 887.890625
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "videoBottom": 703,
+      "toolbarBottom": 755.890625
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "videoBottom": 599.09375,
+      "toolbarBottom": 651.09375
+    }
+  ],
+  "scrollStable": true,
+  "resizeWithoutNavigation": true
+}

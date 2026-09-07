@@ -1,14 +1,13 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import styles from './page.module.css';
-import { PageHeading } from '@/components/page-heading';
 import { listCategories, listPosts } from '@personal-design/inspora';
 import { PlateWall, type PlateWallItem } from '@/components/plate-wall';
 
 export const metadata: Metadata = {
-  title: '灵感集 · 设计灵感同步库',
+  title: '灵感集 · 图像、界面与动效',
   description:
-    '持续整理的设计灵感集，直接浏览图片与视频，每条都可查看完整的原始信息与作者出处。',
+    '浏览图像、界面与动效，发现值得参考的设计与创作者，直接访问作品出处。',
 };
 
 const posts = listPosts();
@@ -49,8 +48,6 @@ if (uncategorized && !tabs.some((category) => category.name === '未分类')) ta
 export default function MusePage() {
   return (
     <main className={styles.page}>
-      <PageHeading title="灵感集" description="图像、界面与动效。找到值得收藏的设计，也找到它的创作者。" />
-
       <div>
         {/* PlateWall 内用 useSearchParams 恢复分类现场，需要 Suspense 边界 */}
         <Suspense fallback={<p role="status" className="py-8 text-ink-soft">正在准备灵感列表…</p>}>

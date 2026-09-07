@@ -1,0 +1,23 @@
+{
+  "base": "http://localhost:3001",
+  "passed": true,
+  "checks": [
+    "all350 original cards including8 missing are native detail links",
+    "desktop uses static five-column grid",
+    "missing item can be searched and read directly",
+    "category theme and keyword combine and survive refresh",
+    "unknown filter has clear empty recovery",
+    "detail return restores actual scroll and card focus",
+    "detail title precedes media and first boundary is explicit",
+    "last theme boundary and theme navigation remain accessible",
+    "responsive1024 no page overflow and title precedes media",
+    "responsive390 no page overflow and title precedes media",
+    "responsive320 no page overflow and title precedes media",
+    "detail enlarge opens once and Escape returns focus",
+    "stalled HD resolves to readable thumbnail fallback",
+    "detail arrow navigation respects focused controls and browser history",
+    "touch card opens detail and returns the search context",
+    "dark theme keeps every card and visible search controls"
+  ],
+  "failure": null
+}

@@ -18,3 +18,11 @@
 /* Video playback and file controls should be visible together on first entry.
    The measured value uses document top, so scrolling never changes the size. */
 .videoStage { width:min(100%,calc(var(--video-height,clamp(240px,calc(100dvh - 400px),70dvh)) * var(--media-ratio))); }
+
+.slide .media { opacity:0; transition:opacity 500ms ease-out; }
+.slide[data-ready=true] .media { opacity:1; }
+.slide video.media { opacity:1; }
+@media(prefers-reduced-motion:reduce) { .slide .media { transition:none; } }
+
+.zoomButton { position:absolute; inset:0; width:100%; height:100%; border-radius:8px; border:0; padding:0; background:transparent; cursor:zoom-in; }
+.zoomButton:focus-visible { outline:2px solid var(--color-ink); outline-offset:-3px; }

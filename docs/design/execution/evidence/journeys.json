@@ -1,0 +1,9 @@
+{
+  "base": "http://localhost:3001",
+  "results": [
+    "home → muse → query → lightbox → detail → JSON/source → return restores query",
+    "home → layouts → category → lightbox → detail → original image link → category return"
+  ],
+  "errors": [],
+  "passed": true
+}

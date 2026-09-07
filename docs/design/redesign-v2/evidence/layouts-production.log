@@ -1,0 +1,16 @@
+PASS all350 original cards including8 missing are native detail links
+PASS desktop uses static five-column grid
+PASS missing item can be searched and read directly
+PASS category theme and keyword combine and survive refresh
+PASS unknown filter has clear empty recovery
+PASS detail return restores actual scroll and card focus
+PASS detail title precedes media and first boundary is explicit
+PASS last theme boundary and theme navigation remain accessible
+PASS responsive1024 no page overflow and title precedes media
+PASS responsive390 no page overflow and title precedes media
+PASS responsive320 no page overflow and title precedes media
+PASS detail enlarge opens once and Escape returns focus
+PASS stalled HD resolves to readable thumbnail fallback
+PASS detail arrow navigation respects focused controls and browser history
+PASS touch card opens detail and returns the search context
+PASS dark theme keeps every card and visible search controls

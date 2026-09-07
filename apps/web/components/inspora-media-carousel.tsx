@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
-import { ArrowLeft, ArrowRight, ArrowUpRight, RotateCcw, Expand } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUpRight, RotateCcw } from 'lucide-react';
 import { Button, buttonClassName } from './button';
 import styles from './inspora-media-carousel.module.css';
+import { MotionVideo } from './motion-video';
 import { LightboxProvider, useLightbox } from './lifeline/lightbox';
 
 export interface CarouselMedia {
@@ -16,13 +17,12 @@ export interface CarouselMedia {
   alt: string;
 }
 
-/** Native snap and playback controls remain usable without autoplay or animation. */
+/** Native snap with visible, muted looping playback and full playback controls. */
 export function MuseMediaCarousel({ media }: { media: CarouselMedia[] }) {
   return <LightboxProvider><Carousel media={media} /></LightboxProvider>;
 }
 
 function Carousel({ media }: { media: CarouselMedia[] }) {
-  const lightbox = useLightbox();
   const trackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -77,41 +77,43 @@ function Carousel({ media }: { media: CarouselMedia[] }) {
       if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); move(current + (event.key === 'ArrowLeft' ? -1 : 1)); }
       if (event.key === 'Home' || event.key === 'End') { event.preventDefault(); move(event.key === 'Home' ? 0 : media.length - 1); }
     }}>
-      {media.map((item, index) => <MediaSlide key={item.id} item={item} active={index === current} index={index} total={media.length} />)}
+      {media.map((item, index) => <MediaSlide key={item.id} item={item} active={index === current} index={index} total={media.length} siblings={media} />)}
     </div></div>
-    <div ref={toolbarRef} className={styles.toolbar}>
-      <span className={styles.counter} aria-live="polite">{current + 1} / {media.length} · {media[current]?.type === 'video' ? '视频' : '图片'}</span>
+    {selected?.type === 'image' || media.length > 1 ? <div ref={toolbarRef} className={styles.toolbar}>
+      <span className={styles.counter} aria-live="polite">{media.length > 1 ? `${current + 1} / ${media.length}` : null}</span>
       <div className={styles.actions}>
-        {selected?.type === 'image' ? <Button variant="ghost" onClick={(event) => {
-          const images = media.filter((item) => item.type === 'image');
-          lightbox?.open({src:selected.src, thumb:selected.poster ?? selected.src, alt:selected.alt}, {sourceEl:event.currentTarget, rect:trackRef.current?.getBoundingClientRect() ?? event.currentTarget.getBoundingClientRect(), siblings:images.map((item) => ({src:item.src, thumb:item.poster ?? item.src, alt:item.alt})), index:images.findIndex((item) => item.id === selected.id)});
-        }}><Expand size={16} />放大查看</Button> : null}
-        <a className={buttonClassName({ variant:'ghost' })} href={media[current]?.src} target="_blank" rel="noreferrer">原始文件 <ArrowUpRight size={16} /></a>
+        <a className={buttonClassName({ variant:'ghost' })} href={media[current]?.src} target="_blank" rel="noreferrer">{selected?.type === 'image' ? '查看原图' : '打开视频'}<ArrowUpRight size={16} aria-hidden /></a>
         {media.length > 1 ? <><Button icon aria-label="上一张媒体" disabled={current === 0} onClick={() => move(current - 1)}><ArrowLeft size={16} /></Button><Button icon aria-label="下一张媒体" disabled={current === media.length - 1} onClick={() => move(current + 1)}><ArrowRight size={16} /></Button></> : null}
       </div>
-    </div>
+    </div> : null}
   </div>;
 }
 
-function MediaSlide({ item, active, index, total }: { item:CarouselMedia; active:boolean; index:number; total:number }) {
+function MediaSlide({ item, active, index, total, siblings }: { item:CarouselMedia; active:boolean; index:number; total:number; siblings:CarouselMedia[] }) {
+  const lightbox = useLightbox();
   const [status, setStatus] = useState<'loading'|'ready'|'error'>('loading');
   const [attempt, setAttempt] = useState(0);
-  const video = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     if (!active || status !== 'loading') return;
     const timer = setTimeout(() => setStatus('error'), 15000);
     return () => clearTimeout(timer);
   }, [active, status, attempt]);
-  useEffect(() => { if (!active) video.current?.pause(); }, [active]);
-  return <figure className={styles.slide} role="group" aria-roledescription="幻灯片" aria-label={`${index + 1} / ${total}`} inert={!active}>
+  return <figure className={styles.slide} data-ready={status === 'ready'} role="group" aria-roledescription="幻灯片" aria-label={`${index + 1} / ${total}`} inert={!active}>
     {item.type === 'image' && item.poster && item.poster !== item.src && status !== 'ready' ? (
       // eslint-disable-next-line @next/next/no-img-element -- Local thumbnail remains visible while original loads.
       <img src={item.poster} alt="" className={styles.preview} />
     ) : null}
-    {item.type === 'video' ? <video key={attempt} ref={video} src={item.src} poster={item.poster ?? undefined} aria-label={item.alt} controls playsInline preload={active ? 'auto' : 'metadata'} onLoadedData={() => setStatus('ready')} onCanPlay={() => setStatus('ready')} onWaiting={() => setStatus((value) => value === 'error' ? 'error' : 'loading')} onError={() => setStatus('error')} className={styles.media} /> : (
+    {item.type === 'video' ? <MotionVideo key={attempt} active={active} src={item.src} poster={item.poster ?? undefined} aria-label={item.alt} controls onLoadedMetadata={() => setStatus('ready')} onLoadedData={() => setStatus('ready')} onCanPlay={() => setStatus('ready')} onWaiting={() => setStatus((value) => value === 'error' ? 'error' : 'loading')} onError={() => setStatus('error')} className={styles.media} /> : (
       // eslint-disable-next-line @next/next/no-img-element -- Full-size source preserves original media and intrinsic proportions.
       <img key={attempt} src={item.src} alt={item.alt} decoding="async" loading={index === 0 ? 'eager' : 'lazy'} fetchPriority={index === 0 ? 'high' : undefined} onLoad={() => setStatus('ready')} onError={() => setStatus('error')} className={styles.media} />
     )}
+    {item.type === 'image' ? <button className={styles.zoomButton} aria-label={`放大查看 ${item.alt}`} onClick={(event) => {
+      const images = siblings.filter(image => image.type === 'image');
+      lightbox?.open({src:item.src, thumb:item.poster ?? item.src, alt:item.alt}, {
+        sourceEl:event.currentTarget, rect:event.currentTarget.getBoundingClientRect(),
+        siblings:images.map(image => ({src:image.src, thumb:image.poster ?? image.src, alt:image.alt})), index:images.findIndex(image => image.id === item.id),
+      });
+    }} /> : null}
     {status !== 'ready' && active ? <div className={status === 'error' ? styles.message : styles.loading} role="status">
       <p>{status === 'error' ? '媒体暂时无法加载' : '正在加载媒体…'}</p>
       {status === 'error' ? <><p>可以重试，或在新窗口打开原媒体。</p><div className={styles.actions}><Button onClick={() => { setStatus('loading'); setAttempt((n) => n + 1); }}><RotateCcw size={16} />重试</Button><a href={item.src} target="_blank" rel="noreferrer" className={buttonClassName({ variant:'ghost' })}>打开原媒体<ArrowUpRight size={16} /></a></div></> : null}

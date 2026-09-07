@@ -1,5 +1,5 @@
 .heading { padding:0 0 32px; }
-.row { display:flex; align-items:baseline; justify-content:space-between; gap:12px 24px; flex-wrap:wrap; }
+.row { display:flex; align-items:center; justify-content:space-between; gap:12px 24px; flex-wrap:wrap; }
 .row h1 { font-family:var(--font-display); font-size:36px; font-weight:600; letter-spacing:0; line-height:1.35; }
 .description { max-width:65ch; margin-top:12px; color:var(--color-ink-soft); font-size:15px; line-height:1.75; }
 .meta { color:var(--color-ink-soft); font-size:12px; font-variant-numeric:tabular-nums; }

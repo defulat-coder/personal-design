@@ -15,7 +15,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
       <header className={styles.header}>
         <Link href="/" className={styles.brand} aria-label={isHome ? 'Personal Design 首页' : '返回首页'}>
           {!isHome && <ArrowUpLeft size={18} aria-hidden />}
-          <span>Personal Design<span className={styles.brandSub}>个人设计产品集</span></span>
+          <span>Personal Design</span>
         </Link>
         <ThemeToggle />
       </header>

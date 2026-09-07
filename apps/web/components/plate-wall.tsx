@@ -4,8 +4,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { Search } from 'lucide-react';
-import fields from './field.module.css';
+import { categoryLabel } from '@/lib/category-label';
+import { MotionVideo } from './motion-video';
+import { CollectionSearch } from './collection-search';
+import { PageHeading } from './page-heading';
 import { Button } from './button';
 import styles from './plate-wall.module.css';
 import { CategoryTabs, useCatParam } from './category-tabs';
@@ -46,7 +48,7 @@ interface PlateWallProps {
 
 const DEFAULT_BATCH = 48;
 
-/** Stable gallery: one native link per work, static previews, explicit batching. */
+/** Stable gallery: one native link per work, visible motion previews, scroll-triggered batching. */
 export function PlateWall({ categories, items, searchPlaceholder, batchSize = DEFAULT_BATCH }: PlateWallProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -58,10 +60,8 @@ export function PlateWall({ categories, items, searchPlaceholder, batchSize = DE
     window.history.replaceState(null, '', `${pathname}${params.size ? `?${params}` : ''}`);
   };
   const returnHref = `${pathname}${searchParams.size ? `?${searchParams}` : ''}`;
-  const remember = (key: string) => {
-    try { sessionStorage.setItem('muse-return', JSON.stringify({ href: returnHref, shown, y: window.scrollY, key })); } catch {}
-  };
   const [shown, setShown] = useState(batchSize);
+  const moreRef = useRef<HTMLDivElement>(null);
 
   const filtered = useMemo(() => {
     const byCat = active === '全部' ? items : items.filter((i) => i.category === active);
@@ -72,11 +72,15 @@ export function PlateWall({ categories, items, searchPlaceholder, batchSize = DE
         i.name.toLowerCase().includes(keyword) ||
         (i.no ?? '').includes(keyword) ||
         (i.lead ?? '').toLowerCase().includes(keyword) ||
-        (i.keywords ?? '').toLowerCase().includes(keyword),
+        (i.keywords ?? '').toLowerCase().includes(keyword) || categoryLabel(i.category).includes(keyword),
     );
   }, [active, query, items]);
 
   const visible = filtered.slice(0, shown);
+  const remember = (key: string) => {
+    try { sessionStorage.setItem('muse-return', JSON.stringify({ href: returnHref, shown, y: window.scrollY, key, entries: filtered.map(item => ({ href: item.href, title: item.name })) })); } catch {}
+  };
+
 
   // 切分类/搜索时重置分批（render 期间调整 state，避免 effect 级联）
   const filterKey = `${active}|${query.trim()}`;
@@ -104,18 +108,27 @@ export function PlateWall({ categories, items, searchPlaceholder, batchSize = DE
     return () => cancelAnimationFrame(frame);
   }, [batchSize]);
 
+  useEffect(() => {
+    const sentinel = moreRef.current;
+    if (!sentinel || shown >= filtered.length) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting) return;
+      observer.disconnect();
+      setShown(count => Math.min(count + batchSize, filtered.length));
+    }, { rootMargin: '600px 0px' });
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [shown, filtered.length, filterKey, batchSize]);
+
   const clear = () => window.history.replaceState(null, '', pathname);
   return (
     <section aria-label="灵感浏览">
-      <div className={styles.toolbar}>
-        {searchPlaceholder ? <label className={`${styles.search} ${fields.field}`}>
-          <Search aria-hidden />
-          <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={searchPlaceholder} aria-label="搜索标题、作者或标签" />
-        </label> : null}
-      </div>
-      <CategoryTabs categories={categories} total={items.length} active={active} onSelect={select} line="muse" />
-      <div className={styles.results}>
-        <p role="status">{active === '全部' ? '全部灵感' : active} · {filtered.length} 件{query ? ` · 搜索「${query}」` : ''}</p>
+      <PageHeading title="灵感集" actions={
+        searchPlaceholder ? <CollectionSearch value={query} onChange={setQuery} placeholder={searchPlaceholder} label="搜索标题、作者或标签" /> : null
+      } />
+      <CategoryTabs categories={categories} active={active} onSelect={select} />
+      <div className={query || active !== '全部' ? styles.results : styles.srOnly}>
+        <p role="status">{filtered.length} 件灵感</p>
         {query || active !== '全部' ? <Button variant="ghost" onClick={clear}>清除筛选</Button> : null}
       </div>
       {filtered.length === 0 ? <div className={styles.empty}>
@@ -125,10 +138,7 @@ export function PlateWall({ categories, items, searchPlaceholder, batchSize = DE
       </div> : <div className={styles.grid}>
         {visible.map((item) => <PlateCell key={item.key} item={item} onNavigate={remember} />)}
       </div>}
-      {visible.length < filtered.length ? <div className={styles.more}>
-        <span>已显示 {visible.length} / {filtered.length}</span>
-        <Button onClick={() => setShown((n) => Math.min(n + batchSize, filtered.length))}>加载更多灵感</Button>
-      </div> : filtered.length > 0 ? <p className={styles.more}>已展示全部 {filtered.length} 件灵感</p> : null}
+      {visible.length < filtered.length ? <div ref={moreRef} className={styles.more} aria-hidden="true" /> : null}
     </section>
   );
 }
@@ -149,16 +159,16 @@ function PlateCell({ item, onNavigate }: { item: PlateWallItem; onNavigate: (key
     observer.observe(cell);
     return () => { observer.disconnect(); clearTimeout(timer); };
   }, [ready, failed]);
-  return <Link ref={cellRef} id={`muse-${item.key}`} href={item.href} className={styles.cell} onClick={() => onNavigate(item.key)}>
+  return <Link ref={cellRef} id={`muse-${item.key}`} href={`${item.href}?browse=1`} className={styles.cell} onClick={() => onNavigate(item.key)}>
     <figure>
       <div className={styles.media}>
-        {preview ? <Image src={preview} alt="" fill sizes="(min-width: 1200px) 25vw, (min-width: 760px) 33vw, (min-width: 360px) 50vw, 100vw" onLoad={() => { setReady(true); setFailed(false); }} onError={() => setFailed(true)} /> : null}
+        {item.kind === 'video' && item.src ? <MotionVideo src={item.src} poster={preview ?? undefined} aria-label={item.name} onLoadedMetadata={() => { setReady(true); setFailed(false); }} onLoadedData={() => { setReady(true); setFailed(false); }} onError={() => setFailed(true)} /> : preview ? <Image src={preview} alt="" fill sizes="(min-width: 1200px) 25vw, (min-width: 760px) 33vw, (min-width: 360px) 50vw, 100vw" onLoad={() => { setReady(true); setFailed(false); }} onError={() => setFailed(true)} /> : null}
         {failed ? <span className={styles.failure}>预览暂不可用<span>查看作品与出处</span></span> : null}
-        {item.kind === 'video' || (item.mediaCount ?? 0) > 1 ? <span className={styles.badge}>{item.kind === 'video' ? '视频' : `${item.mediaCount} 张图片`}</span> : null}
+        {(item.mediaCount ?? 0) > 1 ? <span className={styles.badge}>{item.mediaCount} 项</span> : null}
       </div>
       <figcaption className={styles.caption}>
         <h2 className={styles.title}>{item.name || '未命名灵感'}</h2>
-        <span className={styles.meta}>{item.lead ?? '作者未提供'}<span>{item.category}</span></span>
+        {item.lead ? <span className={styles.meta}>{item.lead}</span> : null}
       </figcaption>
     </figure>
   </Link>;

@@ -1,0 +1,36 @@
+{
+  "baseURL": "http://localhost:3001",
+  "checks": {
+    "baseline": {
+      "scroll": 0,
+      "width": 1184,
+      "total": 1696,
+      "height": 646
+    },
+    "nextOffset": 412,
+    "end": {
+      "left": 512,
+      "max": 512
+    },
+    "drag": {
+      "offset": 512,
+      "pathname": "/"
+    },
+    "wheelOffset": 450,
+    "reduced": {
+      "left": 512,
+      "max": 512
+    },
+    "mobile": {
+      "width": 390,
+      "scroll": 390
+    },
+    "mobileRegion": {
+      "height": 623,
+      "scroll": 1400
+    },
+    "failedCovers": 2
+  },
+  "pageErrors": [],
+  "passed": true
+}

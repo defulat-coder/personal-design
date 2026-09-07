@@ -1,0 +1,3 @@
+.navigation { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:32px; }
+.adjacent { display:flex; gap:8px; }
+@media(max-width:639px) { .navigation { gap:8px; margin-bottom:24px; } .adjacent { gap:0; } .navigation a,.navigation button { padding-inline:8px; font-size:13px; } }

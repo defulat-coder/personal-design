@@ -2,9 +2,6 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
-import { buttonClassName } from './button';
 import styles from './detail-tools.module.css';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -28,7 +25,7 @@ function ensureNavListener() {
     // 灯箱打开时让灯箱消费方向键（灯箱翻图），不跳详情页
     if (document.body.dataset.lightboxOpen === 'true') return;
     if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.repeat) return;
-    // 焦点在输入控件或局部滚动区（媒体轮播、原始 JSON pre）内时，方向键留给局部
+    // 焦点在输入控件或局部滚动区（媒体轮播）内时，方向键留给局部
     const target = event.target as HTMLElement | null;
     if (
       target?.closest?.(
@@ -50,14 +47,14 @@ function ensureNavListener() {
   });
 }
 
-/** 详情页主图：点击进入灯箱（FLIP 放大，siblings = 同二级主题） */
+/** 详情主图支持同主题图鉴的灯箱浏览。 */
 export function DetailMainImage(props: {
   src: string;
   thumb: string;
   alt: string;
-  serial: string;
-  siblings: LightboxItem[];
-  index: number;
+  serial:string;
+  siblings:LightboxItem[];
+  index:number;
 }) {
   return (
     <LightboxProvider>
@@ -77,9 +74,9 @@ function MainImageButton({
   src: string;
   thumb: string;
   alt: string;
-  serial: string;
-  siblings: LightboxItem[];
-  index: number;
+  serial:string;
+  siblings:LightboxItem[];
+  index:number;
 }) {
   const lightbox = useLightbox();
   const [state, setState] = useState<'loading' | 'ready' | 'fallback'>('loading');
@@ -93,7 +90,7 @@ function MainImageButton({
         rect: event.currentTarget.getBoundingClientRect(), sourceEl: event.currentTarget, siblings, index,
       })}>
       <Image src={thumb} alt={alt} fill priority sizes="(min-width: 1024px) 60vw, 100vw" className="object-contain" />
-      {state !== 'fallback' && <Image src={src} alt="" fill priority sizes="(min-width: 1024px) 60vw, 100vw" className={styles.fullImage} style={{ opacity: state === 'ready' ? 1 : 0 }} onLoad={() => setState('ready')} onError={() => setState('fallback')} />}
+      {state !== 'fallback' && <Image src={src} alt="" fill priority unoptimized sizes="(min-width: 1024px) 60vw, 100vw" className={styles.fullImage} style={{ opacity: state === 'ready' ? 1 : 0 }} onLoad={() => setState('ready')} onError={() => setState('fallback')} />}
       <span className={styles.zoomHint}>点击放大</span>
     </button>
     {state !== 'ready' && <p className={styles.status} role="status">{state === 'loading' ? '正在载入高清图，先显示预览' : '高清图暂不可用，已显示预览；可点击放大后重试'}</p>}
@@ -121,7 +118,7 @@ export function DetailKeyboardNav({
   useEffect(() => {
     let target: string | null = null;
     try { target = sessionStorage.getItem('detail-nav'); } catch {}
-    if (target && target === pathname) {
+    if (target && target.split('?')[0] === pathname) {
       try { sessionStorage.removeItem('detail-nav'); } catch {}
       consumedNavRef.current = true;
       document.documentElement.dataset.detailNav = 'true';
@@ -160,19 +157,4 @@ export function DetailKeyboardNav({
     };
   }, [router, prevHref, nextHref]);
   return null;
-}
-
-/** Return to the actual list query and position; direct entry has a deterministic fallback. */
-export function LayoutReturnLink() {
-  const [href, setHref] = useState('/products/layout-compositions');
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      try {
-        const saved = JSON.parse(sessionStorage.getItem('layouts-browse') || 'null') as { url?: string } | null;
-        if (saved?.url && /^\/products\/layout-compositions(?:\?|$)/.test(saved.url)) setHref(saved.url);
-      } catch { /* Fall back to the full archive. */ }
-    });
-    return () => cancelAnimationFrame(frame);
-  }, []);
-  return <Link href={href} scroll={false} className={buttonClassName({ variant: 'ghost' })}><ArrowLeft aria-hidden size={16} />返回图鉴</Link>;
 }
