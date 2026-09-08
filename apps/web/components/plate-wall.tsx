@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { categoryLabel } from '@/lib/category-label';
+import { browseHref, browseMemoryKey } from '@/lib/browse-context';
 import { MotionVideo } from './motion-video';
 import { CollectionSearch } from './collection-search';
 import { PageHeading } from './page-heading';
@@ -78,7 +79,7 @@ export function PlateWall({ categories, items, searchPlaceholder, batchSize = DE
 
   const visible = filtered.slice(0, shown);
   const remember = (key: string) => {
-    try { sessionStorage.setItem('muse-return', JSON.stringify({ href: returnHref, shown, y: window.scrollY, key, entries: filtered.map(item => ({ href: item.href, title: item.name })) })); } catch {}
+    try { sessionStorage.setItem(browseMemoryKey('muse-return', returnHref), JSON.stringify({ href: returnHref, shown, y: window.scrollY, key })); } catch {}
   };
 
 
@@ -94,8 +95,9 @@ export function PlateWall({ categories, items, searchPlaceholder, batchSize = DE
   useEffect(() => {
     let frame = 0;
     try {
-      const saved = JSON.parse(sessionStorage.getItem('muse-return') ?? 'null');
-      if (saved?.href === window.location.pathname + window.location.search) {
+      const memoryKey = browseMemoryKey('muse-return', window.location.pathname + window.location.search);
+      const saved = JSON.parse(sessionStorage.getItem(memoryKey) ?? sessionStorage.getItem('muse-return') ?? 'null');
+      if (typeof saved?.href === 'string' && browseMemoryKey('muse-return', saved.href) === memoryKey) {
         frame = requestAnimationFrame(() => {
           setShown(Math.max(batchSize, Number(saved.shown) || batchSize));
           frame = requestAnimationFrame(() => {
@@ -136,14 +138,14 @@ export function PlateWall({ categories, items, searchPlaceholder, batchSize = DE
         <p>{items.length ? '试试其他关键词，或清除分类与搜索条件。' : '内容收录后会出现在这里。'}</p>
         {items.length ? <Button onClick={clear}>查看全部灵感</Button> : null}
       </div> : <div className={styles.grid}>
-        {visible.map((item) => <PlateCell key={item.key} item={item} onNavigate={remember} />)}
+        {visible.map((item) => <PlateCell key={item.key} item={item} href={browseHref(item.href, returnHref)} onNavigate={remember} />)}
       </div>}
       {visible.length < filtered.length ? <div ref={moreRef} className={styles.more} aria-hidden="true" /> : null}
     </section>
   );
 }
 
-function PlateCell({ item, onNavigate }: { item: PlateWallItem; onNavigate: (key: string) => void }) {
+function PlateCell({ item, href, onNavigate }: { item: PlateWallItem; href: string; onNavigate: (key: string) => void }) {
   const preview = item.kind === 'video' ? item.poster : item.src;
   const [failed, setFailed] = useState(!preview);
   const [ready, setReady] = useState(false);
@@ -159,7 +161,7 @@ function PlateCell({ item, onNavigate }: { item: PlateWallItem; onNavigate: (key
     observer.observe(cell);
     return () => { observer.disconnect(); clearTimeout(timer); };
   }, [ready, failed]);
-  return <Link ref={cellRef} id={`muse-${item.key}`} href={`${item.href}?browse=1`} className={styles.cell} onClick={() => onNavigate(item.key)}>
+  return <Link ref={cellRef} id={`muse-${item.key}`} href={href} className={styles.cell} onClick={() => onNavigate(item.key)}>
     <figure>
       <div className={styles.media}>
         {item.kind === 'video' && item.src ? <MotionVideo src={item.src} poster={preview ?? undefined} aria-label={item.name} onLoadedMetadata={() => { setReady(true); setFailed(false); }} onLoadedData={() => { setReady(true); setFailed(false); }} onError={() => setFailed(true)} /> : preview ? <Image src={preview} alt="" fill sizes="(min-width: 1200px) 25vw, (min-width: 760px) 33vw, (min-width: 360px) 50vw, 100vw" onLoad={() => { setReady(true); setFailed(false); }} onError={() => setFailed(true)} /> : null}

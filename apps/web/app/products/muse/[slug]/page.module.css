@@ -1,6 +1,6 @@
 .page { width:100%; max-width:1200px; margin-inline:auto; padding:24px 48px 72px; }
 .heading { margin-bottom:28px; }
-.title { color:var(--color-ink); font-size:32px; line-height:1.35; letter-spacing:0; font-weight:600; overflow-wrap:anywhere; }
+.title { color:var(--color-ink); font-size:32px; line-height:1.35; letter-spacing:0; font-weight:500; overflow-wrap:anywhere; }
 .byline { display:flex; flex-wrap:wrap; align-items:center; gap:12px 24px; margin-top:14px; font-size:14px; color:var(--color-ink-soft); }
 .author { display:flex; align-items:center; gap:8px; overflow-wrap:anywhere; }
 .author img { width:28px; height:28px; border-radius:50%; object-fit:cover; }

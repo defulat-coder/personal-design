@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowLeft, ArrowRight, ArrowUpRight, ImageOff } from 'lucide-react';
+import { instantMotion } from '@/lib/motion';
 import type { Product } from '@/lib/products';
 import { buttonClassName } from './button';
 import { MotionVideo } from './motion-video';
@@ -42,7 +43,7 @@ export function HomeView({ products, layoutPreviews = [], musePreviews = [] }: {
     if (!element) return;
     const cell = element.querySelector('li');
     const step = cell?.getBoundingClientRect().width ?? element.clientWidth;
-    element.scrollBy({ left: direction * step, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    element.scrollBy({ left: direction * step, behavior: instantMotion() ? 'instant' : 'smooth' });
   }
 
   return <main className={styles.home}>
@@ -55,12 +56,13 @@ export function HomeView({ products, layoutPreviews = [], musePreviews = [] }: {
       <div className={styles.timeline}>
         <div ref={viewport} className={styles.viewport} role="region" aria-label="作品时间轴，左右方向键浏览" tabIndex={0}
           onPointerDown={event => {
-            if (event.pointerType !== 'mouse' || event.button !== 0) return;
+            if (event.pointerType !== 'mouse' || event.button !== 0 || (edges.start && edges.end)) return;
             drag.current = { start: event.clientX, scroll: event.currentTarget.scrollLeft, down: true, moved: false };
           }}
           onPointerMove={event => {
             const state = drag.current;
             if (!state.down) return;
+            if (event.buttons !== 1) { state.down = false; delete event.currentTarget.dataset.dragging; return; }
             const delta = event.clientX - state.start;
             if (Math.abs(delta) > 6) {
               state.moved = true;
@@ -84,14 +86,7 @@ export function HomeView({ products, layoutPreviews = [], musePreviews = [] }: {
               return <li key={product.slug} className={styles.entry} style={{ '--order': index } as CSSProperties}>
                 <time dateTime={product.date} className={styles.date}>{product.date.replaceAll('-', '.')}</time>
                 <div className={styles.rule} aria-hidden="true"><span className={styles.node} /></div>
-                <Link href={product.href} className={styles.project} aria-label={`进入${product.name}`}
-                  onPointerMove={event => {
-                    if (event.pointerType !== 'mouse') return;
-                    const rect = event.currentTarget.getBoundingClientRect();
-                    event.currentTarget.style.setProperty('--look-x', `${((event.clientX - rect.left) / rect.width - .5) * 8}px`);
-                    event.currentTarget.style.setProperty('--look-y', `${((event.clientY - rect.top) / rect.height - .5) * 5}px`);
-                  }}
-                  onPointerLeave={event => { event.currentTarget.style.setProperty('--look-x', '0px'); event.currentTarget.style.setProperty('--look-y', '0px'); }}>
+                <Link href={product.href} className={styles.project} aria-label={`进入${product.name}`}>
                   <div className={styles.title}><h2>{product.name}</h2><ArrowUpRight size={20} strokeWidth={1.5} aria-hidden="true" /></div>
                   <p className={styles.tagline}>{product.tagline}</p>
                   <div className={`${styles.preview} ${isLayout ? styles.sheets : previews[0]?.videoSrc ? styles.motionPreview : styles.frames}`}>

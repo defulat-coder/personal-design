@@ -6,6 +6,7 @@ import { ArrowRight } from 'lucide-react';
 import { catalog, getLayoutById, hasImage, imageUrl, thumbnailUrl, type LayoutItem } from '@personal-design/layout-compositions';
 import { DetailMainImage } from '@/components/detail-tools';
 import { BrowseNavigation } from '@/components/browse-navigation';
+import { categoryLabel } from '@/lib/category-label';
 import { buttonClassName } from '@/components/button';
 import type { LightboxItem } from '@/components/lifeline/lightbox';
 import styles from './page.module.css';
@@ -33,6 +34,7 @@ export default async function LayoutDetailPage({ params }:PageProps) {
   const related = group.filter(entry => entry.id !== item.id).slice(0,6);
   return <main className={styles.page}>
     <BrowseNavigation listPath="/products/layout-compositions" storageKey="layouts-browse" returnLabel="返回布局参考" fallbackHref={themeHref}
+      browseEntries={catalog.map(entry => ({ href: detailHref(entry), title: entry.name, category: entry.category, theme: entry.subcategory_slug, search: [`${entry.id} ${entry.name} ${entry.category} ${categoryLabel(entry.category)} ${entry.subcategory}`] }))}
       currentHref={detailHref(item)} entries={group.map(entry => ({ href:detailHref(entry), title:entry.name }))} />
     <header className={styles.heading}>
       <h1>{item.name}</h1>

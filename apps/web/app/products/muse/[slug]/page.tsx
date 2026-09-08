@@ -40,7 +40,14 @@ export default async function MuseDetailPage({ params }: PageProps) {
   const post = getPostBySlug(slug);
   if (!post) notFound();
 
-  const group = listPosts().filter(entry => !post.category || entry.category === post.category);
+  const posts = listPosts();
+  const group = posts.filter(entry => !post.category || entry.category === post.category);
+  const browseEntries = posts.map(entry => ({
+    href: `/products/muse/${entry.slug}`,
+    title: entry.title,
+    category: entry.category ?? '未分类',
+    search: [entry.title, entry.creatorName ?? '', [entry.category, ...entry.industries, ...entry.styles].filter(Boolean).join(' '), categoryLabel(entry.category ?? '未分类')],
+  }));
 
   const media = post.media
     .filter((m) => m.src)
@@ -64,6 +71,7 @@ export default async function MuseDetailPage({ params }: PageProps) {
   return (
     <main className={styles.page}>
       <BrowseNavigation listPath="/products/muse" storageKey="muse-return" returnLabel="返回灵感集" fallbackHref={listHref}
+        browseEntries={browseEntries}
         currentHref={`/products/muse/${post.slug}`}
         entries={group.map(entry => ({ href:`/products/muse/${entry.slug}`, title:entry.title }))} />
       <header className={styles.heading}>

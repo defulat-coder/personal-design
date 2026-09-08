@@ -48,7 +48,7 @@ export function CollectionSearch({ value, onChange, placeholder, label }: {
       <Search size={18} strokeWidth={1.6} aria-hidden /><span className={styles.query}>{value || '搜索'}</span>
       {value ? <span className={styles.dot} aria-hidden /> : <kbd className={styles.shortcut} aria-hidden>/</kbd>}
     </button>
-    <form id={panelId} hidden={!open} role="search" aria-label={label} className={styles.panel} onSubmit={event => { event.preventDefault(); close(true); }}
+    <form id={panelId} inert={!open} aria-hidden={!open} role="search" aria-label={label} className={styles.panel} onSubmit={event => { event.preventDefault(); close(true); }}
       onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing) return;
         event.preventDefault();

@@ -14,15 +14,38 @@ export function MotionVideo({ active = true, src, onPause, ...props }: Props) {
     let visible = false;
     let eligible = false;
     let manualPause = false;
+    let manualPlay = false;
+    let automaticPlayPending = false;
+    let automaticPausePending = false;
     let disposed = false;
-    const update = () => {
-      eligible = active && visible && !document.hidden && !reduce.matches;
-      if (eligible && !manualPause) {
-        void video.play().then(() => { if (disposed || !eligible) video.pause(); }).catch(() => {});
-      } else if (!eligible) video.pause();
+    const pauseAutomatically = () => {
+      if (video.paused) return;
+      automaticPausePending = true;
+      video.pause();
     };
-    const pause = () => { if (eligible && props.controls) manualPause = true; };
-    const play = () => { manualPause = false; };
+    const update = () => {
+      eligible = active && visible && !document.hidden;
+      if (!eligible || (reduce.matches && !manualPlay)) {
+        pauseAutomatically();
+      } else if (!manualPause && video.paused && !automaticPlayPending) {
+        automaticPlayPending = true;
+        void video.play().then(() => {
+          if (disposed || !eligible || (reduce.matches && !manualPlay)) pauseAutomatically();
+        }).catch(() => {}).finally(() => { automaticPlayPending = false; });
+      }
+    };
+    const pause = () => {
+      if (automaticPausePending) { automaticPausePending = false; return; }
+      if (props.controls) { manualPause = true; manualPlay = false; }
+    };
+    const play = () => {
+      // Native play controls are an explicit choice, even with reduced motion.
+      // Keep that choice through buffering/canplay without treating our own
+      // automatic play() calls as user input.
+      if (!automaticPlayPending && props.controls) { manualPlay = true; manualPause = false; }
+      automaticPlayPending = false;
+      if (!eligible) pauseAutomatically();
+    };
     const near = new IntersectionObserver(([entry]) => {
       if (entry?.isIntersecting && src && video.getAttribute('src') !== src) {
         video.src = src;

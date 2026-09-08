@@ -1,0 +1,270 @@
+{
+  "date": "2026-09-08",
+  "viewport": "1440×900,1280×900,800×900,390×844",
+  "checks": [
+    {
+      "name": "keyboard search opens instantly",
+      "passed": true,
+      "details": {
+        "duration": "0s",
+        "focus": "INPUT"
+      }
+    },
+    {
+      "name": "Escape retains query",
+      "passed": true,
+      "details": "true"
+    },
+    {
+      "name": "filtered next is second result",
+      "passed": false,
+      "details": "query button → realistic button → multi-action button",
+      "supersededBy": 4,
+      "reason": "先于客户端导航提交采样"
+    },
+    {
+      "name": "filtered return restores URL and focus",
+      "passed": true,
+      "details": "button query and originating card focus"
+    },
+    {
+      "name": "filtered next is second result (settled navigation)",
+      "passed": true,
+      "details": "verified after destination heading mounted; earlier sample preceded navigation"
+    },
+    {
+      "name": "empty search preserves query",
+      "passed": true,
+      "details": "0 件灵感"
+    },
+    {
+      "name": "clear query retains category",
+      "passed": true,
+      "details": "Motion category remains"
+    },
+    {
+      "name": "Tab leaving search closes it",
+      "passed": true,
+      "details": "focus moves to categories"
+    },
+    {
+      "name": "layout filtered next follows query",
+      "passed": true,
+      "details": "黄金 query"
+    },
+    {
+      "name": "keyboard lightbox instant and focus",
+      "passed": true,
+      "details": "DOM check; role locator evaluation unavailable"
+    },
+    {
+      "name": "Tab remains in lightbox",
+      "passed": true,
+      "details": "focus containment"
+    },
+    {
+      "name": "Escape restores image focus",
+      "passed": true,
+      "details": "image source button"
+    },
+    {
+      "name": "layout return preserves search",
+      "passed": true,
+      "details": "q=黄金"
+    },
+    {
+      "name": "missing layout retains usable detail",
+      "passed": true,
+      "details": "117 missing image"
+    },
+    {
+      "name": "theme deep link filters",
+      "passed": true,
+      "details": "格式塔与组群 · 12 条图鉴"
+    },
+    {
+      "name": "invalid filters normalize",
+      "passed": true,
+      "details": "unknown category/theme -> all350"
+    },
+    {
+      "name": "automatic append",
+      "passed": true,
+      "details": {
+        "initial": 24,
+        "visibleVideos": [
+          {
+            "muted": true,
+            "paused": true,
+            "ready": 0
+          },
+          {
+            "muted": true,
+            "paused": true,
+            "ready": 0
+          },
+          {
+            "muted": true,
+            "paused": true,
+            "ready": 0
+          },
+          {
+            "muted": true,
+            "paused": true,
+            "ready": 0
+          },
+          {
+            "muted": true,
+            "paused": true,
+            "ready": 0
+          },
+          {
+            "muted": true,
+            "paused": true,
+            "ready": 0
+          },
+          {
+            "muted": true,
+            "paused": true,
+            "ready": 0
+          },
+          {
+            "muted": true,
+            "paused": true,
+            "ready": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "offscreen video pauses",
+      "passed": true,
+      "details": "scrolled away"
+    },
+    {
+      "name": "deep return restores loaded rows and scroll",
+      "passed": false,
+      "details": {
+        "count": 48,
+        "y": 1481
+      },
+      "supersededBy": 22,
+      "reason": "定位器点击先滚动目标；改用真实坐标点击记录点击前位置"
+    },
+    {
+      "name": "native video can be paused",
+      "passed": false,
+      "details": "Space on focused native video",
+      "supersededBy": 25,
+      "reason": "Space未触发原生暂停，改用原生暂停按钮"
+    },
+    {
+      "name": "reduced motion pauses automatic playback",
+      "passed": true,
+      "details": "preference change applied live"
+    },
+    {
+      "name": "deep return restores loaded rows and scroll (settled)",
+      "passed": false,
+      "details": {
+        "shown": 48,
+        "y": 1334
+      },
+      "supersededBy": 22,
+      "reason": "同上"
+    },
+    {
+      "name": "deep return with pointer click (no locator scroll)",
+      "passed": true,
+      "details": {
+        "expected": 1334,
+        "actual": 1334
+      }
+    },
+    {
+      "name": "carousel keyboard reaches last and updates source",
+      "passed": true,
+      "details": "End →4/4, last disabled"
+    },
+    {
+      "name": "lightbox cycles images without leaving detail",
+      "passed": true,
+      "details": "4→1 within lightbox"
+    },
+    {
+      "name": "原生视频手动暂停保持",
+      "passed": true,
+      "details": "点击原生暂停后保持暂停"
+    },
+    {
+      "name": "宽屏首页无多余翻页控件",
+      "passed": true,
+      "details": "1440px两产品完整显示"
+    },
+    {
+      "name": "首页键盘溢出浏览即时",
+      "passed": true,
+      "details": "800px出现控制，右方向键立即滚动"
+    },
+    {
+      "name": "首页拖动不误导航",
+      "passed": true,
+      "details": "从214px拖回起点，仍在首页"
+    },
+    {
+      "name": "缩略图失败保留入口",
+      "passed": true,
+      "details": "网络拦截001缩略图，卡片链接仍保留"
+    },
+    {
+      "name": "高清图失败可重试",
+      "passed": true,
+      "details": "网络拦截原图，显示预览和重新加载"
+    },
+    {
+      "name": "高清图重试恢复",
+      "passed": true,
+      "details": "解除拦截并重新加载成功"
+    },
+    {
+      "name": "小屏既有详情无横向溢出",
+      "passed": true,
+      "details": "390px基础回归"
+    },
+    {
+      "name": "404恢复入口",
+      "passed": true,
+      "details": "不存在地址提供单一首页出口"
+    },
+    {
+      "name": "真实错误边界重试恢复",
+      "passed": true,
+      "details": "临时客户端throw进入根error边界；重试恢复且保留查询"
+    },
+    {
+      "name": "Enter收起搜索保留查询",
+      "passed": true,
+      "details": "输入并Enter后保留结果"
+    },
+    {
+      "name": "外部点击收起搜索",
+      "passed": true,
+      "details": "点击标题空白区域"
+    },
+    {
+      "name": "单图详情直接放大",
+      "passed": true,
+      "details": "作者、分类、查看原作在媒体前，无空说明占位"
+    },
+    {
+      "name": "灯箱加载失败保留重试",
+      "passed": true,
+      "details": "拦截灯箱原图；缩略图及重试可见"
+    },
+    {
+      "name": "灯箱重试恢复原图",
+      "passed": true,
+      "details": "解除拦截后点击灯箱内重试"
+    }
+  ]
+}

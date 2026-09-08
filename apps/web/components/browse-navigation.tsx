@@ -6,10 +6,10 @@ import { useSearchParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button, buttonClassName } from './button';
 import { DetailKeyboardNav } from './detail-tools';
-import { resolveBrowseContext, type BrowseEntry } from '@/lib/browse-context';
+import { browseHref, resolveBrowseContext, resolveUrlBrowseContext, type BrowseEntry, type SearchableBrowseEntry } from '@/lib/browse-context';
 import styles from './browse-navigation.module.css';
 
-type Props = { listPath:string; storageKey:string; returnLabel:string; fallbackHref:string; currentHref:string; entries:BrowseEntry[] };
+type Props = { listPath:string; storageKey:string; returnLabel:string; fallbackHref:string; currentHref:string; entries:BrowseEntry[]; browseEntries:SearchableBrowseEntry[] };
 const subscribe = () => () => {};
 
 export function BrowseNavigation(props: Props) {
@@ -19,7 +19,9 @@ export function BrowseNavigation(props: Props) {
 function ContextNavigation(props: Props) {
   const params = useSearchParams();
   const raw = useSyncExternalStore(subscribe, () => { try { return sessionStorage.getItem(props.storageKey); } catch { return null; } }, () => null);
-  const context = useMemo(() => params.get('browse') === '1' ? resolveBrowseContext(raw, props.listPath, props.currentHref) : null, [raw, props.listPath, props.currentHref, params]);
+  const context = useMemo(() => params.get('browse') === '1'
+    ? resolveBrowseContext(raw, props.listPath, props.currentHref)
+    : resolveUrlBrowseContext(params.toString(), props.listPath, props.currentHref, props.browseEntries), [raw, props.listPath, props.currentHref, props.browseEntries, params]);
   return <Navigation {...props} fallbackHref={context?.href ?? props.fallbackHref} entries={context?.entries ?? props.entries} fromList={!!context} />;
 }
 
@@ -27,7 +29,7 @@ function Navigation({ returnLabel, fallbackHref, currentHref, entries, listPath,
   const index = entries.findIndex(entry => entry.href === currentHref);
   const prev = entries[index - 1];
   const next = entries[index + 1];
-  const href = (entry: BrowseEntry) => `${entry.href}${fromList ? '?browse=1' : ''}`;
+  const href = (entry: BrowseEntry) => fromList ? browseHref(entry.href, fallbackHref) : entry.href;
   return <>
     <nav className={styles.navigation} aria-label="作品导航">
       <Link href={fallbackHref} scroll={false} className={buttonClassName({ variant:'ghost' })}><ArrowLeft size={16} aria-hidden />{returnLabel}</Link>

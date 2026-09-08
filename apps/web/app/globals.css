@@ -85,3 +85,11 @@ input, textarea { caret-color: var(--color-ink); }
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }
 @media (forced-colors: active) { :focus-visible { outline-color: Highlight; } }
+
+/* Shared input contract: keyboard operations complete without visual delay. */
+html[data-input='keyboard'] *, html[data-input='keyboard'] *::before, html[data-input='keyboard'] *::after {
+  transition: none !important;
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  scroll-behavior: auto !important;
+}

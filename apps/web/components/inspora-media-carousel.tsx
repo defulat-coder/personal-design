@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from
 import { ArrowLeft, ArrowRight, ArrowUpRight, RotateCcw } from 'lucide-react';
 import { Button, buttonClassName } from './button';
 import styles from './inspora-media-carousel.module.css';
+import { instantMotion } from '@/lib/motion';
 import { MotionVideo } from './motion-video';
 import { LightboxProvider, useLightbox } from './lifeline/lightbox';
 
@@ -30,7 +31,7 @@ function Carousel({ media }: { media: CarouselMedia[] }) {
   const move = (index: number) => {
     const track = trackRef.current;
     if (!track) return;
-    track.scrollTo({ left: Math.max(0, Math.min(media.length - 1, index)) * track.clientWidth, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    track.scrollTo({ left: Math.max(0, Math.min(media.length - 1, index)) * track.clientWidth, behavior: instantMotion() ? 'instant' : 'smooth' });
   };
   useEffect(() => {
     const track = trackRef.current;
@@ -109,9 +110,9 @@ function MediaSlide({ item, active, index, total, siblings }: { item:CarouselMed
     )}
     {item.type === 'image' ? <button className={styles.zoomButton} aria-label={`放大查看 ${item.alt}`} onClick={(event) => {
       const images = siblings.filter(image => image.type === 'image');
-      lightbox?.open({src:item.src, thumb:item.poster ?? item.src, alt:item.alt}, {
+      lightbox?.open({src:item.src, thumb:item.poster ?? item.src, alt:item.alt, width:item.width ?? undefined, height:item.height ?? undefined}, {
         sourceEl:event.currentTarget, rect:event.currentTarget.getBoundingClientRect(),
-        siblings:images.map(image => ({src:image.src, thumb:image.poster ?? image.src, alt:image.alt})), index:images.findIndex(image => image.id === item.id),
+        siblings:images.map(image => ({src:image.src, thumb:image.poster ?? image.src, alt:image.alt, width:image.width ?? undefined, height:image.height ?? undefined})), index:images.findIndex(image => image.id === item.id),
       });
     }} /> : null}
     {status !== 'ready' && active ? <div className={status === 'error' ? styles.message : styles.loading} role="status">

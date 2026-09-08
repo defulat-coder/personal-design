@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { resolveBrowseContext } from './browse-context.ts';
+import { browseHref, browseMemoryKey, resolveBrowseContext, resolveUrlBrowseContext } from './browse-context.ts';
 
 const path = '/products/muse';
 const entries = [
@@ -23,4 +23,49 @@ test('ignores another product or malformed saved data', () => {
 test('supports layout return records and excludes invalid destinations', () => {
   const raw = JSON.stringify({ url: path, entries: [null, { href: 'https://example.com', title: 'Elsewhere' }, ...entries] });
   assert.deepEqual(resolveBrowseContext(raw, path, entries[1].href), { href: path, entries });
+});
+
+const searchable = [
+  { ...entries[0], category: 'Motion', theme: 'buttons', search: ['First motion', 'Alice', 'Button interaction', '动效'] },
+  { ...entries[1], category: 'Motion', theme: 'cards', search: ['Second motion', 'Bob', 'Card interaction', '动效'] },
+  { href: `${path}/third`, title: 'Third button', category: 'Product', theme: 'buttons', search: ['Third button', 'Alice', '产品设计'] },
+];
+const resolveLink = (href) => {
+  const [pathname, query] = href.split('?');
+  return resolveUrlBrowseContext(query, path, pathname, searchable);
+};
+
+test('a copied or new-tab link preserves filters without a click or storage', () => {
+  const href = browseHref(entries[0].href, `${path}?cat=Motion&q=BUTTON`);
+  const resolved = resolveLink(href);
+  assert.equal(resolved.href, `${path}?cat=Motion&q=BUTTON`);
+  assert.deepEqual(resolved.entries.map(entry => entry.href), [entries[0].href]);
+});
+
+test('an older detail URL keeps its own result order after another browsing trail', () => {
+  const oldLink = browseHref(entries[0].href, `${path}?q=button`);
+  const newLink = browseHref(entries[0].href, path);
+  assert.deepEqual(resolveLink(newLink).entries.map(entry => entry.href), searchable.map(entry => entry.href));
+  assert.deepEqual(resolveLink(oldLink).entries.map(entry => entry.href), [entries[0].href, `${path}/third`]);
+  const nextLink = browseHref(`${path}/third`, resolveLink(oldLink).href);
+  assert.equal(resolveLink(nextLink).href, `${path}?q=button`);
+});
+
+test('theme/category combinations and Chinese or author queries preserve matching order', () => {
+  assert.deepEqual(resolveLink(browseHref(entries[0].href, `${path}?cat=Motion&theme=buttons`)).entries.map(entry => entry.href), [entries[0].href]);
+  assert.equal(resolveLink(browseHref(entries[0].href, `${path}?q=动效`)).entries.length, 2);
+  assert.equal(resolveLink(browseHref(entries[0].href, `${path}?q=alice`)).entries.length, 2);
+  assert.equal(resolveLink(browseHref(entries[0].href, `${path}?cat=missing&theme=missing`)).href, path);
+});
+
+test('direct details and inconsistent filtered links do not create unrelated trails', () => {
+  assert.equal(resolveUrlBrowseContext('', path, entries[0].href, searchable), null);
+  assert.equal(resolveUrlBrowseContext('browse=1', path, entries[0].href, searchable), null);
+  assert.equal(resolveLink(browseHref(entries[0].href, `${path}?q=card`)), null);
+});
+
+test('return positions use independent filter memories with stable parameter ordering', () => {
+  assert.equal(browseMemoryKey('muse-return', `${path}?q=button&cat=Motion`), browseMemoryKey('muse-return', `${path}?cat=Motion&q=button`));
+  assert.notEqual(browseMemoryKey('muse-return', `${path}?q=button`), browseMemoryKey('muse-return', path));
+  assert.equal(browseHref(entries[0].href, `${path}?q=A%26B&unused=1`), `${entries[0].href}?browse=2&q=A%26B`);
 });

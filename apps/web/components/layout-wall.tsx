@@ -2,10 +2,11 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef, type PointerEvent } from 'react';
+import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowUpRight } from 'lucide-react';
 import { categoryLabel } from '@/lib/category-label';
+import { browseHref, browseMemoryKey } from '@/lib/browse-context';
 import { PageHeading } from './page-heading';
 import { CollectionSearch } from './collection-search';
 import { Button } from './button';
@@ -18,8 +19,17 @@ const listPath = '/products/layout-compositions';
 export function LayoutWall({ categories, items }: LayoutWallProps) {
   const params = useSearchParams();
   const router = useRouter();
-  const active = params.get('cat') || '全部';
-  const theme = params.get('theme') || '';
+  const requestedCat = params.get('cat') || '全部';
+  const active = categories.some(category => category.name === requestedCat) ? requestedCat : '全部';
+  const requestedTheme = params.get('theme') || '';
+  const theme = items.some(item => item.themeSlug === requestedTheme && (active === '全部' || item.category === active)) ? requestedTheme : '';
+  useEffect(() => {
+    if (requestedCat === active && requestedTheme === theme) return;
+    const next = new URLSearchParams(params.toString());
+    if (active === '全部') next.delete('cat');
+    if (!theme) next.delete('theme');
+    window.history.replaceState(null, '', `${listPath}${next.size ? `?${next}` : ''}`);
+  }, [requestedCat, active, requestedTheme, theme, params]);
   const query = params.get('q') || '';
   const normalized = query.trim().toLocaleLowerCase();
   const categoryItems = active === '全部' ? items : items.filter((item) => item.category === active);
@@ -34,10 +44,11 @@ export function LayoutWall({ categories, items }: LayoutWallProps) {
   useEffect(() => {
     let frame = 0;
     try {
-      const raw = sessionStorage.getItem('layouts-browse');
+      const memoryKey = browseMemoryKey('layouts-browse', location.pathname + location.search);
+      const raw = sessionStorage.getItem(memoryKey) ?? sessionStorage.getItem('layouts-browse');
       if (!raw) return;
       const saved = JSON.parse(raw) as { url: string; y: number; id: string };
-      if (saved.url !== location.pathname + location.search) return;
+      if (typeof saved.url !== 'string' || browseMemoryKey('layouts-browse', saved.url) !== memoryKey) return;
       frame = requestAnimationFrame(() => {
         document.getElementById(`layout-${saved.id}`)?.focus({ preventScroll: true });
         window.scrollTo({ top: saved.y, behavior: 'instant' });
@@ -53,7 +64,7 @@ export function LayoutWall({ categories, items }: LayoutWallProps) {
       <CategoryTabs categories={categories} active={active} onSelect={(name) => update({ cat: name === '全部' ? '' : name, theme: '' })} />
       <div className={hasFilters ? styles.results : styles.srOnly}><p role="status">{theme ? `${themeName ?? '主题筛选'} · ` : ''}{filtered.length} 条图鉴</p>{hasFilters && <Button variant="ghost" onClick={() => router.replace(listPath, { scroll: false })}>清除筛选</Button>}</div>
       {filtered.length ? <div className={styles.grid}>
-        {filtered.map((item) => <Link key={item.id} id={`layout-${item.id}`} href={`${listPath}/${item.id}?browse=1`} className={styles.card} aria-label={`${item.id} ${item.name}${!item.thumb ? '，暂缺图片' : ''}`} onClick={() => { try { sessionStorage.setItem('layouts-browse', JSON.stringify({ url: location.pathname + location.search, y: window.scrollY, id: item.id, entries: filtered.map(entry => ({ href: `${listPath}/${entry.id}`, title: entry.name })) })); } catch { /* Optional return memory. */ } }}>
+        {filtered.map((item) => <Link key={item.id} id={`layout-${item.id}`} href={browseHref(`${listPath}/${item.id}`, `${listPath}?${params}`)} className={styles.card} aria-label={`${item.id} ${item.name}${!item.thumb ? '，暂缺图片' : ''}`} onClick={() => { try { const url = location.pathname + location.search; sessionStorage.setItem(browseMemoryKey('layouts-browse', url), JSON.stringify({ url, y: window.scrollY, id: item.id })); } catch { /* Optional return memory. */ } }}>
           <LayoutPreview thumb={item.thumb} />
           <span className={styles.caption}><strong>{item.name}</strong><ArrowUpRight size={18} aria-hidden /></span>
         </Link>)}
@@ -65,6 +76,7 @@ export function LayoutWall({ categories, items }: LayoutWallProps) {
 /** Keep the link and grid still; only the image inside its frame follows the pointer. */
 function LayoutPreview({ thumb }: { thumb:string | null }) {
   const frame = useRef<HTMLSpanElement>(null);
+  const [failed, setFailed] = useState(false);
   const delay = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const paint = useRef(0);
   const pointer = useRef({ x:0, y:0 });
@@ -91,13 +103,13 @@ function LayoutPreview({ thumb }: { thumb:string | null }) {
   };
   return <span ref={frame} className={styles.media}
     onPointerEnter={event => {
-      if (!thumb || event.pointerType !== 'mouse' || !matchMedia('(hover:hover) and (pointer:fine)').matches || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+      if (!thumb || failed || event.pointerType !== 'mouse' || !matchMedia('(hover:hover) and (pointer:fine)').matches || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
       follow(event);
       clearTimeout(delay.current);
       delay.current = setTimeout(() => { if (frame.current) frame.current.dataset.zoom = 'true'; }, 180);
     }}
     onPointerMove={event => { if (event.pointerType === 'mouse' && (delay.current || frame.current?.dataset.zoom)) follow(event); }}
     onPointerLeave={stop} onPointerCancel={stop}>
-    {thumb ? <Image src={thumb} alt="" fill unoptimized className={styles.poster} /> : <span className={styles.missing}><span>图片暂缺</span></span>}
+    {thumb && !failed ? <Image src={thumb} alt="" fill unoptimized className={styles.poster} onError={() => { stop(); setFailed(true); }} /> : <span className={styles.missing}><span>{failed ? '预览暂不可用' : '图片暂缺'}</span></span>}
   </span>;
 }

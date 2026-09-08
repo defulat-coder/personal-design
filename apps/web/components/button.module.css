@@ -17,13 +17,13 @@
   flex-shrink: 0;
   text-align: center;
   cursor: pointer;
-  transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), transform 100ms var(--ease-out);
+  transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), transform 140ms var(--ease-out);
 }
 .button:hover:not(:disabled):not([aria-disabled='true']) { background: var(--color-subtle); border-color: var(--color-border-hover); }
-.button:active:not(:disabled):not([aria-disabled='true']) { transform: translateY(1px); }
+.button:active:not(:disabled):not([aria-disabled='true']) { transform: scale(.98); transition-duration:100ms; }
 .button:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
 .default { background: var(--color-paper); }
-.primary { background: var(--color-ink); border-color: transparent; color: var(--color-paper); border-radius: var(--radius-control); }
+.primary { background: var(--color-ink); border-color: transparent; color: var(--color-paper); border-radius: var(--radius-pill); }
 .primary:hover:not(:disabled):not([aria-disabled='true']) { background: var(--color-accent); border-color: transparent; }
 .ghost { border-color: transparent; }
 .ghost:hover:not(:disabled):not([aria-disabled='true']) { border-color: transparent; }
@@ -36,3 +36,5 @@
 
 .button svg { flex-shrink: 0; }
 .button[aria-pressed="true"] { background:var(--color-ink); color:var(--color-paper); border-color:var(--color-ink); }
+
+:global(html[data-input='keyboard']) .button:active { transform:none; }
