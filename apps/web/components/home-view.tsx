@@ -84,7 +84,7 @@ export function HomeView({ products, layoutPreviews = [], musePreviews = [] }: {
               const previews = product.slug === 'layout-compositions' ? layoutPreviews : product.slug === 'muse' ? musePreviews : [];
               const isLayout = product.slug === 'layout-compositions';
               return <li key={product.slug} className={styles.entry} style={{ '--order': index } as CSSProperties}>
-                <time dateTime={product.date} className={styles.date}>{product.date.replaceAll('-', '.')}</time>
+                <time dateTime={product.date} className={styles.date}>{product.date.replaceAll('-', '.')}{product.dateLabel && ` · ${product.dateLabel}`}</time>
                 <div className={styles.rule} aria-hidden="true"><span className={styles.node} /></div>
                 <Link href={product.href} className={styles.project} aria-label={`进入${product.name}`}>
                   <div className={styles.title}><h2>{product.name}</h2><ArrowUpRight size={20} strokeWidth={1.5} aria-hidden="true" /></div>
@@ -92,7 +92,7 @@ export function HomeView({ products, layoutPreviews = [], musePreviews = [] }: {
                   <div className={`${styles.preview} ${isLayout ? styles.sheets : previews[0]?.videoSrc ? styles.motionPreview : styles.frames}`}>
                     {previews[0]?.videoSrc ? <MotionVideo src={previews[0].videoSrc} poster={previews[0].src} aria-label={previews[0].alt} /> : (previews.length ? previews.slice(0, 3) : [{ src: product.cover, alt: `${product.name}内容预览` }]).map((preview, i) => <PreviewImage key={preview.src} {...preview} priority={index === 0 && i === 0} />)}
                   </div>
-                  <span className={styles.enter}>浏览作品<ArrowRight size={15} strokeWidth={1.5} aria-hidden="true" /></span>
+                  <span className={styles.enter}>{product.href.startsWith('https://') ? '访问网站' : '浏览作品'}<ArrowRight size={15} strokeWidth={1.5} aria-hidden="true" /></span>
                 </Link>
               </li>;
             })}

@@ -1,9 +1,11 @@
 /**
  * 产品注册表 —— 产品集首页的数据源。
  * 新增产品：在 packages/ 建内容包、在 app/products/<slug>/ 建页面，
- * 然后在这里注册一条。
+ * 然后在这里注册一条。独立部署的作品直接注册线上地址。
  */
-export type LineId = 'muse' | 'layouts';
+import { personalSite } from '@personal-design/personal-sites';
+
+export type LineId = 'muse' | 'layouts' | 'sites';
 
 export interface Product {
   slug: string;
@@ -12,6 +14,8 @@ export interface Product {
   description: string;
   /** 上线日期（ISO），首页时间轴按它排序 */
   date: string;
+  /** 未提供上线日期时，明确标记为收录日期 */
+  dateLabel?: string;
   href: string;
   /** 首页卡片封面图（public 下路径） */
   cover: string;
@@ -22,6 +26,7 @@ export interface Product {
 
 /** 按上线日期升序 */
 export const products: Product[] = [
+  personalSite,
   {
     slug: 'layout-compositions',
     name: '布局参考',

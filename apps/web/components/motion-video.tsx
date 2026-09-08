@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, type VideoHTMLAttributes } from 'react';
 
-type Props = Omit<VideoHTMLAttributes<HTMLVideoElement>, 'src'> & { src: string; active?: boolean };
+type Props = Omit<VideoHTMLAttributes<HTMLVideoElement>, 'src'> & { src: string; active?: boolean; manualControls?: boolean };
 
 /** Real motion previews: load near the viewport, play only while visible. */
-export function MotionVideo({ active = true, src, onPause, ...props }: Props) {
+export function MotionVideo({ active = true, manualControls = false, src, onPause, ...props }: Props) {
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const video = ref.current;
@@ -36,13 +36,13 @@ export function MotionVideo({ active = true, src, onPause, ...props }: Props) {
     };
     const pause = () => {
       if (automaticPausePending) { automaticPausePending = false; return; }
-      if (props.controls) { manualPause = true; manualPlay = false; }
+      if (props.controls || manualControls) { manualPause = true; manualPlay = false; }
     };
     const play = () => {
-      // Native play controls are an explicit choice, even with reduced motion.
+      // Native or custom controls are an explicit choice, even with reduced motion.
       // Keep that choice through buffering/canplay without treating our own
       // automatic play() calls as user input.
-      if (!automaticPlayPending && props.controls) { manualPlay = true; manualPause = false; }
+      if (!automaticPlayPending && (props.controls || manualControls)) { manualPlay = true; manualPause = false; }
       automaticPlayPending = false;
       if (!eligible) pauseAutomatically();
     };
@@ -72,6 +72,6 @@ export function MotionVideo({ active = true, src, onPause, ...props }: Props) {
       video.removeEventListener('play', play);
       video.pause();
     };
-  }, [active, src, props.controls]);
+  }, [active, src, props.controls, manualControls]);
   return <video {...props} ref={ref} data-motion-video muted loop playsInline preload="metadata" onPause={onPause} />;
 }

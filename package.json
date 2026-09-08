@@ -14,6 +14,7 @@
     "lint": "pnpm --filter @personal-design/web lint",
     "typecheck": "pnpm -r typecheck",
     "sync:layouts": "pnpm --filter @personal-design/layout-compositions sync",
+    "sync:personal-sites": "pnpm --filter @personal-design/personal-sites sync",
     "sync:inspora": "pnpm --filter @personal-design/inspora sync"
   },
   "devDependencies": {

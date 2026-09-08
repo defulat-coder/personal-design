@@ -1,0 +1,7 @@
+.heading { margin:0 0 24px; font-size:24px; font-weight:500; line-height:1.35; letter-spacing:0; }
+.video { display:block; width:100%; height:auto; max-height:78dvh; aspect-ratio:16/9; background:var(--color-plate); border-radius:var(--radius-media); }
+.status { margin:12px 0 0; font-size:13px; color:var(--color-ink-soft); line-height:1.75; }
+.status { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+
+.video { cursor:pointer; }
+.video:focus-visible { outline:2px solid var(--color-ink); outline-offset:4px; }

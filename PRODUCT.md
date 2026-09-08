@@ -43,6 +43,7 @@ pnpm monorepo（apps/web 唯一站点 + packages/* 内容数据包），Next.js 
 
 ## Evidence on Hand
 
+- personal-sites 包：第三个作品「个人网站」，首页进入 `/products/personal-sites` 介绍页，展示默认静音自动播放的 36 秒真实页面宣传片与功能简介，不再重复展示页面截图，再通过「打开网站」访问独立部署的 https://default-coder.lovemyrmb.cn/。不迁移原项目的数据服务。未确认首次上线日期，时间轴明确标注收录日期（2026-09-09 用户确认介绍页流程）。
 - layout-compositions 包：按分类与主题组织的排版构图图鉴；本地 WebP 缩略图，高清图按本地可用性优先本地，否则使用上游 CDN；数量以查询 API 为准。
 - inspora 包（对外「灵感集」）：持续增量同步设计灵感；数据库、海报、缩略图与头像本地化，大图与视频按本地文件可用性回退原站媒体；显示数量以查询 API 为准。
 - 无 testimonials、客户、商业数据；不得虚构。
