@@ -4,8 +4,8 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Personal Design · 产品集',
-    template: '%s · Personal Design',
+    default: '作品时间轴',
+    template: '%s · 作品时间轴',
   },
   description: '设计工具与参考产品集。',
 };

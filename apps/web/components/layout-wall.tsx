@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowUpRight } from 'lucide-react';
 import { categoryLabel } from '@/lib/category-label';
 import { browseHref, browseMemoryKey } from '@/lib/browse-context';
-import { PageHeading } from './page-heading';
+import { CollectionToolbar } from './collection-toolbar';
 import { CollectionSearch } from './collection-search';
 import { Button } from './button';
 import { CategoryTabs } from './category-tabs';
@@ -57,11 +57,10 @@ export function LayoutWall({ categories, items }: LayoutWallProps) {
     return () => cancelAnimationFrame(frame);
   }, []);
   return <div className={styles.wall}>
-    <PageHeading title="布局参考" actions={
-      <CollectionSearch value={query} onChange={value => update({ q:value })} placeholder="搜索图鉴" label="搜索图鉴" />
-    } />
     <section className={styles.content} aria-label="图鉴检索与结果">
-      <CategoryTabs categories={categories} active={active} onSelect={(name) => update({ cat: name === '全部' ? '' : name, theme: '' })} />
+      <CollectionToolbar actions={<CollectionSearch value={query} onChange={value => update({ q:value })} placeholder="搜索图鉴" label="搜索图鉴" />}>
+        <CategoryTabs categories={categories} active={active} onSelect={(name) => update({ cat: name === '全部' ? '' : name, theme: '' })} />
+      </CollectionToolbar>
       <div className={hasFilters ? styles.results : styles.srOnly}><p role="status">{theme ? `${themeName ?? '主题筛选'} · ` : ''}{filtered.length} 条图鉴</p>{hasFilters && <Button variant="ghost" onClick={() => router.replace(listPath, { scroll: false })}>清除筛选</Button>}</div>
       {filtered.length ? <div className={styles.grid}>
         {filtered.map((item) => <Link key={item.id} id={`layout-${item.id}`} href={browseHref(`${listPath}/${item.id}`, `${listPath}?${params}`)} className={styles.card} aria-label={`${item.id} ${item.name}${!item.thumb ? '，暂缺图片' : ''}`} onClick={() => { try { const url = location.pathname + location.search; sessionStorage.setItem(browseMemoryKey('layouts-browse', url), JSON.stringify({ url, y: window.scrollY, id: item.id })); } catch { /* Optional return memory. */ } }}>

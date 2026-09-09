@@ -8,7 +8,7 @@ import { categoryLabel } from '@/lib/category-label';
 import { browseHref, browseMemoryKey } from '@/lib/browse-context';
 import { MotionVideo } from './motion-video';
 import { CollectionSearch } from './collection-search';
-import { PageHeading } from './page-heading';
+import { CollectionToolbar } from './collection-toolbar';
 import { Button } from './button';
 import styles from './plate-wall.module.css';
 import { CategoryTabs, useCatParam } from './category-tabs';
@@ -125,10 +125,9 @@ export function PlateWall({ categories, items, searchPlaceholder, batchSize = DE
   const clear = () => window.history.replaceState(null, '', pathname);
   return (
     <section aria-label="灵感浏览">
-      <PageHeading title="灵感集" actions={
-        searchPlaceholder ? <CollectionSearch value={query} onChange={setQuery} placeholder={searchPlaceholder} label="搜索标题、作者或标签" /> : null
-      } />
-      <CategoryTabs categories={categories} active={active} onSelect={select} />
+      <CollectionToolbar actions={searchPlaceholder ? <CollectionSearch value={query} onChange={setQuery} placeholder={searchPlaceholder} label="搜索标题、作者或标签" /> : null}>
+        <CategoryTabs categories={categories} active={active} onSelect={select} />
+      </CollectionToolbar>
       <div className={query || active !== '全部' ? styles.results : styles.srOnly}>
         <p role="status">{filtered.length} 件灵感</p>
         {query || active !== '全部' ? <Button variant="ghost" onClick={clear}>清除筛选</Button> : null}

@@ -49,7 +49,6 @@ export function HomeView({ products, layoutPreviews = [], musePreviews = [] }: {
 
   return <main className={styles.home}>
     <header className={styles.intro}>
-      <h1>作品时间轴</h1>
       <span className={styles.period}>{ordered[0]?.date.slice(0, 4) ?? new Date().getFullYear()}<span aria-hidden="true">—</span>持续更新</span>
     </header>
 
@@ -93,7 +92,6 @@ export function HomeView({ products, layoutPreviews = [], musePreviews = [] }: {
                   <div className={`${styles.preview} ${isLayout ? styles.sheets : previews[0]?.videoSrc ? styles.motionPreview : styles.frames}`}>
                     {product.slug === 'personal-sites' ? <SiteReceiptPreview /> : previews[0]?.videoSrc ? <MotionVideo src={previews[0].videoSrc} poster={previews[0].src} aria-label={previews[0].alt} /> : (previews.length ? previews.slice(0, 3) : [{ src: product.cover, alt: `${product.name}内容预览` }]).map((preview, i) => <PreviewImage key={preview.src} {...preview} priority={index === 0 && i === 0} />)}
                   </div>
-                  <span className={styles.enter}>{product.href.startsWith('https://') ? '访问网站' : '浏览作品'}<ArrowRight size={15} strokeWidth={1.5} aria-hidden="true" /></span>
                 </Link>
               </li>;
             })}

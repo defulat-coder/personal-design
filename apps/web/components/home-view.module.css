@@ -1,5 +1,5 @@
 .home { --column:380px; --gutter:48px; min-height:calc(100dvh - 88px); display:flex; flex-direction:column; padding-top:56px; color:var(--color-ink); }
-.intro { margin:0 var(--gutter); display:flex; align-items:center; justify-content:space-between; gap:24px; }
+.intro { margin:0 var(--gutter); display:flex; align-items:center; justify-content:flex-end; gap:24px; }
 .intro h1 { margin:0; font-size:28px; font-weight:500; line-height:1.35; letter-spacing:0; }
 .period { display:flex; align-items:center; gap:16px; color:var(--color-ink-soft); font-size:12px; font-variant-numeric:tabular-nums; }
 .timeline { position:relative; margin-top:94px; }
@@ -28,12 +28,8 @@
 .sheets .imageFrame { width:31%; height:136px; flex-shrink:0; transform:translateY(7px) rotate(-7deg); transition:transform 200ms var(--ease-out); }
 .sheets .imageFrame:nth-child(2) { transform:translateY(-5px); z-index:1; }
 .sheets .imageFrame:nth-child(3) { transform:translateY(7px) rotate(7deg); }
-.enter { display:flex; align-items:center; gap:9px; width:fit-content; margin-top:20px; min-height:24px; font-size:12px; color:var(--color-ink-soft); }
-.enter svg { transition:transform 140ms var(--ease-out); }
 .project:focus-visible .title svg { transform:translate(2px,-2px); color:var(--color-ink); }
 .project:focus-visible .title h2 { color:var(--color-ink); }
-.project:focus-visible .enter { color:var(--color-ink); }
-.project:focus-visible .enter svg { transform:translateX(3px); }
 .project:focus-visible .sheets .imageFrame { transform:translateY(0) rotate(0); }
 .project:focus-visible .frames .imageFrame:nth-child(2) { opacity:1; transform:translateX(0); }
 .future { width:190px; }
@@ -48,13 +44,11 @@
 @media(min-width:1440px) { .home { --column:420px; } .viewport { padding-left:max(152px,calc((100vw - 1136px)/2)); scroll-padding-left:max(152px,calc((100vw - 1136px)/2)); } .preview { height:220px; } .sheets .imageFrame { height:158px; } }
 @media(max-width:1100px) { .home { --gutter:24px; --column:340px; } .viewport { padding-left:120px; scroll-padding-left:120px; } .project { margin-right:40px; } }
 @media(max-width:640px) { .home { --gutter:20px; --column:290px; min-height:calc(100dvh - 72px); padding-top:34px; } .intro { align-items:flex-start; } .intro h1 { font-size:22px; } .period { gap:8px; padding-top:5px; } .timeline { margin-top:68px; } .viewport { padding-left:20px; scroll-padding-left:20px; } .project { margin-right:36px; } .title h2 { font-size:22px; } .preview { height:174px; } .sheets { padding:16px 10px; gap:6px; } .sheets .imageFrame { height:122px; } .tagline { font-size:13px; margin-bottom:24px; } .future { width:170px; } .footer { padding-top:32px; gap:12px; } .hint { display:none; } .controls { gap:4px; } }
-@media(prefers-reduced-motion:reduce) { .home *, .home *::before, .home *::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; } .project:is(:hover,:focus-visible) .title svg, .project:is(:hover,:focus-visible) .enter svg { transform:none; } }
+@media(prefers-reduced-motion:reduce) { .home *, .home *::before, .home *::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; } .project:is(:hover,:focus-visible) .title svg { transform:none; } }
 
 @media(hover:hover) and (pointer:fine) {
 .project:hover .title svg { transform:translate(2px,-2px); color:var(--color-ink); }
 .project:hover .title h2 { color:var(--color-ink); }
-.project:hover .enter { color:var(--color-ink); }
-.project:hover .enter svg { transform:translateX(3px); }
 .project:hover .sheets .imageFrame { transform:translateY(0) rotate(0); }
 .project:hover .frames .imageFrame:nth-child(2) { opacity:1; transform:translateX(0); }
 }

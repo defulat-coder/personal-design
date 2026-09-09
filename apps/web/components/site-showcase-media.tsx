@@ -13,8 +13,7 @@ export function SiteShowcaseMedia({ videoSrc, poster }: { videoSrc: string; post
   };
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
-  return <section aria-labelledby="promo-title">
-    <h2 id="promo-title" className={styles.heading}>网站宣传片</h2>
+  return <section aria-label="个人网站动态展示">
     <MotionVideo key={attempt} className={styles.video} src={videoSrc} poster={poster} width={1920} height={1080}
       manualControls disablePictureInPicture disableRemotePlayback role="button" tabIndex={0}
       aria-label={`${playing ? '暂停' : '播放'}个人网站宣传片`}

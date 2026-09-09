@@ -1,7 +1,10 @@
+import type { Metadata } from 'next';
 import { catalog, categories, hasImage, thumbnailUrl } from '@personal-design/layout-compositions';
 import { listPosts } from '@personal-design/inspora';
 import { products } from '@/lib/products';
 import { HomeView } from '@/components/home-view';
+
+export const metadata: Metadata = { title: { absolute: '作品时间轴' } };
 
 export default function HomePage() {
   const layoutPreviews = categories.slice(0, 3).flatMap(category => {
