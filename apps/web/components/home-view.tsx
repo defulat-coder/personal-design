@@ -8,6 +8,7 @@ import { instantMotion } from '@/lib/motion';
 import type { Product } from '@/lib/products';
 import { buttonClassName } from './button';
 import { MotionVideo } from './motion-video';
+import { SiteReceiptPreview } from './site-receipt-preview';
 import styles from './home-view.module.css';
 
 type Preview = { src: string; alt: string; videoSrc?: string };
@@ -90,7 +91,7 @@ export function HomeView({ products, layoutPreviews = [], musePreviews = [] }: {
                   <div className={styles.title}><h2>{product.name}</h2><ArrowUpRight size={20} strokeWidth={1.5} aria-hidden="true" /></div>
                   <p className={styles.tagline}>{product.tagline}</p>
                   <div className={`${styles.preview} ${isLayout ? styles.sheets : previews[0]?.videoSrc ? styles.motionPreview : styles.frames}`}>
-                    {previews[0]?.videoSrc ? <MotionVideo src={previews[0].videoSrc} poster={previews[0].src} aria-label={previews[0].alt} /> : (previews.length ? previews.slice(0, 3) : [{ src: product.cover, alt: `${product.name}内容预览` }]).map((preview, i) => <PreviewImage key={preview.src} {...preview} priority={index === 0 && i === 0} />)}
+                    {product.slug === 'personal-sites' ? <SiteReceiptPreview /> : previews[0]?.videoSrc ? <MotionVideo src={previews[0].videoSrc} poster={previews[0].src} aria-label={previews[0].alt} /> : (previews.length ? previews.slice(0, 3) : [{ src: product.cover, alt: `${product.name}内容预览` }]).map((preview, i) => <PreviewImage key={preview.src} {...preview} priority={index === 0 && i === 0} />)}
                   </div>
                   <span className={styles.enter}>{product.href.startsWith('https://') ? '访问网站' : '浏览作品'}<ArrowRight size={15} strokeWidth={1.5} aria-hidden="true" /></span>
                 </Link>

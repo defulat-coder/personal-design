@@ -20,3 +20,11 @@ export const siteScreenshots = [
   { src: '/personal-sites/curation.webp', title: '每日关注', description: '把值得留下的内容整理为中文摘要与个人判断，方便持续阅读和回看。' },
   { src: '/personal-sites/open-source.webp', title: '开源关注', description: '按主题浏览收藏的开源项目，继续查看中文阅读版、仓库结构与个人判读。' },
 ];
+
+/** Frozen from the original AboutPrint career receipt (2026-09-09). */
+export const careerReceipt = [
+  { company: 'PLUS数字科技', years: '5 年' },
+  { company: '红星美凯龙', years: '4 年' },
+  { company: '喜马拉雅', years: '3 年' },
+  { company: 'PayerMax', years: '至今' },
+];
