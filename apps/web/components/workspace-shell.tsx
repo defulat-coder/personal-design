@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { TaichiAvatar } from './taichi-avatar';
 import { ArrowLeft } from 'lucide-react';
 import { createContext, useContext, useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 import { usePathname } from 'next/navigation';
@@ -45,10 +46,13 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
     <WorkspaceBackContext.Provider value={setBack}><div className={styles.shell}>
       <a href="#workspace-content" className={styles.skip}>跳至内容</a>
       <header className={`${styles.header} ${isHome ? '' : styles.innerHeader}`}>
+        <div className={styles.identity}>
+        {isHome && <TaichiAvatar />}
         {back ? <h1 className={styles.heading}><button type="button" className={styles.brand} onClick={back.onBack} aria-label={back.label} title={back.label}><ArrowLeft className={styles.backIcon} size={18} strokeWidth={1.6} aria-hidden="true" /><span>{title}</span></button></h1> : <Link href="/" className={styles.brand} title={isHome ? undefined : '返回首页'} aria-label={isHome ? '作品时间轴首页' : `${title}，返回首页`}>
           {!isHome && <ArrowLeft className={styles.backIcon} size={18} strokeWidth={1.6} aria-hidden="true" />}
           {isLanding ? <h1>{title}</h1> : <span>{title}</span>}
         </Link>}
+        </div>
         <ThemeToggle />
       </header>
       <div id="workspace-content" tabIndex={-1} className={styles.content}>{children}</div>

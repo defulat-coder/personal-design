@@ -12,6 +12,8 @@ export const personalSite = {
   line: 'sites' as const,
 };
 
+export const timelineAvatarUrl = '/personal-sites/profile-avatar.webp';
+
 export const websiteUrl = 'https://default-coder.lovemyrmb.cn/';
 export const promoUrl = '/personal-sites/promo.mp4';
 export const promoPosterUrl = '/personal-sites/promo-poster.webp';

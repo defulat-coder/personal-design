@@ -17,7 +17,7 @@
 .matchList { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 40px; }
 .matchList button { display:flex; align-items:center; justify-content:space-between; text-align:left; gap:16px; padding:16px 0; border:0; border-bottom:1px solid var(--color-hairline); background:none; color:var(--color-ink); cursor:pointer; }
 .matchList small { display:block; margin-top:4px; font-size:12px; color:var(--color-ink-soft); }
-.reader { margin:12px auto 0; max-width:1160px; outline:none; animation:open-book 480ms cubic-bezier(.23,1,.32,1); }
+.reader { margin:12px auto 0; max-width:1160px; outline:none; }
 .readerHeading { display:flex; justify-content:space-between; align-items:center; margin:0 56px 24px; }
 .readerHeading h2 { font-size:20px; font-weight:500; }
 
@@ -46,8 +46,9 @@
 .pageImage:focus-visible .zoomHint { opacity:1; }
 @media (hover:hover) and (pointer:fine) { .pageImage:hover .zoomHint { opacity:1; } }
 @media (max-width:600px) { .zoomHint { bottom:4px; right:4px; padding:5px; } }
-.pageCount { margin:0; font-size:13px; font-variant-numeric:tabular-nums; }
-.pageCount span { color:var(--color-ink-soft); }
+.readingStatus { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.folio { display:block; flex-shrink:0; padding-top:12px; text-align:center; color:#807868; font-size:11px; line-height:16px; font-variant-numeric:tabular-nums; user-select:none; }
+@media (max-width:600px) { .folio { padding-top:6px; font-size:10px; line-height:14px; } }
 @keyframes turn-forward { to { transform:rotateY(-180deg); } }
 @keyframes turn-backward { to { transform:rotateY(180deg); } }
 @keyframes paper-shade { 0%,100% { opacity:0; } 50% { opacity:.3; } }
@@ -71,3 +72,17 @@
 
 /* Covers belong to the animated homepage preview, never the interactive shelf. */
 .spine > [data-book-cover] { display:none; }
+
+/* The travelling cover replaces its source spine, leaving the shelf slot intact. */
+.library[data-opening="0"] .spine:nth-child(1) { visibility:hidden; }
+.library[data-opening="1"] .spine:nth-child(2) { visibility:hidden; }
+.library[data-opening="2"] .spine:nth-child(3) { visibility:hidden; }
+.library[data-opening="3"] .spine:nth-child(4) { visibility:hidden; }
+.library[data-opening="4"] .spine:nth-child(5) { visibility:hidden; }
+.library[data-opening="5"] .spine:nth-child(6) { visibility:hidden; }
+.library[data-opening="6"] .spine:nth-child(7) { visibility:hidden; }
+.library[data-opening="7"] .spine:nth-child(8) { visibility:hidden; }
+.library[aria-busy="true"] .reader { pointer-events:none; animation:none; }
+
+.library[aria-busy="true"] .left { opacity:0; transform-origin:right center; backface-visibility:hidden; }
+.library[aria-busy="true"] .readerHeading, .library[aria-busy="true"] .pagination { opacity:0; }

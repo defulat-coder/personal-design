@@ -11,6 +11,11 @@ for (const name of ['home', 'news', 'curation', 'open-source']) {
     .webp({ quality: 85 })
     .toFile(new URL(`${name}.webp`, output).pathname);
 }
+// Existing profile portrait from the user's personal website.
+await sharp(new URL('../assets/profile-avatar.png', import.meta.url).pathname)
+  .resize(128, 128)
+  .webp({ quality: 92 })
+  .toFile(new URL('profile-avatar.webp', output).pathname);
 // 宣传片由本包的 Remotion 工程生成；先 render:promo，再同步。
 await copyFile(new URL('../promo/out/promo.mp4', import.meta.url), new URL('promo.mp4', output));
 await sharp(new URL('../promo/out/poster.png', import.meta.url).pathname)
@@ -18,3 +23,7 @@ await sharp(new URL('../promo/out/poster.png', import.meta.url).pathname)
   .webp({ quality: 88 })
   .toFile(new URL('promo-poster.webp', output).pathname);
 await rm(new URL('walkthrough.mp4', output), { force: true });
+
+await rm(new URL('timeline-avatar.webp', output), { force: true });
+
+await rm(new URL('timeline-avatar-full.webp', output), { force: true });
