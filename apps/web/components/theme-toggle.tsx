@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { Moon, Sun } from 'lucide-react';
+import { Button } from './button';
 import styles from './theme-toggle.module.css';
 
 export function ThemeToggle() {
@@ -40,13 +41,13 @@ export function ThemeToggle() {
   };
 
   return (
-    <button type="button" className={styles.toggle} onClick={toggle} title="切换明暗主题">
+    <Button icon variant="ghost" onClick={toggle} title="切换明暗主题">
       <span className={styles.lightLabel}>切换为深色主题</span>
       <span className={styles.darkLabel}>切换为浅色主题</span>
       <span className={styles.icons} aria-hidden="true">
-        <Moon className={styles.moon} size={14.4} strokeWidth={1.8} />
-        <Sun className={styles.sun} size={14.4} strokeWidth={1.8} />
+        <Moon className={styles.moon} size={18} strokeWidth={1.6} />
+        <Sun className={styles.sun} size={18} strokeWidth={1.6} />
       </span>
-    </button>
+    </Button>
   );
 }

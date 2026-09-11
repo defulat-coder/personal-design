@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-07T15:33:10.868258+00:00",
+  "generatedAt": "2026-09-11T14:20:13.847707+00:00",
   "title": "Design System: Personal Design 产品集",
   "extensions": {
     "colorMeta": {
@@ -467,7 +467,18 @@
         "purpose": "时期、轴标签、入口与图例 12px。"
       }
     },
-    "shadows": [],
+    "shadows": [
+      {
+        "name": "bookshelf-binding",
+        "value": "inset 3px 0 5px #fff3,inset -5px 0 6px #0002,4px 1px 5px #0002",
+        "purpose": "仅分类书脊，表达装订厚度。"
+      },
+      {
+        "name": "bookshelf-spread",
+        "value": "0 20px 35px -18px #0006,0 4px 7px #0002",
+        "purpose": "仅布局参考双页画册的书板深度。"
+      }
+    ],
     "motion": [
       {
         "name": "ease-out",
@@ -518,6 +529,21 @@
         "name": "home-preview",
         "value": "650ms cubic-bezier(.16,1,.3,1)",
         "purpose": "图鉴展开及指针跟随；首页真实视频可视静音循环，不显示播放开关；reduced-motion 取消空间过渡和自动播放。"
+      },
+      {
+        "name": "bookshelf-lift",
+        "value": "260ms cubic-bezier(.23,1,.32,1)",
+        "purpose": "指针悬停书脊提起，减少动态效果移除。"
+      },
+      {
+        "name": "bookshelf-open",
+        "value": "480ms cubic-bezier(.23,1,.32,1)",
+        "purpose": "布局参考打开画册；键盘与减少动态效果即时。"
+      },
+      {
+        "name": "bookshelf-leaf",
+        "value": "680ms cubic-bezier(.45,.05,.25,1)",
+        "purpose": "指针或触摸双面书叶沿中缝翻转，期间禁止连续翻动；键盘与减少动态效果即时。"
       }
     ],
     "breakpoints": [
@@ -558,7 +584,7 @@
       "refersTo": "button-default",
       "description": "从共享 Button 提取的 default 变体。",
       "html": "<button class=\"ds-default\">普通按钮</button>",
-      "css": ".ds-default{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:var(--radius-control);background:transparent;color:var(--color-body);font:500 14px/1.35 var(--font-sans);cursor:pointer;transition:background-color 50ms var(--ease-out),border-color 50ms var(--ease-out),color 50ms var(--ease-out),transform 100ms var(--ease-out);background:var(--color-paper);}.ds-default:hover:not(:disabled){background:var(--color-subtle);border-color:var(--color-border-hover);}.ds-default:active:not(:disabled){transform:translateY(1px);}.ds-default:focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}.ds-default:disabled{background:var(--color-subtle);color:var(--color-ink-faint);border-color:transparent;cursor:not-allowed;transform:none;}@media(pointer:coarse){.ds-default{min-height:44px;}}@media(prefers-reduced-motion:reduce){.ds-default{transition:none;}.ds-default:active{transform:none;}}"
+      "css": ".ds-default{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:var(--radius-control);background:transparent;color:var(--color-body);font:500 14px/1.35 var(--font-sans);cursor:pointer;transition:background-color 50ms var(--ease-out),border-color 50ms var(--ease-out),color 50ms var(--ease-out),transform 100ms var(--ease-out);background:var(--color-paper);}.ds-default:hover:not(:disabled){background:var(--color-subtle);border-color:var(--color-border-hover);}.ds-default:active:not(:disabled){transform:translateY(1px);}.ds-default:focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}.ds-default:disabled{background:var(--color-subtle);color:var(--color-ink-faint);border-color:transparent;cursor:not-allowed;transform:none;}@media(pointer:coarse){.ds-default{min-height:44px;}}@media(prefers-reduced-motion:reduce){.ds-default{transition:none;}.ds-default:active{transform:none;}}"
     },
     {
       "name": "Primary Button",
@@ -566,7 +592,7 @@
       "refersTo": "button-primary",
       "description": "从共享 Button 提取的 primary 变体。",
       "html": "<button class=\"ds-primary\">查看原始出处</button>",
-      "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:var(--radius-control);background:transparent;color:var(--color-body);font:500 14px/1.35 var(--font-sans);cursor:pointer;transition:background-color 50ms var(--ease-out),border-color 50ms var(--ease-out),color 50ms var(--ease-out),transform 100ms var(--ease-out);background:var(--color-ink);border-color:transparent;color:var(--color-paper);border-radius:var(--radius-pill);}.ds-primary:hover:not(:disabled){background:var(--color-accent);}.ds-primary:active:not(:disabled){transform:translateY(1px);}.ds-primary:focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}.ds-primary:disabled{background:var(--color-subtle);color:var(--color-ink-faint);border-color:transparent;cursor:not-allowed;transform:none;}@media(pointer:coarse){.ds-primary{min-height:44px;}}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none;}.ds-primary:active{transform:none;}}"
+      "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:var(--radius-control);background:transparent;color:var(--color-body);font:500 14px/1.35 var(--font-sans);cursor:pointer;transition:background-color 50ms var(--ease-out),border-color 50ms var(--ease-out),color 50ms var(--ease-out),transform 100ms var(--ease-out);background:var(--color-ink);border-color:transparent;color:var(--color-paper);border-radius:var(--radius-pill);}.ds-primary:hover:not(:disabled){background:var(--color-accent);}.ds-primary:active:not(:disabled){transform:translateY(1px);}.ds-primary:focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}.ds-primary:disabled{background:var(--color-subtle);color:var(--color-ink-faint);border-color:transparent;cursor:not-allowed;transform:none;}@media(pointer:coarse){.ds-primary{min-height:44px;}}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none;}.ds-primary:active{transform:none;}}"
     },
     {
       "name": "Ghost Button",
@@ -574,7 +600,7 @@
       "refersTo": "button-ghost",
       "description": "从共享 Button 提取的 ghost 变体。",
       "html": "<button class=\"ds-ghost\">上一件</button>",
-      "css": ".ds-ghost{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:var(--radius-control);background:transparent;color:var(--color-body);font:500 14px/1.35 var(--font-sans);cursor:pointer;transition:background-color 50ms var(--ease-out),border-color 50ms var(--ease-out),color 50ms var(--ease-out),transform 100ms var(--ease-out);border-color:transparent;}.ds-ghost:hover:not(:disabled){background:var(--color-subtle);}.ds-ghost:active:not(:disabled){transform:translateY(1px);}.ds-ghost:focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}.ds-ghost:disabled{background:var(--color-subtle);color:var(--color-ink-faint);border-color:transparent;cursor:not-allowed;transform:none;}@media(pointer:coarse){.ds-ghost{min-height:44px;}}@media(prefers-reduced-motion:reduce){.ds-ghost{transition:none;}.ds-ghost:active{transform:none;}}"
+      "css": ".ds-ghost{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:var(--radius-control);background:transparent;color:var(--color-body);font:500 14px/1.35 var(--font-sans);cursor:pointer;transition:background-color 50ms var(--ease-out),border-color 50ms var(--ease-out),color 50ms var(--ease-out),transform 100ms var(--ease-out);border-color:transparent;}.ds-ghost:hover:not(:disabled){background:var(--color-subtle);}.ds-ghost:active:not(:disabled){transform:translateY(1px);}.ds-ghost:focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}.ds-ghost:disabled{background:var(--color-subtle);color:var(--color-ink-faint);border-color:transparent;cursor:not-allowed;transform:none;}@media(pointer:coarse){.ds-ghost{min-height:44px;}}@media(prefers-reduced-motion:reduce){.ds-ghost{transition:none;}.ds-ghost:active{transform:none;}}"
     },
     {
       "name": "Subtle Button",
@@ -582,7 +608,7 @@
       "refersTo": "button-subtle",
       "description": "从共享 Button 提取的 subtle 变体。",
       "html": "<button class=\"ds-subtle\">更多选项</button>",
-      "css": ".ds-subtle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:var(--radius-control);background:transparent;color:var(--color-body);font:500 14px/1.35 var(--font-sans);cursor:pointer;transition:background-color 50ms var(--ease-out),border-color 50ms var(--ease-out),color 50ms var(--ease-out),transform 100ms var(--ease-out);background:var(--color-subtle);border-color:transparent;}.ds-subtle:hover:not(:disabled){border-color:var(--color-border-hover);}.ds-subtle:active:not(:disabled){transform:translateY(1px);}.ds-subtle:focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}.ds-subtle:disabled{background:var(--color-subtle);color:var(--color-ink-faint);border-color:transparent;cursor:not-allowed;transform:none;}@media(pointer:coarse){.ds-subtle{min-height:44px;}}@media(prefers-reduced-motion:reduce){.ds-subtle{transition:none;}.ds-subtle:active{transform:none;}}"
+      "css": ".ds-subtle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:var(--radius-control);background:transparent;color:var(--color-body);font:500 14px/1.35 var(--font-sans);cursor:pointer;transition:background-color 50ms var(--ease-out),border-color 50ms var(--ease-out),color 50ms var(--ease-out),transform 100ms var(--ease-out);background:var(--color-subtle);border-color:transparent;}.ds-subtle:hover:not(:disabled){border-color:var(--color-border-hover);}.ds-subtle:active:not(:disabled){transform:translateY(1px);}.ds-subtle:focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}.ds-subtle:disabled{background:var(--color-subtle);color:var(--color-ink-faint);border-color:transparent;cursor:not-allowed;transform:none;}@media(pointer:coarse){.ds-subtle{min-height:44px;}}@media(prefers-reduced-motion:reduce){.ds-subtle{transition:none;}.ds-subtle:active{transform:none;}}"
     },
     {
       "name": "Search",
@@ -596,14 +622,14 @@
       "kind": "nav",
       "description": "仅品牌/首页链接与主题控制，不是产品菜单。",
       "html": "<header class=\"ds-header\"><a href=\"#\">Personal Design</a><button aria-label=\"切换外观\">外观</button></header>",
-      "css": ".ds-header{display:flex;align-items:center;justify-content:space-between;min-height:88px;padding:20px 48px;background:var(--color-paper);color:var(--color-ink);}.ds-header a{font:600 17px/1.3 var(--font-sans);color:inherit;text-decoration:none;}.ds-header a:hover{text-decoration:underline;}.ds-header button{min-height:36px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:4px;background:var(--color-paper);color:var(--color-body);}.ds-header button:hover{background:var(--color-subtle);}.ds-header :focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}@media(max-width:639px){.ds-header{min-height:72px;padding:12px 20px;}}"
+      "css": ".ds-header{display:flex;align-items:center;justify-content:space-between;min-height:88px;padding:20px 48px;background:var(--color-paper);color:var(--color-ink);}.ds-header a{font:600 17px/1.3 var(--font-sans);color:inherit;text-decoration:none;}.ds-header a:hover{text-decoration:underline;}.ds-header button{min-height:44px;padding:8px 16px;border:1px solid var(--color-hairline-strong);border-radius:999px;background:var(--color-paper);color:var(--color-body);}.ds-header button:hover{background:var(--color-subtle);}.ds-header :focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;}@media(max-width:639px){.ds-header{min-height:72px;padding:12px 20px;}}"
     },
     {
       "name": "Category",
       "kind": "chip",
-      "description": "下划线分类选择，48px 操作高度。",
+      "description": "下划线分类选择，44px 操作高度。",
       "html": "<button class=\"ds-category\" aria-pressed=\"true\">全部 <span>24</span></button>",
-      "css": ".ds-category{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:10px 0 13px;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--color-ink-soft);font:14px/1.75 var(--font-sans);transition:color 100ms ease,border-color 100ms ease;}.ds-category[aria-pressed=true]{color:var(--color-ink);border-bottom-color:var(--color-ink);font-weight:600;}.ds-category span{font-size:11px;font-weight:400;font-variant-numeric:tabular-nums;}.ds-category:hover{color:var(--color-ink);}.ds-category:focus-visible{outline:2px solid var(--color-ink);outline-offset:-2px;}"
+      "css": ".ds-category{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:10px 0 13px;border:0;border-bottom:1px solid transparent;background:transparent;color:var(--color-ink-soft);font:14px/1.75 var(--font-sans);transition:color 100ms ease,border-color 100ms ease;}.ds-category[aria-pressed=true]{color:var(--color-ink);border-bottom-color:var(--color-ink);font-weight:600;}.ds-category span{font-size:11px;font-weight:400;font-variant-numeric:tabular-nums;}.ds-category:hover{color:var(--color-ink);}.ds-category:focus-visible{outline:2px solid var(--color-ink);outline-offset:-2px;}"
     },
     {
       "name": "Information Section",
@@ -626,7 +652,7 @@
     "keyCharacteristics": [
       "白色页面与浅灰媒体衬底，深色使用同一组语义角色。",
       "首页为单色横向作品时间轴，按 `date` 从左到右排列并延伸至「更多作品」；内页以返回列表、相邻内容和首页链接提供上下文导航。",
-      "稳定内容网格、可视视频动态预览、单一详情去向、标题优先的自然阅读顺序。",
+      "布局参考用八本分类书籍与双页画册，搜索命中定位所在跨页；灵感保留稳定内容网格、可视视频动态预览与单一详情去向。",
       "边框留给控件和分组边界，媒体之外减少包框；组件样式归相邻 CSS Module。"
     ],
     "rules": [
@@ -649,11 +675,21 @@
         "name": "The Neutral Timeline Rule",
         "body": "首页轨道、日期、标题和操作沿用中性语义 token；真实媒体提供内容颜色。",
         "section": "colors"
+      },
+      {
+        "name": "The Physical Book Surface Exception",
+        "body": "布局参考书架、双页画册和首页对应书脊预览使用局部实体书配色、恒定米白纸面与装订阴影。八本分类书籍按共同底线对齐，真实图鉴各占一页；其余页面保持中性主题。配色见 DESIGN.md 的 book-*，实现归 layout-bookshelf.tsx 与相邻 CSS Module。",
+        "section": "colors"
+      },
+      {
+        "name": "The Shared Control Rule",
+        "body": "所有操作复用44px共享按钮，文字胶囊、图标圆形，18px/1.6px线条；主动作实心、连续浏览描边、返回与清除透明。搜索常驻即时过滤。详见 docs/design/controls/README.md。",
+        "section": "components"
       }
     ],
     "dos": [
       "**Do** 让首页承担产品选择，内页只提供上下文返回和阅读操作。",
-      "**Do** 用稳定网格、真实媒体与一个详情链接建立可预期的浏览流程。",
+      "**Do** 让布局搜索进入所属分类的命中跨页，画册每页使用一张真实图鉴；灵感保持稳定网格与单一详情链接。",
       "**Do** 让详情标题在媒体之前、实际说明在媒体之后自然展开，原作链接放在作者栏。",
       "**Do** 保留主题、可见焦点、原生视频控制、滚动自动追加与返回现场。",
       "**Do** 沿用源 tokens、中文排印、共享按钮和局部 CSS 归属。",
@@ -661,7 +697,7 @@
     ],
     "donts": [
       "**Don't** 恢复全站菜单、固定侧栏或自动移动内容墙。",
-      "**Don't** 将列表点击改为灯箱中转、列表自动滚动或重复追加已加载内容。",
+      "**Don't** 将灵感列表点击改为灯箱中转、列表自动滚动或重复追加已加载内容；布局画册以翻页为主，图片点击放大，放大即详情，不再提供详情跳转；细线圆形翻页按钮位于书本左右中部。",
       "**Don't** 用固定全高媒体井、窄资料侧栏或层层面板挤压阅读。",
       "**Don't** 因保留线路色 tokens 而恢复装饰线路色、站牌或待机循环动效。",
       "**Don't** 删除缺图条目、原作出处或包内原始数据 。首页不添加关于或许可说明，也不另建说明文档。"

@@ -5,7 +5,7 @@ import { instantMotion } from '@/lib/motion';
 import { buttonClassName } from '../button';
 import styles from './lightbox.module.css';
 import { createPortal } from 'react-dom';
-import { ArrowUpRight, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 import {
   createContext,
   useCallback,
@@ -551,19 +551,21 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
                 <span className="mr-2 inline-flex shrink-0 gap-1 sm:hidden">
                   <button
                     type="button"
+                    data-direction="previous"
                     aria-label="上一张"
                     onClick={() => go(-1)}
                     className={buttonClassName({ icon: true, className: styles.control })}
                   >
-                    <ChevronLeft className="size-4" />
+                    <ArrowLeft className="size-4" />
                   </button>
                   <button
                     type="button"
+                    data-direction="next"
                     aria-label="下一张"
                     onClick={() => go(1)}
                     className={buttonClassName({ icon: true, className: styles.control })}
                   >
-                    <ChevronRight className="size-4" />
+                    <ArrowRight className="size-4" />
                   </button>
                 </span>
               ) : null}
@@ -587,7 +589,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
                   className="inline-flex items-center gap-1 text-[#c3ccd8] underline-offset-4 transition-colors hover:text-white hover:underline"
                 >
                   查看详情
-                  <ArrowUpRight className="size-3.5" />
+                  <ArrowRight size={18} strokeWidth={1.6} aria-hidden />
                 </Link>
               ) : null}
             </span>
@@ -610,19 +612,21 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
             <>
               <button
                 type="button"
-                aria-label="上一张"
+                data-direction="previous"
+                    aria-label="上一张"
                 onClick={() => go(-1)}
                 className={buttonClassName({ icon: true, className: `${styles.control} ${styles.previous}` })}
               >
-                <ChevronLeft className="size-5" />
+                <ArrowLeft className="size-5" />
               </button>
               <button
                 type="button"
-                aria-label="下一张"
+                data-direction="next"
+                    aria-label="下一张"
                 onClick={() => go(1)}
                 className={buttonClassName({ icon: true, className: `${styles.control} ${styles.next}` })}
               >
-                <ChevronRight className="size-5" />
+                <ArrowRight className="size-5" />
               </button>
             </>
           ) : null}

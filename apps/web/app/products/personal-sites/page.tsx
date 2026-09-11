@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import { ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { websiteUrl, promoUrl, promoPosterUrl } from '@personal-design/personal-sites';
 import { buttonClassName } from '@/components/button';
 import { SiteShowcaseMedia } from '@/components/site-showcase-media';
@@ -13,7 +12,6 @@ export const metadata: Metadata = {
 
 export default function PersonalSitesPage() {
   return <main className={styles.page}>
-    <Link href="/" className={styles.back}><ArrowLeft size={16} aria-hidden="true" />返回作品时间轴</Link>
     <header className={styles.header}>
       <div><p>一份持续更新的个人工程档案。</p></div>
       <a href={websiteUrl} target="_blank" rel="noopener noreferrer" className={buttonClassName({ variant: 'primary' })} aria-label="打开个人网站（新标签页）">打开网站<ArrowUpRight size={16} aria-hidden="true" /></a>

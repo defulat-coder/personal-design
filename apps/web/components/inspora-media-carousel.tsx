@@ -79,12 +79,11 @@ function Carousel({ media }: { media: CarouselMedia[] }) {
       if (event.key === 'Home' || event.key === 'End') { event.preventDefault(); move(event.key === 'Home' ? 0 : media.length - 1); }
     }}>
       {media.map((item, index) => <MediaSlide key={item.id} item={item} active={index === current} index={index} total={media.length} siblings={media} />)}
-    </div></div>
+    </div>{media.length > 1 ? <nav className={styles.mediaNavigation} aria-label="媒体翻页"><Button icon data-direction="previous" aria-label="上一张媒体" disabled={current === 0} onClick={() => move(current - 1)}><ArrowLeft aria-hidden /></Button><Button icon data-direction="next" aria-label="下一张媒体" disabled={current === media.length - 1} onClick={() => move(current + 1)}><ArrowRight aria-hidden /></Button></nav> : null}</div>
     {selected?.type === 'image' || media.length > 1 ? <div ref={toolbarRef} className={styles.toolbar}>
       <span className={styles.counter} aria-live="polite">{media.length > 1 ? `${current + 1} / ${media.length}` : null}</span>
       <div className={styles.actions}>
         <a className={buttonClassName({ variant:'ghost' })} href={media[current]?.src} target="_blank" rel="noreferrer">{selected?.type === 'image' ? '查看原图' : '打开视频'}<ArrowUpRight size={16} aria-hidden /></a>
-        {media.length > 1 ? <><Button icon aria-label="上一张媒体" disabled={current === 0} onClick={() => move(current - 1)}><ArrowLeft size={16} /></Button><Button icon aria-label="下一张媒体" disabled={current === media.length - 1} onClick={() => move(current + 1)}><ArrowRight size={16} /></Button></> : null}
       </div>
     </div> : null}
   </div>;

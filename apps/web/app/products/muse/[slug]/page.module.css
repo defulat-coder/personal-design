@@ -5,10 +5,10 @@
 .author { display:flex; align-items:center; gap:8px; overflow-wrap:anywhere; }
 .author img { width:28px; height:28px; border-radius:50%; object-fit:cover; }
 .author a:hover,.category:hover { color:var(--color-ink); text-decoration:underline; text-underline-offset:3px; }
-.category { min-height:28px; display:inline-flex; align-items:center; }
+.category { min-height:44px; display:inline-flex; align-items:center; }
 .information { max-width:68ch; margin:32px auto 0; }
 .description { font-size:14px; line-height:1.75; color:var(--color-body); white-space:pre-line; overflow-wrap:anywhere; }
-.source { display:inline-flex; align-items:center; gap:5px; min-height:28px; color:var(--color-ink-soft); }
+.source { display:inline-flex; align-items:center; gap:8px; min-height:44px; color:var(--color-ink-soft); }
 .source:hover { color:var(--color-ink); text-decoration:underline; text-underline-offset:3px; }
 .empty { display:grid; place-content:center; gap:12px; padding:64px 24px; text-align:center; color:var(--color-ink-soft); background:var(--color-plate); border-radius:8px; }
 @media(max-width:1100px) { .page { padding-inline:24px; } }

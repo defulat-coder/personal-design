@@ -46,6 +46,8 @@
 
 :root {
   --control-height: 44px;
+  --control-icon-size: 18px;
+  --control-icon-stroke: 1.6;
   color-scheme: light;
   --radius-control: 4px;
   --radius-card: 12px;

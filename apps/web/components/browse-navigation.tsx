@@ -32,10 +32,10 @@ function Navigation({ returnLabel, fallbackHref, currentHref, entries, listPath,
   const href = (entry: BrowseEntry) => fromList ? browseHref(entry.href, fallbackHref) : entry.href;
   return <>
     <nav className={styles.navigation} aria-label="作品导航">
-      <Link href={fallbackHref} scroll={false} className={buttonClassName({ variant:'ghost' })}><ArrowLeft size={16} aria-hidden />{returnLabel}</Link>
+      <Link href={fallbackHref} scroll={false} data-direction="previous" className={buttonClassName({ variant:'ghost' })}><ArrowLeft size={16} aria-hidden />{returnLabel}</Link>
       <div className={styles.adjacent}>
-        {prev ? <Link href={href(prev)} title={prev.title} aria-label={`上一件：${prev.title}`} className={buttonClassName({variant:'ghost'})}><ArrowLeft size={16} aria-hidden /><span>上一件</span></Link> : <Button variant="ghost" disabled aria-label="已是第一件"><ArrowLeft size={16} aria-hidden /><span>上一件</span></Button>}
-        {next ? <Link href={href(next)} title={next.title} aria-label={`下一件：${next.title}`} className={buttonClassName({variant:'ghost'})}><span>下一件</span><ArrowRight size={16} aria-hidden /></Link> : <Button variant="ghost" disabled aria-label="已是最后一件"><span>下一件</span><ArrowRight size={16} aria-hidden /></Button>}
+        {prev ? <Link href={href(prev)} data-direction="previous" title={prev.title} aria-label={`上一件：${prev.title}`} className={buttonClassName()}><ArrowLeft size={16} aria-hidden /><span>上一件</span></Link> : <Button disabled aria-label="已是第一件"><ArrowLeft size={16} aria-hidden /><span>上一件</span></Button>}
+        {next ? <Link href={href(next)} data-direction="next" title={next.title} aria-label={`下一件：${next.title}`} className={buttonClassName()}><span>下一件</span><ArrowRight size={16} aria-hidden /></Link> : <Button disabled aria-label="已是最后一件"><span>下一件</span><ArrowRight size={16} aria-hidden /></Button>}
       </div>
     </nav>
     <DetailKeyboardNav prevHref={prev ? href(prev) : undefined} nextHref={next ? href(next) : undefined} hrefPattern={`^${listPath}/`} />

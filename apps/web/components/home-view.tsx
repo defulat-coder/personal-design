@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowLeft, ArrowRight, ArrowUpRight, ImageOff } from 'lucide-react';
 import { instantMotion } from '@/lib/motion';
+import { shuffleBooks } from '@/lib/book-shuffle';
 import type { Product } from '@/lib/products';
 import { buttonClassName } from './button';
 import { MotionVideo } from './motion-video';
+import { BookSpines } from './layout-bookshelf';
 import { SiteReceiptPreview } from './site-receipt-preview';
 import styles from './home-view.module.css';
 
@@ -21,7 +23,45 @@ function PreviewImage({ src, alt, priority = false }: Preview & { priority?: boo
   </div>;
 }
 
-export function HomeView({ products, layoutPreviews = [], musePreviews = [] }: { products: Product[]; layoutPreviews?: Preview[]; musePreviews?: Preview[] }) {
+/** The homepage preview moves only while it is visible; the actual shelf stays unchanged. */
+function BookPreview({ categories }: {categories:{name:string;count:number}[]}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [running, setRunning] = useState(false);
+  const [active, setActive] = useState(-1);
+  const bag = useRef<number[]>([]);
+  const current = useRef(-1);
+  function nextBook() {
+    if (!bag.current.length) bag.current = shuffleBooks(categories.length, current.current);
+    current.current = bag.current.shift() ?? -1;
+    setActive(current.current);
+  }
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    let visible = false;
+    const update = () => {
+      const playing = visible && !document.hidden;
+      setRunning(playing);
+      if (playing && current.current === -1) {
+        bag.current = shuffleBooks(categories.length);
+        current.current = bag.current.shift() ?? -1;
+        setActive(current.current);
+      }
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = !!entry?.isIntersecting && entry.intersectionRatio >= .3;
+      update();
+    }, { threshold:.3 });
+    observer.observe(element);
+    document.addEventListener('visibilitychange', update);
+    return () => { observer.disconnect(); document.removeEventListener('visibilitychange', update); };
+  }, [categories.length]);
+  return <div ref={ref} className={styles.bookMotion} data-running={running} aria-hidden="true" onAnimationEnd={event => {
+    if (event.target instanceof HTMLElement && event.target.dataset.bookActive === 'true') nextBook();
+  }}><BookSpines categories={categories} previewActive={active}/></div>;
+}
+
+export function HomeView({ products, layoutPreviews = [], musePreviews = [], layoutCategories = [] }: { products: Product[]; layoutCategories?: {name:string;count:number}[]; layoutPreviews?: Preview[]; musePreviews?: Preview[] }) {
   const drag = useRef({ start: 0, scroll: 0, down: false, moved: false });
   const viewport = useRef<HTMLDivElement>(null);
   const [edges, setEdges] = useState({ start: true, end: true });
@@ -87,10 +127,10 @@ export function HomeView({ products, layoutPreviews = [], musePreviews = [] }: {
                 <time dateTime={product.date} className={styles.date}>{product.date.replaceAll('-', '.')}{product.dateLabel && ` · ${product.dateLabel}`}</time>
                 <div className={styles.rule} aria-hidden="true"><span className={styles.node} /></div>
                 <Link href={product.href} className={styles.project} aria-label={`进入${product.name}`}>
-                  <div className={styles.title}><h2>{product.name}</h2><ArrowUpRight size={20} strokeWidth={1.5} aria-hidden="true" /></div>
+                  <div className={styles.title}><h2>{product.name}</h2>{product.href.startsWith('/') ? <ArrowRight size={18} strokeWidth={1.6} aria-hidden="true" /> : <ArrowUpRight size={18} strokeWidth={1.6} aria-hidden="true" />}</div>
                   <p className={styles.tagline}>{product.tagline}</p>
-                  <div className={`${styles.preview} ${isLayout ? styles.sheets : previews[0]?.videoSrc ? styles.motionPreview : styles.frames}`}>
-                    {product.slug === 'personal-sites' ? <SiteReceiptPreview /> : previews[0]?.videoSrc ? <MotionVideo src={previews[0].videoSrc} poster={previews[0].src} aria-label={previews[0].alt} /> : (previews.length ? previews.slice(0, 3) : [{ src: product.cover, alt: `${product.name}内容预览` }]).map((preview, i) => <PreviewImage key={preview.src} {...preview} priority={index === 0 && i === 0} />)}
+                  <div className={`${styles.preview} ${isLayout ? styles.bookPreview : previews[0]?.videoSrc ? styles.motionPreview : styles.frames}`}>
+                    {isLayout ? <BookPreview categories={layoutCategories} /> : product.slug === 'personal-sites' ? <SiteReceiptPreview /> : previews[0]?.videoSrc ? <MotionVideo src={previews[0].videoSrc} poster={previews[0].src} aria-label={previews[0].alt} /> : (previews.length ? previews.slice(0, 3) : [{ src: product.cover, alt: `${product.name}内容预览` }]).map((preview, i) => <PreviewImage key={preview.src} {...preview} priority={index === 0 && i === 0} />)}
                   </div>
                 </Link>
               </li>;
@@ -105,8 +145,8 @@ export function HomeView({ products, layoutPreviews = [], musePreviews = [] }: {
       {(!edges.start || !edges.end) && <footer className={styles.footer}>
         <div className={styles.controls}>
           <span className={styles.hint}>拖动或沿时间浏览</span>
-          <button className={buttonClassName({ variant: 'ghost', icon: true })} onClick={() => move(-1)} disabled={edges.start} aria-label="向前浏览作品"><ArrowLeft size={18} strokeWidth={1.5} /></button>
-          <button className={buttonClassName({ variant: 'ghost', icon: true })} onClick={() => move(1)} disabled={edges.end} aria-label="向后浏览作品"><ArrowRight size={18} strokeWidth={1.5} /></button>
+          <button className={buttonClassName({ icon: true })} data-direction="previous" onClick={() => move(-1)} disabled={edges.start} aria-label="向前浏览作品"><ArrowLeft size={18} strokeWidth={1.5} /></button>
+          <button className={buttonClassName({ icon: true })} data-direction="next" onClick={() => move(1)} disabled={edges.end} aria-label="向后浏览作品"><ArrowRight size={18} strokeWidth={1.5} /></button>
         </div>
       </footer>}
     </> : <p className={styles.empty}>产品正在整理中，稍后再来看看。</p>}

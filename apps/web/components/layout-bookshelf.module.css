@@ -1,0 +1,73 @@
+.library { max-width:1440px; margin:0 auto; padding:24px 48px 64px; }
+.toolbar { display:flex; align-items:center; justify-content:space-between; min-height:48px; gap:24px; }
+.collectionName { color:var(--color-ink-soft); font-size:14px; }
+.shelf { max-width:1040px; margin:90px auto 0; padding:0 64px; border-bottom:8px solid var(--color-hairline-strong); box-shadow:0 14px 18px -16px #0008; }
+.books { display:flex; align-items:flex-end; justify-content:center; gap:7px; min-height:390px; perspective:1200px; }
+.spine { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:space-between; flex:0 1 var(--book-width); width:var(--book-width); height:var(--book-height); padding:26px 8px 18px; border:0; border-radius:3px 5px 2px 2px; color:var(--binding-ink); background:var(--binding); box-shadow:inset 3px 0 5px #fff3,inset -5px 0 6px #0002,4px 1px 5px #0002; transform-origin:50% 100%; transition:transform 260ms cubic-bezier(.23,1,.32,1),opacity 160ms; cursor:pointer; }
+.spine::after { content:''; position:absolute; inset:0; pointer-events:none; border-left:1px solid #ffffff30; border-right:2px solid #00000018; border-radius:inherit; }
+.spine:disabled { opacity:.22; cursor:default; }
+.spineTitle { writing-mode:vertical-rl; font-size:22px; font-weight:500; line-height:1.35; letter-spacing:0; }
+.spineBottom { display:flex; flex-direction:column; align-items:center; gap:12px; font-size:13px; font-variant-numeric:tabular-nums; }
+.spineBottom>span { font-size:10px; }
+.spine:focus-visible { outline:2px solid var(--color-ink); outline-offset:6px; transform:translateY(-18px); }
+@media (hover:hover) and (pointer:fine) { .spine:not(:disabled):hover { transform:translateY(-20px) rotate(-2deg); } }
+.hint { margin:32px 0 0; text-align:center; color:var(--color-ink-soft); font-size:13px; }
+.results { max-width:900px; margin:48px auto 0; }
+.resultHeading { display:flex; align-items:center; justify-content:space-between; color:var(--color-ink-soft); font-size:13px; }
+.matchList { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 40px; }
+.matchList button { display:flex; align-items:center; justify-content:space-between; text-align:left; gap:16px; padding:16px 0; border:0; border-bottom:1px solid var(--color-hairline); background:none; color:var(--color-ink); cursor:pointer; }
+.matchList small { display:block; margin-top:4px; font-size:12px; color:var(--color-ink-soft); }
+.reader { margin:12px auto 0; max-width:1160px; outline:none; animation:open-book 480ms cubic-bezier(.23,1,.32,1); }
+.readerHeading { display:flex; justify-content:space-between; align-items:center; margin:0 56px 24px; }
+.readerHeading h2 { font-size:20px; font-weight:500; }
+
+.bookStage { position:relative; padding:6px 56px 12px; perspective:2200px; touch-action:pan-y; }
+.spread { position:relative; display:flex; width:100%; aspect-ratio:1.5; max-height:calc(100svh - 230px); min-height:320px; margin:auto; background:#e5dfd0; border-radius:3px 6px 6px 3px; box-shadow:0 20px 35px -18px #0006,0 4px 7px #0002; transform-style:preserve-3d; }
+.page { position:relative; width:50%; padding:20px 24px 14px; display:flex; flex-direction:column; background:#f5f1e7; color:#38362e; }
+/* A single stationary gutter avoids shading jumping between static and turning pages. */
+.spread::after { content:''; position:absolute; top:0; bottom:0; left:50%; width:28px; margin-left:-14px; z-index:4; pointer-events:none; background:linear-gradient(90deg,transparent,rgba(72,57,35,.035) 35%,rgba(72,57,35,.10) 50%,rgba(72,57,35,.035) 65%,transparent); transform:translateZ(1px); }
+.left { border-radius:3px 0 0 3px; }
+.right { border-radius:0 4px 4px 0; }
+.pageImage { position:relative; flex:1; min-height:0; width:100%; display:grid; place-items:center; text-align:center; color:#625c50; border:0; padding:0; background:transparent; cursor:zoom-in; }
+.pageImage:disabled { cursor:default; }
+.pageImage img { object-fit:contain; }
+.endPage { display:grid; place-items:center; flex:1; font-size:14px; color:#625c50; }
+.leaf { position:absolute; top:0; bottom:0; width:50%; z-index:3; transform-style:preserve-3d; will-change:transform; pointer-events:none; }
+.forward { left:50%; transform-origin:left center; animation:turn-forward 680ms cubic-bezier(.45,.05,.25,1) forwards; }
+.backward { left:0; transform-origin:right center; animation:turn-backward 680ms cubic-bezier(.45,.05,.25,1) forwards; }
+.face { position:absolute; inset:0; display:flex; flex-direction:column; padding:20px 24px 14px; backface-visibility:hidden; background:#f5f1e7; color:#38362e; overflow:hidden; }
+.front { transform:translateZ(.5px); }
+.back { transform:rotateY(180deg) translateZ(.5px); }
+.face::after { content:''; position:absolute; inset:0; pointer-events:none; background:linear-gradient(90deg,rgba(72,57,35,.16),transparent 45%,rgba(72,57,35,.08)); opacity:0; animation:paper-shade 680ms cubic-bezier(.45,.05,.25,1) both; }
+.pagination { position:absolute; inset:0; display:flex; align-items:center; justify-content:space-between; pointer-events:none; }
+.pagination button { pointer-events:auto; }
+.zoomHint { position:absolute; bottom:12px; right:12px; display:flex; align-items:center; gap:6px; padding:7px 10px; border-radius:4px; background:#202020; color:#fafafa; font-size:11px; opacity:0; transition:opacity 140ms ease; pointer-events:none; }
+.pageImage:focus-visible { outline:2px solid #514735; outline-offset:4px; }
+.pageImage:focus-visible .zoomHint { opacity:1; }
+@media (hover:hover) and (pointer:fine) { .pageImage:hover .zoomHint { opacity:1; } }
+@media (max-width:600px) { .zoomHint { bottom:4px; right:4px; padding:5px; } }
+.pageCount { margin:0; font-size:13px; font-variant-numeric:tabular-nums; }
+.pageCount span { color:var(--color-ink-soft); }
+@keyframes turn-forward { to { transform:rotateY(-180deg); } }
+@keyframes turn-backward { to { transform:rotateY(180deg); } }
+@keyframes paper-shade { 0%,100% { opacity:0; } 50% { opacity:.3; } }
+@keyframes open-book { from { opacity:.3; transform:translateY(22px) rotateX(8deg) scale(.96); } to { opacity:1; transform:none; } }
+.shelf[data-preview] { width:100%; margin:0; padding:0 18px; border-bottom-width:4px; align-self:center; }
+.shelf[data-preview] .books { min-height:185px; gap:3px; }
+.shelf[data-preview] .spine { height:calc(var(--book-height)*.46); padding:12px 2px 8px; cursor:inherit; }
+.shelf[data-preview] .spineTitle { font-size:11px; }
+.shelf[data-preview] .spineBottom { font-size:8px; }
+.shelf[data-preview] .spineBottom>span { display:none; }
+@media (max-width:900px) { .library { padding:20px 24px 48px; } .shelf { padding:0 24px; } .spineTitle { font-size:19px; } .spread { min-height:280px; } }
+@media (max-width:600px) { .library { padding:16px 20px 40px; } .shelf { margin-top:60px; padding:0 4px; } .books { gap:4px; min-height:290px; } .spine { height:calc(var(--book-height)*.72); padding:18px 2px 12px; } .spineTitle { font-size:16px; } .spineBottom>span { display:none; } .matchList { grid-template-columns:1fr; } .readerHeading { margin:0 32px 20px; } .bookStage { padding:4px 32px 8px; } .pagination { inset:0 -8px; } .spread { min-height:0; max-height:none; aspect-ratio:1.25; } .page,.face { padding:8px 8px 6px; } }
+@media (prefers-reduced-motion:reduce) { .spine,.reader,.leaf,.face::after { animation:none; transition:none; transform:none; } }
+:global(html[data-input='keyboard']) .reader { animation:none; }
+
+.library[data-search] .shelf { margin-top:36px; }
+.library[data-search] .books { min-height:240px; }
+.library[data-search] .spine { height:calc(var(--book-height)*.6); padding-top:16px; }
+.library[data-search] .spineTitle { font-size:16px; }
+.library[data-search] .spineBottom>span { display:none; }
+
+/* Covers belong to the animated homepage preview, never the interactive shelf. */
+.spine > [data-book-cover] { display:none; }

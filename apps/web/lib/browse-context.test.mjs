@@ -69,3 +69,13 @@ test('return positions use independent filter memories with stable parameter ord
   assert.notEqual(browseMemoryKey('muse-return', `${path}?q=button`), browseMemoryKey('muse-return', path));
   assert.equal(browseHref(entries[0].href, `${path}?q=A%26B&unused=1`), `${entries[0].href}?browse=2&q=A%26B`);
 });
+
+ test('layout detail returns to the current image inside its filtered book', () => {
+  const base = '/products/layout-compositions';
+  const layouts = [{ href: `${base}/003`, title: '三分法', category: '构图', search: ['三分法'] }];
+  const result = resolveUrlBrowseContext('browse=2&cat=构图&q=三分', base, `${base}/003`, layouts);
+  const url = new URL(result.href, 'https://example.test');
+  assert.equal(url.searchParams.get('page'), '003');
+  assert.equal(url.searchParams.get('cat'), '构图');
+  assert.equal(url.searchParams.get('q'), '三分');
+});

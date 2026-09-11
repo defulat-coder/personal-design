@@ -1,28 +1,11 @@
-.shell { position:relative; display:flex; justify-content:flex-end; min-width:108px; height:48px; max-width:100%; }
-.trigger { display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:48px; max-width:280px; padding:0 18px; border:1px solid var(--color-hairline-strong); border-radius:999px; background:transparent; color:var(--color-ink-soft); font:400 14px/1.5 var(--font-sans); cursor:pointer; transition:background 160ms ease-out,color 160ms ease-out,border-color 160ms ease-out; }
-.trigger:hover { background:var(--color-plate); color:var(--color-ink); border-color:var(--color-ink-soft); }
-.trigger svg { flex-shrink:0; }
-.query { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.shortcut { display:grid; place-items:center; width:18px; height:20px; border-left:1px solid var(--color-hairline-strong); padding-left:8px; font:400 12px/1 var(--font-sans); opacity:.7; }
-.dot { width:5px; height:5px; flex-shrink:0; border-radius:50%; background:currentColor; }
-.shell[data-open=true] .trigger { visibility:hidden; }
-.panel { position:absolute; z-index:5; top:0; right:0; display:flex; align-items:center; gap:12px; width:380px; max-width:calc(100vw - 48px); min-height:48px; padding:0 6px 0 18px; border:1px solid var(--color-hairline-strong); border-radius:999px; background:var(--color-plate); color:var(--color-ink); visibility:hidden; opacity:0; pointer-events:none; clip-path:inset(0 0 0 calc(100% - 108px) round 24px); transition:clip-path 140ms var(--ease-out),opacity 140ms ease,visibility 0s 140ms; }
-.shell[data-open=true] .panel { visibility:visible; opacity:1; pointer-events:auto; clip-path:inset(0 round 24px); transition:clip-path 200ms var(--ease-out),opacity 200ms ease,visibility 0s; }
-.icon { flex-shrink:0; color:var(--color-ink-soft); }
-.panel input { width:100%; min-width:0; height:46px; padding:0; border:0; border-radius:0; outline:0; background:transparent; color:var(--color-ink); caret-color:var(--color-ink); font:400 16px/1.5 var(--font-sans); }
-.panel input::placeholder { color:var(--color-ink-soft); opacity:1; }
-.panel input::-webkit-search-cancel-button,.panel input::-webkit-search-decoration { appearance:none; }
-.clear,.done { display:grid; place-items:center; flex:0 0 36px; width:36px; height:36px; padding:0; border:0; border-radius:50%; cursor:pointer; }
-.clear { color:var(--color-ink-soft); background:transparent; }
-.clear:hover { color:var(--color-ink); background:var(--color-subtle); }
-.done { color:var(--color-ink-soft); background:transparent; }
-.done:hover { color:var(--color-ink); background:var(--color-subtle); }
-.trigger:focus-visible,.clear:focus-visible,.done:focus-visible { outline:2px solid var(--color-ink); outline-offset:3px; }
-.panel:has(input:focus-visible) { border-color:var(--color-ink); }
-
-@media(prefers-reduced-motion:reduce) { .panel { transition:none; } .trigger { transition:none; } }
-@media(forced-colors:active) { .trigger,.panel,.done { border:1px solid ButtonText; } .panel input:focus { outline:2px solid Highlight; } }
-
-@media(hover:hover) and (pointer:fine) { .trigger:active,.clear:active,.done:active { transform:scale(.98); } }
-
-:global(html[data-input='keyboard']) :is(.trigger,.clear,.done):active { transform:none; }
+.search { display:flex; align-items:center; gap:10px; width:240px; max-width:100%; min-height:var(--control-height); border-bottom:1px solid var(--color-hairline-strong); color:var(--color-ink); transition:border-color var(--dur-fast) ease; }
+.icon { width:var(--control-icon-size); height:var(--control-icon-size); flex-shrink:0; color:var(--color-ink-soft); }
+.search input { flex:1; width:100%; min-width:0; height:43px; padding:0; border:0; outline:0; background:transparent; color:var(--color-ink); font:400 14px/22px var(--font-sans); caret-color:var(--color-ink); }
+.search input::placeholder { color:var(--color-ink-soft); opacity:1; }
+.search input::-webkit-search-cancel-button,.search input::-webkit-search-decoration { appearance:none; }
+.search .clear { flex:0 0 44px; border-radius:0; }
+.search:focus-within { border-bottom-color:var(--color-ink); box-shadow:0 1px 0 var(--color-ink); }
+@media (hover:hover) and (pointer:fine) { .search:hover:not(:focus-within) { border-bottom-color:var(--color-border-hover); } }
+@media (pointer:coarse) { .search input { font-size:16px; } }
+@media (max-width:639px) { .search { width:100%; } }
+@media (forced-colors:active) { .search { border-bottom-color:ButtonText; } .search:focus-within { outline:2px solid Highlight; outline-offset:3px; } }

@@ -85,7 +85,7 @@ export default async function MuseDetailPage({ params }: PageProps) {
             {post.creatorUrl ? <a href={post.creatorUrl} target="_blank" rel="noreferrer">{post.creatorName}</a> : <span>{post.creatorName}</span>}
           </p> : null}
           {post.category ? <Link href={listHref} className={styles.category}>{categoryLabel(post.category)}</Link> : null}
-          {post.sourceUrl ? <a href={post.sourceUrl} target="_blank" rel="noreferrer" className={styles.source}>查看原作<ArrowUpRight size={14} aria-hidden /></a> : null}
+          {post.sourceUrl ? <a href={post.sourceUrl} target="_blank" rel="noreferrer" className={styles.source}>查看原作<ArrowUpRight size={18} strokeWidth={1.6} aria-hidden /></a> : null}
         </div>
       </header>
       {media.length ? <MuseMediaCarousel key={post.slug} media={media} /> : <div className={styles.empty}><p>作品暂时无法显示</p></div>}

@@ -43,6 +43,8 @@ export function resolveUrlBrowseContext(query: string, listPath: string, pathnam
   if (category) filters.set('cat', category);
   if (theme) filters.set('theme', theme);
   if (queryValue) filters.set('q', queryValue);
+  // Returning from a layout detail reopens its book at the image just viewed.
+  if (listPath === '/products/layout-compositions' && category) filters.set('page', pathname.split('/').at(-1)!);
   return { href: `${listPath}${filters.size ? `?${filters}` : ''}`, entries };
 }
 

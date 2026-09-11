@@ -1,5 +1,5 @@
 .carousel { min-width:0; }
-.stage { width:100%; aspect-ratio:var(--media-ratio); margin-inline:auto; border-radius:8px; background:var(--color-plate); }
+.stage { position:relative; width:100%; aspect-ratio:var(--media-ratio); margin-inline:auto; border-radius:8px; background:var(--color-plate); }
 .track { display:flex; width:100%; height:100%; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; border-radius:8px; }
 .track::-webkit-scrollbar { display:none; }
 .track:focus-visible { outline:2px solid var(--color-ink); outline-offset:3px; }
@@ -26,3 +26,6 @@
 
 .zoomButton { position:absolute; inset:0; width:100%; height:100%; border-radius:8px; border:0; padding:0; background:transparent; cursor:zoom-in; }
 .zoomButton:focus-visible { outline:2px solid var(--color-ink); outline-offset:-3px; }
+
+.mediaNavigation { position:absolute; inset:0 12px; display:flex; align-items:center; justify-content:space-between; pointer-events:none; }
+.mediaNavigation button { pointer-events:auto; }

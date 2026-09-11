@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { LightboxProvider } from '@/components/lifeline/lightbox';
 import {
   catalog,
   categories,
   hasImage,
+  imageUrl,
   thumbnailUrl,
 } from '@personal-design/layout-compositions';
-import { LayoutWall, type LayoutWallItem } from '@/components/layout-wall';
+import { LayoutBookshelf, type BookPage } from '@/components/layout-bookshelf';
 
 export const metadata: Metadata = {
   title: '布局参考 · 350 种排版构图图鉴',
@@ -15,12 +17,13 @@ export const metadata: Metadata = {
 };
 
 // 只把客户端需要的字段传下去，控制 RSC 负载
-const items: LayoutWallItem[] = catalog.map((item) => ({
+const items: BookPage[] = catalog.map((item) => ({
   id: item.id,
   name: item.name,
   category: item.category,
   theme: item.subcategory,
   themeSlug: item.subcategory_slug,
+  src: hasImage(item) ? imageUrl(item) : null,
   thumb: hasImage(item) ? thumbnailUrl(item) : null,
 }));
 
@@ -32,9 +35,9 @@ const tabs = categories.map((category) => ({
 export default function LayoutCompositionsPage() {
   return (
     <main >
-      {/* LayoutWall 内用 useSearchParams 读分类，需要 Suspense 边界 */}
+      {/* LayoutBookshelf 内用 useSearchParams 读分类，需要 Suspense 边界 */}
       <Suspense fallback={<p className="p-6 text-ink-soft" role="status">正在加载布局图鉴…</p>}>
-        <LayoutWall categories={tabs} items={items} />
+        <LightboxProvider><LayoutBookshelf categories={tabs} items={items} /></LightboxProvider>
       </Suspense>
     </main>
   );

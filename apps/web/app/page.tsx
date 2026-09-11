@@ -19,5 +19,5 @@ export default function HomePage() {
   const motionPost = listPosts().find(post => post.media[0]?.type === 'video' && post.media[0]?.src);
   const motionMedia = motionPost?.media[0];
   if (motionMedia?.src) musePreviews.unshift({ src: motionMedia.thumb ?? motionMedia.poster ?? '', alt: motionPost!.title, videoSrc: motionMedia.src });
-  return <HomeView products={products} layoutPreviews={layoutPreviews} musePreviews={musePreviews} />;
+  return <HomeView layoutCategories={categories.map(({name,count})=>({name,count}))} products={products} layoutPreviews={layoutPreviews} musePreviews={musePreviews} />;
 }
