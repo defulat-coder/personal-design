@@ -22,13 +22,13 @@ const bindings = [
   ['#465676','#f7f3e9',360,82], ['#a65e47','#fff8ec',280,66],
   ['#707453','#fff9e5',350,78], ['#ddd5c3','#34312a',310,72],
 ] as const;
-export function BookSpines({ categories, onOpen, muted = [], previewActive = -1 }: {previewActive?:number; categories:{name:string;count:number}[]; onOpen?:(name:string)=>void; muted?:string[]}) {
+export function BookSpines({ categories, onOpen, muted = [], previewActive = -1, extracting = -1, onExtract }: {extracting?:number; onExtract?:()=>void; previewActive?:number; categories:{name:string;count:number}[]; onOpen?:(name:string)=>void; muted?:string[]}) {
   return <div className={styles.shelf} data-preview={!onOpen || undefined}>
     <div className={styles.books}>{categories.map((category,index) => {
       const [color,ink,height,width] = bindings[index % bindings.length]!;
       const content = <Fragment key={category.name}><span className={styles.spineTitle}>{categoryLabel(category.name)}</span><span className={styles.spineBottom}>{String(index+1).padStart(2,'0')}<span>{category.count} 页</span></span></Fragment>;
       const props = {className:styles.spine, style:{'--binding':color,'--binding-ink':ink,'--book-height':`${height}px`,'--book-width':`${width}px`} as CSSProperties};
-      return onOpen ? <button {...props} key={category.name} id={`book-${index}`} disabled={muted.includes(category.name)} aria-label={`打开${categoryLabel(category.name)}，${category.count}页`} onClick={()=>onOpen(category.name)}>{content}</button> : <span {...props} key={category.name} data-book-active={index === previewActive} data-cover-title={categoryLabel(category.name)}>{content}<span key="cover" data-book-cover aria-hidden="true"><span>{categoryLabel(category.name)}</span><small>排版构图图鉴</small></span></span>;
+      return onOpen ? <button {...props} key={category.name} id={`book-${index}`} disabled={muted.includes(category.name)} aria-label={`打开${categoryLabel(category.name)}，${category.count}页`} data-extracting={extracting===index || undefined} onAnimationEnd={event=>{if(event.target===event.currentTarget && extracting===index)onExtract?.();}} onClick={()=>onOpen(category.name)}>{content}<span data-book-cover aria-hidden="true"><span>{categoryLabel(category.name)}</span><small>排版构图图鉴</small></span></button> : <span {...props} key={category.name} data-book-active={index === previewActive} data-cover-title={categoryLabel(category.name)}>{content}<span key="cover" data-book-cover aria-hidden="true"><span>{categoryLabel(category.name)}</span><small>排版构图图鉴</small></span></span>;
     })}</div>
   </div>;
 }
@@ -41,6 +41,8 @@ export function LayoutBookshelf({categories,items}:Props) {
   const active = categories.find(c=>c.name===params.get('cat'));
   const matches = items.filter(item=>(!theme || item.themeSlug===theme) && (!term || `${item.id} ${item.name} ${item.category} ${categoryLabel(item.category)} ${item.theme}`.toLocaleLowerCase().includes(term)));
   const pages = active ? matches.filter(item=>item.category===active.name) : [];
+  const [extracting,setExtracting] = useState(-1);
+  const extracted = useRef<(()=>void)|null>(null);
   const [opening,setOpening] = useState<OpeningBook|null>(null);
   const finishOpening = useCallback(()=>setOpening(null),[]);
   const lastBook = useRef(0);
@@ -51,16 +53,21 @@ export function LayoutBookshelf({categories,items}:Props) {
     window.history[push ? 'pushState' : 'replaceState'](null,'',`${path}${next.size ? `?${next}`:''}`);
   }
   function open(name:string,id='') {
-    if(opening) return;
+    if(opening || extracting!==-1) return;
     shelfScroll.current = window.scrollY;
     window.scrollTo({top:0,behavior:'instant'});
     lastBook.current = categories.findIndex(c=>c.name===name);
     const index=lastBook.current;
     const element=document.getElementById(`book-${index}`);
     if(!element || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {update({cat:name,page:id},true);return;}
-    const rect=element.getBoundingClientRect();
-    const [color,ink]=bindings[index % bindings.length]!;
-    setOpening({index,title:categoryLabel(name),color,ink,rect:{left:rect.left,top:rect.top,width:rect.width,height:rect.height},reveal:()=>update({cat:name,page:id},true)});
+    extracted.current=()=>{
+      const rect=(element.querySelector('[data-book-cover]') ?? element).getBoundingClientRect();
+      const [color,ink]=bindings[index % bindings.length]!;
+      setOpening({index,extracted:true,title:categoryLabel(name),color,ink,rect:{left:rect.left,top:rect.top,width:rect.width,height:rect.height},reveal:()=>update({cat:name,page:id},true)});
+      setExtracting(-1);
+      extracted.current=null;
+    };
+    setExtracting(index);
   }
   const close = useCallback(() => {
     setOpening(null);
@@ -70,15 +77,15 @@ export function LayoutBookshelf({categories,items}:Props) {
     window.history.replaceState(null,'',`${path}${next.size ? `?${next}`:''}`);
     requestAnimationFrame(()=>{document.getElementById(`book-${active ? categories.indexOf(active) : lastBook.current}`)?.focus({preventScroll:true});window.scrollTo({top:shelfScroll.current,behavior:'instant'});});
   }, [active, categories]);
-  return <div className={styles.library} aria-busy={!!opening} data-opening={opening?.index} data-search={!!term || !!theme || undefined}>
+  return <div className={styles.library} aria-busy={!!opening || extracting!==-1} data-opening={opening?.index} data-search={!!term || !!theme || undefined}>
     {opening && <BookOpening book={opening} onDone={finishOpening}/> }
-    {active ? <WorkspaceBack label="返回书架" onBack={close} /> : <div className={styles.toolbar} inert={!!opening}>
+    {active ? <WorkspaceBack label="返回书架" onBack={close} /> : <div className={styles.toolbar} inert={!!opening || extracting!==-1}>
       <span className={styles.collectionName}>排版构图图鉴</span>
       <CollectionSearch value={query} onChange={q=>update({q,cat:'',page:''})} placeholder="搜索图鉴" label="搜索图鉴" />
     </div>}
     {active && pages.length ? <BookReader key={`${active.name}:${query}:${theme}`} name={active.name} pages={pages} initialId={params.get('page') || ''} onPage={id=>update({page:id})} onClose={close} /> : <>
-      <div inert={!!opening}><BookSpines categories={categories} onOpen={open} muted={categories.filter(c=>!matches.some(item=>item.category===c.name)).map(c=>c.name)} /></div>
-      {term || theme ? <section className={styles.results} aria-label="搜索结果" inert={!!opening}>
+      <div inert={!!opening || extracting!==-1}><BookSpines categories={categories} extracting={extracting} onExtract={()=>extracted.current?.()} onOpen={open} muted={categories.filter(c=>!matches.some(item=>item.category===c.name)).map(c=>c.name)} /></div>
+      {term || theme ? <section className={styles.results} aria-label="搜索结果" inert={!!opening || extracting!==-1}>
         <div className={styles.resultHeading}><p role="status">{matches.length} 条图鉴</p><Button variant="ghost" onClick={()=>update({q:'',theme:'',cat:'',page:''})}>清除筛选</Button></div>
         {matches.length ? <div className={styles.matchList}>{matches.map(item=><button key={item.id} onClick={()=>open(item.category,item.id)}><span>{item.name}<small>{categoryLabel(item.category)} · {item.theme}</small></span><ArrowRight size={18} strokeWidth={1.6} aria-hidden/></button>)}</div> : <p>没有找到匹配的图鉴，试试其他关键词。</p>}
       </section> : <p className={styles.hint}>选一本，翻开看看。</p>}
