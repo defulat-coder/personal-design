@@ -70,7 +70,7 @@ export default async function MuseDetailPage({ params }: PageProps) {
 
   return (
     <main className={styles.page}>
-      <BrowseNavigation listPath="/products/muse" storageKey="muse-return" returnLabel="返回灵感集" fallbackHref={listHref}
+      <BrowseNavigation appearance="text" listPath="/products/muse" storageKey="muse-return" returnLabel="返回灵感集" fallbackHref={listHref}
         browseEntries={browseEntries}
         currentHref={`/products/muse/${post.slug}`}
         entries={group.map(entry => ({ href:`/products/muse/${entry.slug}`, title:entry.title }))} />
