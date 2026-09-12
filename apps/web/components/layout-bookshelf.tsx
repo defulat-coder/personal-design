@@ -1,12 +1,12 @@
 'use client';
 
 import Image from 'next/image';
-import { Fragment, useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Maximize2 } from 'lucide-react';
 import { categoryLabel } from '@/lib/category-label';
 import { useLightbox } from './lifeline/lightbox';
-import { instantMotion } from '@/lib/motion';
+import { instantMotion, observeMotionPolicy, playExit } from '@/lib/motion';
 import { CollectionSearch } from './collection-search';
 import { Button } from './button';
 import { WorkspaceBack } from './workspace-shell';
@@ -42,11 +42,14 @@ export function LayoutBookshelf({categories,items}:Props) {
   const matches = items.filter(item=>(!theme || item.themeSlug===theme) && (!term || `${item.id} ${item.name} ${item.category} ${categoryLabel(item.category)} ${item.theme}`.toLocaleLowerCase().includes(term)));
   const pages = active ? matches.filter(item=>item.category===active.name) : [];
   const [extracting,setExtracting] = useState(-1);
-  const extracted = useRef<(()=>void)|null>(null);
+  const extracted = useRef<((skip?: boolean)=>void)|null>(null);
   const [opening,setOpening] = useState<OpeningBook|null>(null);
   const finishOpening = useCallback(()=>setOpening(null),[]);
   const lastBook = useRef(0);
   const shelfScroll = useRef(0);
+  const closing = useRef<ReturnType<typeof playExit> | null>(null);
+  const shelfReturn = useRef<{index:number;y:number}|null>(null);
+  const [isClosing,setIsClosing]=useState(false);
   function update(values:Record<string,string>, push=false) {
     const next = new URLSearchParams(params.toString());
     Object.entries(values).forEach(([key,value])=>value ? next.set(key,value) : next.delete(key));
@@ -59,31 +62,78 @@ export function LayoutBookshelf({categories,items}:Props) {
     lastBook.current = categories.findIndex(c=>c.name===name);
     const index=lastBook.current;
     const element=document.getElementById(`book-${index}`);
-    if(!element || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {update({cat:name,page:id},true);return;}
-    extracted.current=()=>{
+    if(!element || instantMotion()) {update({cat:name,page:id},true);return;}
+    extracted.current=(skip=false)=>{
+      extracted.current=null;
+      setExtracting(-1);
+      if(skip || instantMotion() || document.hidden) {update({cat:name,page:id},true);return;}
       const rect=(element.querySelector('[data-book-cover]') ?? element).getBoundingClientRect();
       const [color,ink]=bindings[index % bindings.length]!;
       setOpening({index,extracted:true,title:categoryLabel(name),color,ink,rect:{left:rect.left,top:rect.top,width:rect.width,height:rect.height},reveal:()=>update({cat:name,page:id},true)});
-      setExtracting(-1);
-      extracted.current=null;
     };
     setExtracting(index);
   }
+  useEffect(()=>{
+    if(extracting===-1) return;
+    const stop=observeMotionPolicy(()=>{
+      if(instantMotion() || document.hidden) extracted.current?.(true);
+    });
+    // Animation completion is presentation, not the only path to opening the book.
+    const timeout=setTimeout(()=>extracted.current?.(true),2100);
+    return ()=>{stop();clearTimeout(timeout);};
+  },[extracting]);
+  useEffect(()=>{
+    const cancel=(event:KeyboardEvent)=>{
+      if(event.key!=='Escape' || !extracted.current)return;
+      event.preventDefault();
+      extracted.current=null;
+      setExtracting(-1);
+      requestAnimationFrame(()=>document.getElementById(`book-${lastBook.current}`)?.focus({preventScroll:true}));
+    };
+    window.addEventListener('keydown',cancel);
+    return ()=>window.removeEventListener('keydown',cancel);
+  },[]);
   const close = useCallback(() => {
-    setOpening(null);
-    const next = new URLSearchParams(window.location.search);
-    next.delete('cat');
-    next.delete('page');
-    window.history.replaceState(null,'',`${path}${next.size ? `?${next}`:''}`);
-    requestAnimationFrame(()=>{document.getElementById(`book-${active ? categories.indexOf(active) : lastBook.current}`)?.focus({preventScroll:true});window.scrollTo({top:shelfScroll.current,behavior:'instant'});});
-  }, [active, categories]);
+    if(closing.current)return;
+    const commit=()=>{
+      shelfReturn.current={index:active ? categories.indexOf(active) : lastBook.current,y:shelfScroll.current};
+      setIsClosing(false);
+      setOpening(null);
+      const next = new URLSearchParams(window.location.search);
+      next.delete('cat');
+      next.delete('page');
+      window.history.replaceState(null,'',`${path}${next.size ? `?${next}`:''}`);
+    };
+    const spread=document.querySelector<HTMLElement>('[data-book-spread]');
+    const reader=spread?.closest<HTMLElement>('[aria-label$="画册"]') ?? null;
+    if(instantMotion() || document.hidden || opening || !reader) {commit();return;}
+    const left=spread?.firstElementChild as HTMLElement | null;
+    if(left)left.style.transformOrigin='right center';
+    const fold=left?.animate([{transform:'rotateY(0deg)'},{transform:'rotateY(180deg)'}],{duration:260,easing:'cubic-bezier(.4,0,.8,.6)',fill:'forwards'});
+    setIsClosing(true);
+    const exit=playExit(reader,commit,[{opacity:1,transform:'none'},{opacity:1,transform:'scale(.98)',offset:.6},{opacity:0,transform:'translateY(14px) scale(.96)'}],{duration:260,hold:true});
+    closing.current={finish:exit.finish,cancel:()=>{exit.cancel();fold?.cancel();left?.style.removeProperty('transform-origin');}};
+  }, [active, categories, opening]);
+  useLayoutEffect(()=>{
+    const restore=shelfReturn.current;
+    if(active || !restore)return;
+    const book=document.getElementById(`book-${restore.index}`);
+    if(!book)return;
+    // The reader is detached now; releasing its final frame cannot flash the old spread.
+    closing.current?.cancel();
+    closing.current=null;
+    window.scrollTo({top:restore.y,behavior:'instant'});
+    book.focus({preventScroll:true});
+    shelfReturn.current=null;
+  },[active]);
+  useEffect(()=>()=>closing.current?.cancel(),[]);
   return <div className={styles.library} aria-busy={!!opening || extracting!==-1} data-opening={opening?.index} data-search={!!term || !!theme || undefined}>
     {opening && <BookOpening book={opening} onDone={finishOpening}/> }
     {active ? <WorkspaceBack label="返回书架" onBack={close} /> : <div className={styles.toolbar} inert={!!opening || extracting!==-1}>
       <span className={styles.collectionName}>排版构图图鉴</span>
       <CollectionSearch value={query} onChange={q=>update({q,cat:'',page:''})} placeholder="搜索图鉴" label="搜索图鉴" />
     </div>}
-    {active && pages.length ? <BookReader key={`${active.name}:${query}:${theme}`} name={active.name} pages={pages} initialId={params.get('page') || ''} onPage={id=>update({page:id})} onClose={close} /> : <>
+    {active && pages.length ? <BookReader key={`${active.name}:${query}:${theme}`} closing={isClosing} name={active.name} pages={pages} initialId={params.get('page') || ''} onPage={id=>update({page:id})} onClose={close} /> : <>
       <div inert={!!opening || extracting!==-1}><BookSpines categories={categories} extracting={extracting} onExtract={()=>extracted.current?.()} onOpen={open} muted={categories.filter(c=>!matches.some(item=>item.category===c.name)).map(c=>c.name)} /></div>
       {term || theme ? <section className={styles.results} aria-label="搜索结果" inert={!!opening || extracting!==-1}>
         <div className={styles.resultHeading}><p role="status">{matches.length} 条图鉴</p><Button variant="ghost" onClick={()=>update({q:'',theme:'',cat:'',page:''})}>清除筛选</Button></div>
@@ -93,7 +143,7 @@ export function LayoutBookshelf({categories,items}:Props) {
   </div>;
 }
 
-function BookReader({name,pages,initialId,onPage,onClose}:{name:string;pages:BookPage[];initialId:string;onPage:(id:string)=>void;onClose:()=>void}) {
+function BookReader({name,pages,initialId,onPage,onClose,closing}:{name:string;pages:BookPage[];initialId:string;onPage:(id:string)=>void;onClose:()=>void;closing:boolean}) {
   const initial = Math.max(0,pages.findIndex(page=>page.id===initialId));
   const [spread,setSpread] = useState(Math.floor(initial/2)*2);
   const [turn,setTurn] = useState<{from:number;to:number;direction:number}|null>(null);
@@ -113,7 +163,7 @@ function BookReader({name,pages,initialId,onPage,onClose}:{name:string;pages:Boo
   }
   const left = turn?.direction===-1 ? turn.to : spread;
   const right = turn?.direction===1 ? turn.to+1 : spread+1;
-  return <div ref={reader} className={styles.reader} tabIndex={-1} aria-label={`${categoryLabel(name)}画册`} onKeyDown={event=>{
+  return <div ref={reader} className={styles.reader} inert={closing} tabIndex={-1} aria-label={`${categoryLabel(name)}画册`} onKeyDown={event=>{
     if(event.target instanceof HTMLElement && event.target.closest('[aria-busy="true"]') && event.key!=='Escape') return;
     if(event.target instanceof HTMLElement && event.target.closest('input,textarea,select')) return;
     if(event.key==='ArrowRight' || event.key==='ArrowLeft') {event.preventDefault();go(event.key==='ArrowRight'?1:-1);}

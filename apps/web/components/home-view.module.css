@@ -57,10 +57,13 @@
 .viewport[data-dragging], .viewport[data-dragging] a { cursor:grabbing; user-select:none; }
 /* Short, visible-by-default introduction; never replay a keyframed entrance on filtering. */
 @media(prefers-reduced-motion:no-preference) {
-  .entry .project { transition:opacity 260ms var(--ease-out),translate 260ms var(--ease-out); transition-delay:calc(var(--order,0) * 40ms); }
+  .entry .project { transition:opacity 260ms var(--ease-out),translate 260ms var(--ease-out),transform 140ms var(--ease-out); transition-delay:calc(var(--order,0) * 40ms),calc(var(--order,0) * 40ms),0ms; }
   @starting-style { .entry .project { opacity:.65; translate:0 6px; } }
 }
 .project:focus-visible *, .project:focus-visible { transition:none; }
+
+/* The workspace owns route entry; nested starting-style movement would shift its title target. */
+:global([data-route-motion='true']) .entry .project { transition:transform 140ms var(--ease-out); }
 
 .bookPreview { display:flex; align-items:center; overflow:visible; background:transparent; padding-bottom:8px; }
 
@@ -90,3 +93,11 @@
 }
 
 .bookMotion [data-book-cover] small { font-size:9px; font-weight:400; letter-spacing:0; }
+
+/* Immediate press response, separate from the route's shared-title transition. */
+.project { transition:transform 140ms var(--ease-out); transform-origin:50% 55%; }
+.project:active { transform:scale(.975); transition-duration:70ms; }
+@media(hover:hover) and (pointer:fine) {
+  .project:hover .title svg { transform:translateX(6px); }
+}
+@media(prefers-reduced-motion:reduce) { .project:active { transform:none; } }

@@ -22,10 +22,10 @@
 
 ## 使用顺序
 
-1. 根 [AGENTS.md](../../../AGENTS.md)：本站产品与数据约束。
-2. [apps/web/AGENTS.md](../../../apps/web/AGENTS.md)：前端样式归属及组件复用。
-3. [rules.md](rules.md)：从原项目迁入的有效设计规则、冲突处理和现状差异。
-4. 根 [DESIGN.md](../../../DESIGN.md)：当前实现 token 与布局记录。
-5. 按任务阅读 [source/craft/README.md](source/craft/README.md) 列出的相关原文。
+1. 根 [AGENTS.md](../../../AGENTS.md) 与 [PRODUCT.md](../../../PRODUCT.md)：项目与产品边界。
+2. 根 [DESIGN.md](../../../DESIGN.md)：本站唯一现行视觉与交互标准。
+3. [设计文档入口](../README.md) 和 [控件标准](../controls/README.md)：页面流程、组件用途与验收。
+4. [apps/web/AGENTS.md](../../../apps/web/AGENTS.md)：前端修改与验证要求。
+5. [rules.md](rules.md)：来源说明、采用原则与有意适配；需要溯源时再读 source。
 
 `source/` 是来源证据，不是新项目指令树；其中路径、命令、包名与自动检查说明均属于原项目，不直接执行。更新副本时同时更新 manifest；更改采用规则时记录源文件依据。

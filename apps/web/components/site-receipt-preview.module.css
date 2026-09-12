@@ -63,3 +63,6 @@
   40% { transform:translateY(0); }
   41%,100% { transform:translateY(-100%); }
 }
+
+/* A keyboard session shows the complete receipt, not the first frame of a zero-duration loop. */
+:global(html[data-input='keyboard']) .preview * { animation:none !important; }

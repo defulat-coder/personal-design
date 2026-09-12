@@ -1,16 +1,16 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowLeft, ArrowRight, ArrowUpRight, ImageOff } from 'lucide-react';
-import { instantMotion } from '@/lib/motion';
+import { instantMotion, observeMotionPolicy } from '@/lib/motion';
 import { shuffleBooks } from '@/lib/book-shuffle';
 import type { Product } from '@/lib/products';
 import { buttonClassName } from './button';
 import { MotionVideo } from './motion-video';
 import { BookSpines } from './layout-bookshelf';
 import { SiteReceiptPreview } from './site-receipt-preview';
+import { WorkspaceLink } from './workspace-shell';
 import styles from './home-view.module.css';
 
 type Preview = { src: string; alt: string; videoSrc?: string };
@@ -27,10 +27,12 @@ function PreviewImage({ src, alt, priority = false }: Preview & { priority?: boo
 function BookPreview({ categories }: {categories:{name:string;count:number}[]}) {
   const ref = useRef<HTMLDivElement>(null);
   const [running, setRunning] = useState(false);
+  const [quiet, setQuiet] = useState(false);
   const [active, setActive] = useState(-1);
   const bag = useRef<number[]>([]);
   const current = useRef(-1);
   function nextBook() {
+    if (!running || instantMotion() || document.hidden) return;
     if (!bag.current.length) bag.current = shuffleBooks(categories.length, current.current);
     current.current = bag.current.shift() ?? -1;
     setActive(current.current);
@@ -40,7 +42,9 @@ function BookPreview({ categories }: {categories:{name:string;count:number}[]}) 
     if (!element) return;
     let visible = false;
     const update = () => {
-      const playing = visible && !document.hidden;
+      const quiet = instantMotion();
+      const playing = visible && !document.hidden && !quiet;
+      setQuiet(quiet);
       setRunning(playing);
       if (playing && current.current === -1) {
         bag.current = shuffleBooks(categories.length);
@@ -53,12 +57,12 @@ function BookPreview({ categories }: {categories:{name:string;count:number}[]}) 
       update();
     }, { threshold:.3 });
     observer.observe(element);
-    document.addEventListener('visibilitychange', update);
-    return () => { observer.disconnect(); document.removeEventListener('visibilitychange', update); };
+    const stop = observeMotionPolicy(update);
+    return () => { observer.disconnect(); stop(); };
   }, [categories.length]);
   return <div ref={ref} className={styles.bookMotion} data-running={running} aria-hidden="true" onAnimationEnd={event => {
     if (event.target instanceof HTMLElement && event.target.dataset.bookActive === 'true') nextBook();
-  }}><BookSpines categories={categories} previewActive={active}/></div>;
+  }}><BookSpines categories={categories} previewActive={quiet ? -1 : active}/></div>;
 }
 
 export function HomeView({ products, layoutPreviews = [], musePreviews = [], layoutCategories = [] }: { products: Product[]; layoutCategories?: {name:string;count:number}[]; layoutPreviews?: Preview[]; musePreviews?: Preview[] }) {
@@ -126,13 +130,13 @@ export function HomeView({ products, layoutPreviews = [], musePreviews = [], lay
               return <li key={product.slug} className={styles.entry} style={{ '--order': index } as CSSProperties}>
                 <time dateTime={product.date} className={styles.date}>{product.date.replaceAll('-', '.')}{product.dateLabel && ` · ${product.dateLabel}`}</time>
                 <div className={styles.rule} aria-hidden="true"><span className={styles.node} /></div>
-                <Link href={product.href} className={styles.project} aria-label={`进入${product.name}`}>
+                <WorkspaceLink href={product.href} prefetch className={styles.project} aria-label={`进入${product.name}`}>
                   <div className={styles.title}><h2>{product.name}</h2>{product.href.startsWith('/') ? <ArrowRight size={18} strokeWidth={1.6} aria-hidden="true" /> : <ArrowUpRight size={18} strokeWidth={1.6} aria-hidden="true" />}</div>
                   <p className={styles.tagline}>{product.tagline}</p>
                   <div className={`${styles.preview} ${isLayout ? styles.bookPreview : previews[0]?.videoSrc ? styles.motionPreview : styles.frames}`}>
                     {isLayout ? <BookPreview categories={layoutCategories} /> : product.slug === 'personal-sites' ? <SiteReceiptPreview /> : previews[0]?.videoSrc ? <MotionVideo src={previews[0].videoSrc} poster={previews[0].src} aria-label={previews[0].alt} /> : (previews.length ? previews.slice(0, 3) : [{ src: product.cover, alt: `${product.name}内容预览` }]).map((preview, i) => <PreviewImage key={preview.src} {...preview} priority={index === 0 && i === 0} />)}
                   </div>
-                </Link>
+                </WorkspaceLink>
               </li>;
             })}
             <li className={`${styles.entry} ${styles.future}`}>

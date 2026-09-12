@@ -2,34 +2,20 @@
 version: 1
 slug: "apps-web-app-page-tsx"
 primary_target: "apps/web/app/page.tsx"
-related_targets: ["apps/web/app/products/muse/page.tsx","apps/web/app/products/layout-compositions/page.tsx"]
+related_targets: ["apps/web/components/home-view.tsx", "apps/web/components/workspace-shell.tsx", "apps/web/app/products/muse/page.tsx", "apps/web/app/products/layout-compositions/page.tsx", "apps/web/app/products/personal-sites/page.tsx"]
 ---
 
-# Surface Brief: V2 全站产品入口与内容浏览
+# Surface Brief: 产品入口与内容浏览
 
-Scope: 首页、两个产品列表与全部详情、媒体、404及状态。
-Mode: 首页 Experience（沿时间发现作品）；列表 Experience/Operate（发现与检索）；详情 Read/Experience（查看与追溯）。
-Audience: 站长及设计师同行；快速找到设计参考，理解内容并回溯出处。
-Constraints: 首页为唯一产品选择入口；2026-09-07 最新用户指定 Lifeline 参考，覆盖此前地铁、LED 与时钟方向。未来产品按日期自动入列；不设置全站导航菜单或侧栏，不添加关于、许可或宣传说明。保留真实内容、原作出处、双主题及零动画库。
+现行版本：2026-09-12。全站视觉以根 DESIGN.md 为准，具体页面流程与验收由 docs/design/README.md 维护；本文件为设计工具提供范围和方向，不重复完整规格。
 
-## Direction contract
+Scope: 首页、书架／画册、灵感列表与详情、个人网站介绍及共享外壳。
+Mode: 首页 Experience；集合 Experience / Operate；作品阅读 Read / Experience。
+Audience: 站长与设计师同行，快速检索、连续阅读并能返回现场。
 
-THESIS: 稀疏单色的横向作品时间轴，以细轨道、日期、真实预览和大量留白表达个人作品的持续积累。
-OWN-WORLD: 继承 OpenDesign 中性语义 tokens、Albert Sans 和中文零字距；没有彩色线路、站牌面板或 LED，媒体自身提供颜色。
-STORY: 从早到晚沿横轨阅读，日期在上、产品入口在下，末端虚线通向更多作品；单一原生链接直达产品。
-FIRST VIEWPORT: 适度标题与时期、留白、日期及细轨道、产品名称与真实媒体；手机保留横向轨道并露出下一列，页脚提供前后操作。
-FORM: code-led Experience；用户指定 https://lifeline-evil-rabbit.vercel.app/ 为 pinned reference，覆盖随机方向种子；没有 imagegen comp。轨道分段铺开、作品裁切展开；hover/focus 与指针驱动叠纸展开，首页灵感集播放真实视频。reduced-motion 取消空间动画与自动播放。
-FINISH: 独立 review/lifeline/review.md disposition 为 Ship；review 检查桌面 1440、手机 390 和用户 1280 截图。源码具备日期/list/link 语义、命名按钮、可见焦点、左右键滚动、首尾禁用、图片失败占位及 reduced-motion；本记录不宣称已完成辅助技术测试。
-
-## Implementation status
-
-首页已实现为单色「作品时间轴」（2026-09-07 Lifeline 方向）：日期升序、细轨道与 7px 节点、下方单一产品链接与真实媒体。列宽 380px，≥1440px 420px，≤1100px 340px，≤640px 290px；手机横向溢出，按钮及左右键按一列滚动。标题层级 28/24px，手机均 22px；未来标题 16px、用途 14/13px、日期 13px、辅助标签 12px。首页采用 650–950ms 展开入场与 450–650ms 减速反馈，支持鼠标拖动及防误点；灵感集预览使用真实视频，reduced-motion 移除空间过渡并即时滚动。其余状态如下。
-
-- 轻量页头实际为桌面最小 88px / 手机 72px，仅品牌/首页链接及主题开关；首页不追加关于与许可说明。
-- 灵感集静态网格 4/3/2/1 列，统一 4:3 媒体框；视频可视时静音循环、离屏暂停，列表默认预览，不显示播放开关；分类/搜索、滚动自动加载、详情返回现场。
-- 布局参考静态 5/4/2 列网格；当前 catalog 350 条（含 8 条上游缺图）均可按分类/主题/关键词检索和进入详情，数量依查询 API 更新。
-- 详情标题在媒体之前，实际说明在媒体后，原作链接并入作者栏；布局图鉴保持大尺寸阅读，关联内容在下方。
-- 视频详情测量剩余视口，预留原生控制与工具条；只对视频限制高度，图片按内容比例保持阅读尺度。灯箱仅从详情放大触发。
-- 源 tokens、中文排印、共享按钮、双主题与局部 CSS 归属保留；侧栏、自动墙、列表灯箱不再是当前体验；首页当前以用户最新指定的单色横向时间轴取代地铁导视。
-
-本轮动效修订以桌面为准；review/motion/review.md 已完成桌面范围复核。列表与详情动态视频恢复，首页与列表默认预览，不显示暂停／播放开关；不添加新的详情缩略图导航，保留原有前后翻页。
+THESIS: 首页以稀疏单色横向时间轴表达作品的时间顺序；日期、细轨道、真实预览与留白构成页面。
+OWN-WORLD: OpenDesign 中性色、Albert Sans、中文零字距；书架与画册使用局部实体书材质，其他表面保持开放轻量。
+STORY: 从首页单一作品入口进入产品；书架检索和开册、灵感筛选和连续详情、个人网站静态介绍与真实宣传片各承担实际任务。
+FIRST VIEWPORT: 页头首页／产品名与主题；首页追加已确认的头像，作品块以真实名称、用途与预览呈现。无地铁、LED、全站菜单或品牌副标题。
+FORM: code；现有站点是视觉依据。按钮胶囊、图标圆形、底线搜索；布局分类以书籍呈现。个人网站不恢复龙卷风。
+FINISH: 页面行为标准与已知差异见 docs/design/README.md。历史截图不代表当前版本的视觉验收；本次规范刷新不声明新一轮全站视觉审核通过。

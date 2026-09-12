@@ -24,3 +24,6 @@
 .heading { margin:0; font:inherit; }
 
 .identity { display:flex; align-items:center; gap:8px; }
+
+/* A single text layer carries the selected work into its page heading. */
+.travelTitle { position:fixed; z-index:100; margin:0; padding:0; pointer-events:none; transform-origin:0 0; white-space:nowrap; }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, type CSSProperties } from 'react';
+import { instantMotion, observeMotionPolicy } from '@/lib/motion';
 import styles from './book-opening.module.css';
 
 export interface OpeningBook {
@@ -25,7 +26,17 @@ export function BookOpening({book,onDone}:{book:OpeningBook;onDone:()=>void}) {
     const side=spine.current;
     const animations:Animation[]=[];
     let stopped=false;
+    let revealed=false;
     let frame=0;
+    const reveal=()=>{if(!revealed){revealed=true;book.reveal();}};
+    const finish=()=>{
+      if(stopped)return;
+      stopped=true;
+      cancelAnimationFrame(frame);
+      animations.forEach(animation=>animation.cancel());
+      reveal();
+      onDone();
+    };
     const play=(element:Element,frames:Keyframe[],duration:number)=>{
       const animation=element.animate(frames,{duration,fill:'forwards',easing:'cubic-bezier(.4,0,.2,1)'});
       animations.push(animation);
@@ -38,6 +49,7 @@ export function BookOpening({book,onDone}:{book:OpeningBook;onDone:()=>void}) {
     const origin=`translate(${book.rect.left}px,${book.rect.top}px)`;
     const center=`translate(${x}px,${y}px)`;
     const run=async()=>{
+      if(stopped)return;
       if(!book.extracted) {
       // Lift before rotating, so the cover clears the adjacent books.
       await play(actor,[{transform:origin},{transform:`translate(${book.rect.left}px,${book.rect.top-38}px)`}],240);
@@ -52,12 +64,12 @@ export function BookOpening({book,onDone}:{book:OpeningBook;onDone:()=>void}) {
       await play(front,[{transform:'rotateY(0deg)'},{transform:'rotateY(0deg)'}],260);
       if(stopped)return;
       }
-      book.reveal();
+      reveal();
       const deadline=performance.now()+2000;
       const settle=()=>{
         if(stopped)return;
         const spread=document.querySelector('[data-book-spread]');
-        if(!spread){if(performance.now()>deadline){onDone();return;}frame=requestAnimationFrame(settle);return;}
+        if(!spread){if(performance.now()>deadline){finish();return;}frame=requestAnimationFrame(settle);return;}
         const box=spread.getBoundingClientRect();
         void (async()=>{
           await play(actor,[{transform:center,width:`${width}px`,height:`${height}px`},{transform:`translate(${box.left+box.width/2}px,${box.top}px)`,width:`${box.width/2}px`,height:`${box.height}px`}],360);
@@ -67,13 +79,15 @@ export function BookOpening({book,onDone}:{book:OpeningBook;onDone:()=>void}) {
             play(front,[{transform:'rotateY(0deg)',opacity:1},{transform:'rotateY(-176deg)',opacity:1,offset:.9},{transform:'rotateY(-180deg)',opacity:0}],720),
             ...(left ? [play(left,[{transform:'rotateY(180deg)',opacity:1},{transform:'rotateY(0deg)',opacity:1}],720)] : []),
           ]);
-          if(!stopped)onDone();
-        })().catch(()=>{});
+          finish();
+        })().catch(finish);
       };
       frame=requestAnimationFrame(settle);
     };
-    void run().catch(()=>{});
-    return ()=>{stopped=true;cancelAnimationFrame(frame);animations.forEach(animation=>animation.cancel());};
+    const stop=observeMotionPolicy(()=>{if(instantMotion() || document.hidden)finish();});
+    const timeout=setTimeout(finish,4500);
+    void run().catch(finish);
+    return ()=>{stopped=true;stop();clearTimeout(timeout);cancelAnimationFrame(frame);animations.forEach(animation=>animation.cancel());};
   },[book,onDone]);
   return <div className={styles.overlay} aria-hidden="true">
     <div ref={root} className={styles.book} data-extracted={book.extracted || undefined} style={{'--cover':book.color,'--cover-ink':book.ink,width:book.rect.width,height:book.rect.height,transform:`translate(${book.rect.left}px,${book.rect.top}px)`} as CSSProperties}>
