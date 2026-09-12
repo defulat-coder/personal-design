@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import styles from './page.module.css';
-import { listCategories, listPosts } from '@personal-design/inspora';
+import { listCategories, listPosts, videoPreviewUrl } from '@personal-design/inspora';
 import { PlateWall, type PlateWallItem } from '@/components/plate-wall';
 
 export const metadata: Metadata = {
@@ -15,7 +15,7 @@ const posts = listPosts();
 // 只把客户端需要的字段传下去，控制 RSC 负载
 const items: PlateWallItem[] = posts.flatMap((post) => {
   const first = post.media[0];
-  const src = first?.type === 'video' ? first.src : (first?.thumb ?? first?.src);
+  const src = first?.type === 'video' ? videoPreviewUrl(post, first) : (first?.thumb ?? first?.src);
   return [
     {
       key: post.slug,
@@ -32,10 +32,8 @@ const items: PlateWallItem[] = posts.flatMap((post) => {
       width: first?.width ?? 4,
       height: first?.height ?? 3,
       mediaCount: post.media.length,
-      // 搜索命中面：分类 + 行业 + 风格标签（标题短词多，只搜标题会显得「搜不到」）
-      keywords: [post.category, ...post.industries, ...post.styles]
-        .filter(Boolean)
-        .join(' '),
+      keywords: [post.category, ...post.industries, ...post.styles].filter(Boolean).join(' '),
+
     },
   ];
 });
@@ -55,7 +53,6 @@ export default function MusePage() {
             categories={tabs}
             items={items}
             batchSize={24}
-            searchPlaceholder="搜索灵感"
           />
         </Suspense>
       </div>

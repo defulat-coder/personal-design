@@ -81,6 +81,14 @@ export interface InsporaCategory {
   count: number;
 }
 
+/** Use the provider's existing lightweight clip for simultaneous previews; full playback keeps src. */
+export function videoPreviewUrl(post: Pick<InsporaPost, 'raw'>, media: Pick<InsporaMedia, 'id' | 'type' | 'src'>): string | null {
+  if (media.type !== 'video' || !post.raw || typeof post.raw !== 'object' || !('media' in post.raw) || !Array.isArray(post.raw.media)) return media.src;
+  const record = post.raw.media.find(entry => entry && typeof entry === 'object' && entry.id === media.id);
+  const preview = record?.videoPreview;
+  return preview && typeof preview === 'object' && typeof preview.url === 'string' && preview.url.startsWith('https://') ? preview.url : media.src;
+}
+
 /** inspora 原帖链接 */
 export function upstreamUrl(post: Pick<InsporaPost, 'slug'>): string {
   return `https://www.inspora.design/posts/${post.slug}`;

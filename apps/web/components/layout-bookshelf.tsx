@@ -3,11 +3,12 @@
 import Image from 'next/image';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { ArrowLeft, ArrowRight, Maximize2 } from 'lucide-react';
+import { ArrowRight, Maximize2 } from 'lucide-react';
 import { categoryLabel } from '@/lib/category-label';
 import { useLightbox } from './lifeline/lightbox';
 import { instantMotion, observeMotionPolicy, playExit } from '@/lib/motion';
 import { CollectionSearch } from './collection-search';
+import { matchesSearch } from '@/lib/browse-context';
 import { Button } from './button';
 import { WorkspaceBack } from './workspace-shell';
 import styles from './layout-bookshelf.module.css';
@@ -35,11 +36,10 @@ export function BookSpines({ categories, onOpen, muted = [], previewActive = -1,
 
 export function LayoutBookshelf({categories,items}:Props) {
   const params = useSearchParams();
-  const query = params.get('q') || '';
-  const term = query.trim().toLocaleLowerCase();
   const theme = params.get('theme') || '';
+  const query = params.get('q') || '';
   const active = categories.find(c=>c.name===params.get('cat'));
-  const matches = items.filter(item=>(!theme || item.themeSlug===theme) && (!term || `${item.id} ${item.name} ${item.category} ${categoryLabel(item.category)} ${item.theme}`.toLocaleLowerCase().includes(term)));
+  const matches = items.filter(item=>(!theme || item.themeSlug===theme) && matchesSearch(query,[item.id,item.name,item.theme,categoryLabel(item.category)]));
   const pages = active ? matches.filter(item=>item.category===active.name) : [];
   const [extracting,setExtracting] = useState(-1);
   const extracted = useRef<((skip?: boolean)=>void)|null>(null);
@@ -49,27 +49,31 @@ export function LayoutBookshelf({categories,items}:Props) {
   const shelfScroll = useRef(0);
   const closing = useRef<ReturnType<typeof playExit> | null>(null);
   const shelfReturn = useRef<{index:number;y:number}|null>(null);
+  const previousActive = useRef(active);
   const [isClosing,setIsClosing]=useState(false);
   function update(values:Record<string,string>, push=false) {
     const next = new URLSearchParams(params.toString());
     Object.entries(values).forEach(([key,value])=>value ? next.set(key,value) : next.delete(key));
-    window.history[push ? 'pushState' : 'replaceState'](null,'',`${path}${next.size ? `?${next}`:''}`);
+    window.history[push ? 'pushState' : 'replaceState']({layoutShelfReturn:push || !!window.history.state?.layoutShelfReturn},'',`${path}${next.size ? `?${next}`:''}`);
   }
   function open(name:string,id='') {
     if(opening || extracting!==-1) return;
+    let committed=false;
+    const commitOpen=()=>{if(committed)return;committed=true;update({cat:name,page:id},true);};
     shelfScroll.current = window.scrollY;
     window.scrollTo({top:0,behavior:'instant'});
     lastBook.current = categories.findIndex(c=>c.name===name);
     const index=lastBook.current;
+    shelfReturn.current={index,y:shelfScroll.current};
     const element=document.getElementById(`book-${index}`);
-    if(!element || instantMotion()) {update({cat:name,page:id},true);return;}
+    if(!element || instantMotion()) {commitOpen();return;}
     extracted.current=(skip=false)=>{
       extracted.current=null;
       setExtracting(-1);
-      if(skip || instantMotion() || document.hidden) {update({cat:name,page:id},true);return;}
+      if(skip || instantMotion() || document.hidden) {commitOpen();return;}
       const rect=(element.querySelector('[data-book-cover]') ?? element).getBoundingClientRect();
       const [color,ink]=bindings[index % bindings.length]!;
-      setOpening({index,extracted:true,title:categoryLabel(name),color,ink,rect:{left:rect.left,top:rect.top,width:rect.width,height:rect.height},reveal:()=>update({cat:name,page:id},true)});
+      setOpening({index,extracted:true,title:categoryLabel(name),color,ink,rect:{left:rect.left,top:rect.top,width:rect.width,height:rect.height},reveal:commitOpen});
     };
     setExtracting(index);
   }
@@ -99,7 +103,9 @@ export function LayoutBookshelf({categories,items}:Props) {
       shelfReturn.current={index:active ? categories.indexOf(active) : lastBook.current,y:shelfScroll.current};
       setIsClosing(false);
       setOpening(null);
+      if(window.history.state?.layoutShelfReturn){window.history.back();return;}
       const next = new URLSearchParams(window.location.search);
+      next.delete('zoom');
       next.delete('cat');
       next.delete('page');
       window.history.replaceState(null,'',`${path}${next.size ? `?${next}`:''}`);
@@ -115,8 +121,12 @@ export function LayoutBookshelf({categories,items}:Props) {
     closing.current={finish:exit.finish,cancel:()=>{exit.cancel();fold?.cancel();left?.style.removeProperty('transform-origin');}};
   }, [active, categories, opening]);
   useLayoutEffect(()=>{
-    const restore=shelfReturn.current;
-    if(active || !restore)return;
+    const prior=previousActive.current;
+    previousActive.current=active;
+    if(active || !prior)return;
+    setOpening(null);
+    setIsClosing(false);
+    const restore=shelfReturn.current ?? {index:categories.indexOf(prior),y:shelfScroll.current};
     const book=document.getElementById(`book-${restore.index}`);
     if(!book)return;
     // The reader is detached now; releasing its final frame cannot flash the old spread.
@@ -125,25 +135,25 @@ export function LayoutBookshelf({categories,items}:Props) {
     window.scrollTo({top:restore.y,behavior:'instant'});
     book.focus({preventScroll:true});
     shelfReturn.current=null;
-  },[active]);
+  },[active,categories]);
   useEffect(()=>()=>closing.current?.cancel(),[]);
-  return <div className={styles.library} aria-busy={!!opening || extracting!==-1} data-opening={opening?.index} data-search={!!term || !!theme || undefined}>
+  return <div className={styles.library} aria-busy={!!opening || extracting!==-1} data-opening={opening?.index} data-filtered={!!theme || !!query || undefined}>
     {opening && <BookOpening book={opening} onDone={finishOpening}/> }
     {active ? <WorkspaceBack label="返回书架" onBack={close} /> : <div className={styles.toolbar} inert={!!opening || extracting!==-1}>
       <span className={styles.collectionName}>排版构图图鉴</span>
-      <CollectionSearch value={query} onChange={q=>update({q,cat:'',page:''})} placeholder="搜索图鉴" label="搜索图鉴" />
+      <CollectionSearch value={query} onChange={q=>update({q,page:''})} placeholder="搜索图鉴" label="搜索图鉴名称或主题" />
     </div>}
-    {active && pages.length ? <BookReader key={`${active.name}:${query}:${theme}`} closing={isClosing} name={active.name} pages={pages} initialId={params.get('page') || ''} onPage={id=>update({page:id})} onClose={close} /> : <>
+    {active && pages.length ? <BookReader key={`${active.name}:${theme}:${query}`} closing={isClosing} name={active.name} pages={pages} initialId={params.get('page') || ''} zoomId={params.get('zoom') || ''} onZoomHandled={()=>update({zoom:''})} onPage={id=>update({page:id})} onClose={close} /> : <>
       <div inert={!!opening || extracting!==-1}><BookSpines categories={categories} extracting={extracting} onExtract={()=>extracted.current?.()} onOpen={open} muted={categories.filter(c=>!matches.some(item=>item.category===c.name)).map(c=>c.name)} /></div>
-      {term || theme ? <section className={styles.results} aria-label="搜索结果" inert={!!opening || extracting!==-1}>
+      {theme || query ? <section className={styles.results} aria-label="图鉴搜索结果" inert={!!opening || extracting!==-1}>
         <div className={styles.resultHeading}><p role="status">{matches.length} 条图鉴</p><Button variant="ghost" onClick={()=>update({q:'',theme:'',cat:'',page:''})}>清除筛选</Button></div>
-        {matches.length ? <div className={styles.matchList}>{matches.map(item=><button key={item.id} onClick={()=>open(item.category,item.id)}><span>{item.name}<small>{categoryLabel(item.category)} · {item.theme}</small></span><ArrowRight size={18} strokeWidth={1.6} aria-hidden/></button>)}</div> : <p>没有找到匹配的图鉴，试试其他关键词。</p>}
+        {matches.length ? <div className={styles.matchList}>{matches.map(item=><button key={item.id} onClick={()=>open(item.category,item.id)}><span>{item.name}<small>{categoryLabel(item.category)} · {item.theme}</small></span><ArrowRight size={18} strokeWidth={1.6} aria-hidden/></button>)}</div> : <p>没有匹配的图鉴，试试其他关键词或主题。</p>}
       </section> : <p className={styles.hint}>选一本，翻开看看。</p>}
     </>}
   </div>;
 }
 
-function BookReader({name,pages,initialId,onPage,onClose,closing}:{name:string;pages:BookPage[];initialId:string;onPage:(id:string)=>void;onClose:()=>void;closing:boolean}) {
+function BookReader({name,pages,initialId,zoomId,onZoomHandled,onPage,onClose,closing}:{name:string;pages:BookPage[];initialId:string;zoomId:string;onZoomHandled:()=>void;onPage:(id:string)=>void;onClose:()=>void;closing:boolean}) {
   const initial = Math.max(0,pages.findIndex(page=>page.id===initialId));
   const [spread,setSpread] = useState(Math.floor(initial/2)*2);
   const [turn,setTurn] = useState<{from:number;to:number;direction:number}|null>(null);
@@ -152,6 +162,19 @@ function BookReader({name,pages,initialId,onPage,onClose,closing}:{name:string;p
   const pointer = useRef<number|null>(null);
   const swiped = useRef(false);
   useEffect(()=>{reader.current?.focus({preventScroll:true}); return ()=>clearTimeout(timer.current);},[]);
+  const zoomOpened=useRef(false);
+  useEffect(()=>{
+    if(!zoomId || zoomOpened.current)return;
+    const button=reader.current?.querySelector<HTMLButtonElement>(`[data-page-id="${CSS.escape(zoomId)}"]`);
+    if(button && !button.disabled){zoomOpened.current=true;button.focus({preventScroll:true});button.click();}
+    onZoomHandled();
+  },[zoomId,onZoomHandled]);
+  function jump(id:string) {
+    const index=pages.findIndex(page=>page.id===id);
+    if(index<0)return;
+    clearTimeout(timer.current);setTurn(null);
+    setSpread(Math.floor(index/2)*2);onPage(id);
+  }
   function go(direction:number) {
     if (turn) return;
     const next = spread+direction*2;
@@ -163,26 +186,27 @@ function BookReader({name,pages,initialId,onPage,onClose,closing}:{name:string;p
   }
   const left = turn?.direction===-1 ? turn.to : spread;
   const right = turn?.direction===1 ? turn.to+1 : spread+1;
+  const previousFooter=<footer className={styles.pageFooter}><Button variant="ghost" data-direction="previous" disabled={spread===0 || !!turn} onClick={()=>go(-1)} aria-label="上一页">上一页</Button></footer>;
+  const nextFooter=<footer className={styles.pageFooter}><Button variant="ghost" data-direction="next" disabled={spread+2>=pages.length || !!turn} onClick={()=>go(1)} aria-label="下一页">下一页</Button></footer>;
   return <div ref={reader} className={styles.reader} inert={closing} tabIndex={-1} aria-label={`${categoryLabel(name)}画册`} onKeyDown={event=>{
     if(event.target instanceof HTMLElement && event.target.closest('[aria-busy="true"]') && event.key!=='Escape') return;
     if(event.target instanceof HTMLElement && event.target.closest('input,textarea,select')) return;
     if(event.key==='ArrowRight' || event.key==='ArrowLeft') {event.preventDefault();go(event.key==='ArrowRight'?1:-1);}
     if(event.key==='Escape') {event.preventDefault();onClose();}
   }}>
-    <div className={styles.readerHeading}><h2>{categoryLabel(name)}</h2><p className={styles.readingStatus} role="status" aria-label={`第${spread+1}至${Math.min(spread+2,pages.length)}页，共${pages.length}页`}>{spread+1}{spread+1 < pages.length ? `–${Math.min(spread+2,pages.length)}` : ''}<span> / {pages.length}</span></p></div>
+    <div className={styles.readerHeading}><h2>{categoryLabel(name)}</h2><select className={styles.pagePicker} aria-label="跳转到图鉴" value={pages[spread]!.id} onChange={event=>jump(event.target.value)}>{pages.map((page,index)=><option value={page.id} key={page.id}>第{index+1}页 · {page.name}</option>)}</select><p className={styles.readingStatus} role="status" aria-label={`第${spread+1}至${Math.min(spread+2,pages.length)}页，共${pages.length}页`}>{spread+1}{spread+1 < pages.length ? `–${Math.min(spread+2,pages.length)}` : ''}<span> / {pages.length}</span></p></div>
     <div className={styles.bookStage} onClickCapture={event=>{if(swiped.current){event.preventDefault();event.stopPropagation();swiped.current=false;}}} onPointerDown={event=>{swiped.current=false;if(event.pointerType==='touch') pointer.current=event.clientX;}} onPointerUp={event=>{
       if(pointer.current!==null && Math.abs(event.clientX-pointer.current)>60) {swiped.current=true;go(event.clientX<pointer.current?1:-1);event.preventDefault();}
       pointer.current=null;
     }} onPointerCancel={()=>{pointer.current=null;}}>
       <div className={styles.spread} data-book-spread>
-        <div className={`${styles.page} ${styles.left}`}><PageContent key={pages[left]?.id ?? 'end-left'} item={pages[left]} number={left+1}/></div>
-        <div className={`${styles.page} ${styles.right}`}><PageContent key={pages[right]?.id ?? 'end-right'} item={pages[right]} number={right+1}/></div>
+        <div className={`${styles.page} ${styles.left}`}><PageContent key={pages[left]?.id ?? 'end-left'} item={pages[left]} number={left+1}/>{previousFooter}</div>
+        <div className={`${styles.page} ${styles.right}`}><PageContent key={pages[right]?.id ?? 'end-right'} item={pages[right]} number={right+1}/>{nextFooter}</div>
         {turn && <div className={`${styles.leaf} ${turn.direction===1?styles.forward:styles.backward}`} aria-hidden inert>
-          <div className={`${styles.face} ${styles.front}`}><PageContent item={pages[turn.direction===1?turn.from+1:turn.from]} number={turn.direction===1?turn.from+2:turn.from+1}/></div>
-          <div className={`${styles.face} ${styles.back}`}><PageContent item={pages[turn.direction===1?turn.to:turn.to+1]} number={turn.direction===1?turn.to+1:turn.to+2}/></div>
+          <div className={`${styles.face} ${styles.front}`}><PageContent item={pages[turn.direction===1?turn.from+1:turn.from]} number={turn.direction===1?turn.from+2:turn.from+1}/>{turn.direction===1?nextFooter:previousFooter}</div>
+          <div className={`${styles.face} ${styles.back}`}><PageContent item={pages[turn.direction===1?turn.to:turn.to+1]} number={turn.direction===1?turn.to+1:turn.to+2}/>{turn.direction===1?previousFooter:nextFooter}</div>
         </div>}
       </div>
-      <nav className={styles.pagination} aria-label="画册翻页"><Button icon data-direction="previous" disabled={spread===0 || !!turn} onClick={()=>go(-1)} aria-label="上一页"><ArrowLeft aria-hidden/></Button><Button icon data-direction="next" disabled={spread+2>=pages.length || !!turn} onClick={()=>go(1)} aria-label="下一页"><ArrowRight aria-hidden/></Button></nav>
     </div>
   </div>;
 }
@@ -191,7 +215,7 @@ function PageContent({item,number}:{item?:BookPage;number:number}) {
   const [failed,setFailed] = useState(false);
   const lightbox = useLightbox();
   if(!item) return <div className={styles.endPage}>本册已阅毕</div>;
-  return <><button className={styles.pageImage} aria-label={`放大${item.name}`} disabled={!item.src} onClick={event=>{
+  return <><button data-page-id={item.id} className={styles.pageImage} aria-label={`放大${item.name}`} disabled={!item.src} onClick={event=>{
     if(item.src) lightbox?.open({src:item.src,thumb:item.thumb ?? undefined,alt:item.name},{rect:event.currentTarget.getBoundingClientRect(),sourceEl:event.currentTarget});
   }}>
     {item.thumb && !failed ? <Image src={item.thumb} alt={item.name} fill unoptimized sizes="(max-width: 640px) 44vw, 440px" draggable={false} onError={()=>setFailed(true)}/> : <span>{item.name}<br/>{failed?'图片暂时无法加载':'此图鉴暂缺图片'}</span>}

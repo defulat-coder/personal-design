@@ -9,6 +9,11 @@ Use **pnpm** (11.x, workspaces): `pnpm install`, `pnpm dev`, `pnpm build`
 - `pnpm dev` 通过 [portless](https://github.com/vercel-labs/portless)（全局安装）启动，站点在 **https://personal-design.localhost**（HTTPS + HTTP/2，无端口）
 - 路由名在根 `portless.json` 配置；绕过代理直连端口用 `pnpm dev:direct`（http://localhost:3000）
 
+## Browser Automation
+
+- Agent 的浏览器操作和页面验收使用 **ego-lite 应用内置的 [ego-browser 技能](</Applications/ego lite.app/Contents/Frameworks/ego Framework.framework/Versions/0.4.7.4/Resources/ego-skills/ego-browser/SKILL.md>)**；先读取该文件，再通过 `ego-browser nodejs` heredoc 执行。不使用 `agent-browser` 或其他位置的同名技能。应用升级后若路径失效，在应用内查找新版技能路径。现有数据同步脚本的 Playwright 实现不受此约束影响。
+- `next-dev-loop` 是用户有意移除的技能；更新技能时不要恢复安装。
+
 ## Commit Attribution
 
 AI commits MUST include:
@@ -37,10 +42,10 @@ Co-Authored-By: (the agent model's name and attribution byline)
 - `packages/<product>` — 每个产品的内容/数据包（catalog、类型、同步脚本）
 - 新增产品：`packages/<product>` + `apps/web/app/products/<slug>/` + 在 `apps/web/lib/products.ts` 注册（现有类型要求 `date` 上线日期，注册表按它排序；`line` 是保留的注册字段，当前页面不显示线路色，不要求新增装饰色）；需要独立部署才拆 `apps/<product>`
 - 首页是按 `date` 升序的稀疏单色横向作品时间轴，使用 `home-view.tsx`；每件作品一个入口，仅溢出时显示翻页按钮。不恢复地铁、站牌、LED、全站菜单或侧栏。`line` 是历史保留注册字段，不要求新增线路色。
-- 灵感集使用 `plate-wall.tsx` 稳定网格、即时分类与检索、滚动自动追加、单链接直达详情。布局参考使用 `layout-bookshelf.tsx` 八本分类书籍与双页画册，书架检索命中后定位跨页；图片点击放大即详情，不增加二次详情跳转。缺图条目保留。
+- 灵感集使用 plate-wall.tsx 网格和中文分类；原生链接进入详情，支持搜索，无放映台。布局参考使用 `layout-bookshelf.tsx` 八本分类书籍与双页画册，书架按分类或既有theme链接筛选后定位跨页，画册页码目录可直接选图鉴；旧图鉴链接重定向同一画册并放大；图片点击放大即详情，不增加二次详情跳转。缺图条目保留。
 - 站点内图片一律放 `apps/web/public/`，由包的同步脚本生成，不手写路径
 - 首页不放关于、署名、许可或额外宣传说明；用户要求个人自用、简洁优先。不要再添加或转存这类额外说明。
-- 产品 truth 在 `PRODUCT.md`；全站视觉与交互唯一现行标准在 `DESIGN.md`，页面流程与验收见 `docs/design/README.md`。改 UI 前先读标准；使用中性双主题、Albert Sans、中文零字距、胶囊文字按钮、圆形图标按钮、底线搜索与8px媒体。书籍材质只用于局部表面。
+- 产品 truth 在 `PRODUCT.md`；全站视觉与交互唯一现行标准在 `DESIGN.md`，页面流程与验收见 `docs/design/README.md`。改 UI 前先读标准；使用中性双主题、Albert Sans、中文零字距、胶囊文字按钮、圆形图标按钮、8px媒体；两集合支持即时搜索。书籍材质仅用于布局参考局部表面；灵感媒体沿用8px圆角。
 
 ## layout-compositions 包
 
@@ -58,10 +63,10 @@ Co-Authored-By: (the agent model's name and attribution byline)
 - 查询一律用 `src/index.ts` 的 API（`listPosts`、`getPostBySlug`、`listCategories`、`upstreamUrl`…），不在 app 里读 DB、不拼路径
 - 详情面向访客，只展示作品、作者、分类、实际说明和「查看原作」出处链接；不展示原始 JSON、同步信息、文件大小/分辨率、内部标签或空信息占位。原始数据只在包内保留（2026-09-07 用户明确）。
 - 产品对外的名字是「灵感集」，路由 `/products/muse`；**访客可见处（文案、链接、metadata）一律不得出现来源站点名**，事实性描述只留在本文件与包/脚本注释里
-- 灵感列表为稳定 CSS grid，视频默认动态预览、单链接进详情、滚动自动追加，不设预览开关；详情标题/作者/出处在媒体前，实际说明在媒体后。视频默认静音循环并保留原生控制，离屏暂停；仅视频按剩余视口适配，不缩小图片阅读。
+- 灵感集使用 plate-wall.tsx 网格与中文分类，首批24件、滚动追加；原生作品链接进详情，返回恢复分类和位置。图片与视频预览保留，视频详情原生控制，图片可放大；支持搜索，无放映机或旋钮。旧post参数跳转对应详情。
 
 ## 当前用户故事约束（2026-09-12）
 
 - 当前首页沿用 Lifeline 参考的稀疏单色横向作品时间轴，不添加重复状态图例、轴标签或品牌副标题，只有横向溢出时才显示翻页按钮。
-- 两个集合即时检索；灵感详情相邻导航沿进入时的筛选结果，布局画册沿检索结果翻页；返回保留筛选和位置。分类用中文呈现，数量集中在结果区，实体书可显示本册页数。
-- 灵感预览默认动态播放，滚动自动追加；不显示预览开关、手动加载按钮、JSON 或同步信息。详情保留作品、作者、说明、分类和原作入口，图片可直接点击放大。
+- 两个集合支持即时搜索，URL的q保存搜索关键词；灵感网格与相邻作品沿当前筛选结果，布局画册沿分类／主题结果翻页；返回保留筛选和位置。分类用中文呈现，数量集中在结果区，实体书可显示本册页数。
+- 灵感预览默认动态播放，滚动自动追加；不显示预览开关、手动加载按钮、JSON 或同步信息。播放器保留作品、作者、说明、分类和原作入口，图片与视频均可点格进入右侧专注画面。

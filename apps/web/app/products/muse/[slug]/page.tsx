@@ -46,7 +46,7 @@ export default async function MuseDetailPage({ params }: PageProps) {
     href: `/products/muse/${entry.slug}`,
     title: entry.title,
     category: entry.category ?? '未分类',
-    search: [entry.title, entry.creatorName ?? '', [entry.category, ...entry.industries, ...entry.styles].filter(Boolean).join(' '), categoryLabel(entry.category ?? '未分类')],
+    search: [entry.creatorName ?? '', [entry.category, ...entry.industries, ...entry.styles].filter(Boolean).join(' '), categoryLabel(entry.category ?? '未分类')],
   }));
 
   const media = post.media

@@ -97,7 +97,6 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<Element | null>(null);
-  const wasOpenRef = useRef(false);
   const closeTimerRef = useRef(0);
   const closingRef = useRef(false);
   const swipeRef = useRef<HTMLDivElement>(null);
@@ -208,18 +207,13 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
   const isOpen = active !== null;
   const dialogReady = isOpen && frame !== null;
 
+  useEffect(() => {
+    if (active && !previousFocusRef.current) previousFocusRef.current = active.sourceEl ?? document.activeElement;
+  }, [active]);
+
   // 打开后双帧展开；锁背景滚动；body 挂标记（暂停灵感墙 marquee）
   useEffect(() => {
-    if (!isOpen) {
-      wasOpenRef.current = false;
-      return;
-    }
-    // 只在「关闭 → 打开」时记下之前焦点：go() 翻图也更新 active，
-    // 无守卫会把 ref 覆盖成灯箱内部焦点，关闭后焦点丢失到 body
-    if (!wasOpenRef.current) {
-      previousFocusRef.current = document.activeElement;
-      wasOpenRef.current = true;
-    }
+    if (!isOpen) return;
     let inner = 0;
     const raf = instant ? 0 : requestAnimationFrame(() => {
       inner = requestAnimationFrame(() => { if (!closingRef.current) setExpanded(true); });

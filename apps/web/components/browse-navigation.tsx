@@ -6,11 +6,11 @@ import { useSearchParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight, MoveLeft, MoveRight } from 'lucide-react';
 import { buttonClassName } from './button';
 import { DetailKeyboardNav } from './detail-tools';
-import { browseHref, resolveBrowseContext, resolveUrlBrowseContext, type BrowseEntry, type SearchableBrowseEntry } from '@/lib/browse-context';
+import { browseHref, resolveBrowseContext, resolveUrlBrowseContext, type BrowseEntry, type FilterableBrowseEntry } from '@/lib/browse-context';
 import styles from './browse-navigation.module.css';
 import { WorkspaceLink } from './workspace-shell';
 
-type Props = { appearance?:'button'|'text'; listPath:string; storageKey:string; returnLabel:string; fallbackHref:string; currentHref:string; entries:BrowseEntry[]; browseEntries:SearchableBrowseEntry[] };
+type Props = { appearance?:'button'|'text'; listPath:string; storageKey:string; returnLabel:string; fallbackHref:string; currentHref:string; entries:BrowseEntry[]; browseEntries:FilterableBrowseEntry[] };
 const subscribe = () => () => {};
 
 export function BrowseNavigation(props: Props) {

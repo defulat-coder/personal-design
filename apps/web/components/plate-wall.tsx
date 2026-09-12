@@ -3,10 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { categoryLabel } from '@/lib/category-label';
-import { browseHref, browseMemoryKey } from '@/lib/browse-context';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { browseHref, browseMemoryKey, matchesSearch } from '@/lib/browse-context';
 import { MotionVideo } from './motion-video';
+import { categoryLabel } from '@/lib/category-label';
 import { CollectionSearch } from './collection-search';
 import { CollectionToolbar } from './collection-toolbar';
 import { Button } from './button';
@@ -34,15 +34,12 @@ export interface PlateWallItem {
   width: number;
   height: number;
   mediaCount?: number;
-  /** 搜索匹配用的附加词（主题名等） */
   keywords?: string;
 }
 
 interface PlateWallProps {
   categories: { name: string; count: number }[];
   items: PlateWallItem[];
-  /** 传了才显示搜索框 */
-  searchPlaceholder?: string;
   /** 首屏与每批数量 */
   batchSize?: number;
 }
@@ -50,32 +47,29 @@ interface PlateWallProps {
 const DEFAULT_BATCH = 48;
 
 /** Stable gallery: one native link per work, visible motion previews, scroll-triggered batching. */
-export function PlateWall({ categories, items, searchPlaceholder, batchSize = DEFAULT_BATCH }: PlateWallProps) {
+export function PlateWall({ categories, items, batchSize = DEFAULT_BATCH }: PlateWallProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const [active, select] = useCatParam(categories.map((category) => category.name));
+  const router = useRouter();
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    const post = params.get('post');
+    params.delete('post');
+    const listHref = `${pathname}${params.size ? `?${params}` : ''}`;
+    if (post) router.replace(browseHref(`${pathname}/${encodeURIComponent(post)}`, listHref));
+  }, [searchParams, pathname, router]);
   const query = searchParams.get('q') ?? '';
-  const setQuery = (value: string) => {
+  const setQuery = (q: string) => {
     const params = new URLSearchParams(window.location.search);
-    if (value) params.set('q', value); else params.delete('q');
+    if (q) params.set('q', q); else params.delete('q');
     window.history.replaceState(null, '', `${pathname}${params.size ? `?${params}` : ''}`);
   };
   const returnHref = `${pathname}${searchParams.size ? `?${searchParams}` : ''}`;
   const [shown, setShown] = useState(batchSize);
   const moreRef = useRef<HTMLDivElement>(null);
 
-  const filtered = useMemo(() => {
-    const byCat = active === '全部' ? items : items.filter((i) => i.category === active);
-    const keyword = query.trim().toLowerCase();
-    if (!keyword) return byCat;
-    return byCat.filter(
-      (i) =>
-        i.name.toLowerCase().includes(keyword) ||
-        (i.no ?? '').includes(keyword) ||
-        (i.lead ?? '').toLowerCase().includes(keyword) ||
-        (i.keywords ?? '').toLowerCase().includes(keyword) || categoryLabel(i.category).includes(keyword),
-    );
-  }, [active, query, items]);
+  const filtered = useMemo(() => items.filter(item => (active === '全部' || item.category === active) && matchesSearch(query, [item.name, item.lead, item.keywords, categoryLabel(item.category)])), [active, items, query]);
 
   const visible = filtered.slice(0, shown);
   const remember = (key: string) => {
@@ -83,8 +77,8 @@ export function PlateWall({ categories, items, searchPlaceholder, batchSize = DE
   };
 
 
-  // 切分类/搜索时重置分批（render 期间调整 state，避免 effect 级联）
-  const filterKey = `${active}|${query.trim()}`;
+  // 切分类时重置分批（render 期间调整 state，避免 effect 级联）
+  const filterKey = `${active}|${query}`;
   const [prevKey, setPrevKey] = useState(filterKey);
   if (prevKey !== filterKey) {
     setPrevKey(filterKey);
@@ -125,16 +119,16 @@ export function PlateWall({ categories, items, searchPlaceholder, batchSize = DE
   const clear = () => window.history.replaceState(null, '', pathname);
   return (
     <section aria-label="灵感浏览">
-      <CollectionToolbar actions={searchPlaceholder ? <CollectionSearch value={query} onChange={setQuery} placeholder={searchPlaceholder} label="搜索标题、作者或标签" /> : null}>
+      <CollectionToolbar actions={<CollectionSearch value={query} onChange={setQuery} placeholder="搜索灵感" label="搜索标题、作者或标签" />}>
         <CategoryTabs categories={categories} active={active} onSelect={select} />
       </CollectionToolbar>
-      <div className={query || active !== '全部' ? styles.results : styles.srOnly}>
+      <div className={styles.results}>
         <p role="status">{filtered.length} 件灵感</p>
         {query || active !== '全部' ? <Button variant="ghost" onClick={clear}>清除筛选</Button> : null}
       </div>
       {filtered.length === 0 ? <div className={styles.empty}>
         <h2>{items.length ? '没有找到匹配的灵感' : '还没有收录内容'}</h2>
-        <p>{items.length ? '试试其他关键词，或清除分类与搜索条件。' : '内容收录后会出现在这里。'}</p>
+        <p>{items.length ? '试试其他关键词或分类，或清除筛选。' : '内容收录后会出现在这里。'}</p>
         {items.length ? <Button onClick={clear}>查看全部灵感</Button> : null}
       </div> : <div className={styles.grid}>
         {visible.map((item) => <PlateCell key={item.key} item={item} href={browseHref(item.href, returnHref)} onNavigate={remember} />)}

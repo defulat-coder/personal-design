@@ -1,8 +1,12 @@
 export type BrowseEntry = { href: string; title: string };
 export type BrowseContext = { href: string; entries: BrowseEntry[] };
-export type SearchableBrowseEntry = BrowseEntry & { category: string; theme?: string; search: string[] };
+export type FilterableBrowseEntry = BrowseEntry & { category: string; theme?: string; search?: string[] };
 
 const filterNames = ['cat', 'theme', 'q'] as const;
+
+export function matchesSearch(query: string, fields: (string | undefined)[]): boolean {
+  return fields.filter(Boolean).join(' ').toLocaleLowerCase().includes(query.trim().toLocaleLowerCase());
+}
 
 /** Carry the actual filters in native links, including open-in-new-tab and history. */
 export function browseHref(href: string, listHref: string): string {
@@ -28,21 +32,20 @@ export function browseMemoryKey(storageKey: string, listHref: string): string {
 }
 
 /** Resolve shareable trails from current data, independently of session storage. */
-export function resolveUrlBrowseContext(query: string, listPath: string, pathname: string, catalog: SearchableBrowseEntry[]): BrowseContext | null {
+export function resolveUrlBrowseContext(query: string, listPath: string, pathname: string, catalog: FilterableBrowseEntry[]): BrowseContext | null {
   const params = new URLSearchParams(query);
   if (params.get('browse') !== '2') return null;
   const requestedCat = params.get('cat') ?? '';
   const category = catalog.some(entry => entry.category === requestedCat) ? requestedCat : '';
   const requestedTheme = params.get('theme') ?? '';
   const theme = catalog.some(entry => entry.theme === requestedTheme && (!category || entry.category === category)) ? requestedTheme : '';
-  const queryValue = params.get('q') ?? '';
-  const keyword = queryValue.trim().toLocaleLowerCase();
-  const entries = catalog.filter(entry => (!category || entry.category === category) && (!theme || entry.theme === theme) && (!keyword || entry.search.some(field => field.toLocaleLowerCase().includes(keyword))));
+  const queryText = params.get('q') ?? '';
+  const entries = catalog.filter(entry => matchesSearch(queryText, [entry.title, ...(entry.search ?? [])]) && (!category || entry.category === category) && (!theme || entry.theme === theme));
   if (!entries.some(entry => entry.href === pathname)) return null;
   const filters = new URLSearchParams();
+  if (queryText) filters.set('q', queryText);
   if (category) filters.set('cat', category);
   if (theme) filters.set('theme', theme);
-  if (queryValue) filters.set('q', queryValue);
   // Returning from a layout detail reopens its book at the image just viewed.
   if (listPath === '/products/layout-compositions' && category) filters.set('page', pathname.split('/').at(-1)!);
   return { href: `${listPath}${filters.size ? `?${filters}` : ''}`, entries };
