@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { connection } from 'next/server';
 import { LightboxProvider } from '@/components/lifeline/lightbox';
 import {
   catalog,
@@ -32,10 +33,12 @@ const tabs = categories.map((category) => ({
   count: items.filter((item) => item.category === category.name).length,
 }));
 
-export default function LayoutCompositionsPage() {
+export default async function LayoutCompositionsPage() {
+  // Render the requested spread on the server so its images do not wait for hydration.
+  await connection();
   return (
     <main >
-      {/* LayoutBookshelf 内用 useSearchParams 读分类，需要 Suspense 边界 */}
+      {/* Keep navigation transitions within the existing Suspense boundary. */}
       <Suspense fallback={<p className="p-6 text-ink-soft" role="status">正在加载布局图鉴…</p>}>
         <LightboxProvider><LayoutBookshelf categories={tabs} items={items} /></LightboxProvider>
       </Suspense>

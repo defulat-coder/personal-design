@@ -218,7 +218,7 @@ function PageContent({item,number}:{item?:BookPage;number:number}) {
   return <><button data-page-id={item.id} className={styles.pageImage} aria-label={`放大${item.name}`} disabled={!item.src} onClick={event=>{
     if(item.src) lightbox?.open({src:item.src,thumb:item.thumb ?? undefined,alt:item.name},{rect:event.currentTarget.getBoundingClientRect(),sourceEl:event.currentTarget});
   }}>
-    {item.thumb && !failed ? <Image src={item.thumb} alt={item.name} fill unoptimized sizes="(max-width: 640px) 44vw, 440px" draggable={false} onError={()=>setFailed(true)}/> : <span>{item.name}<br/>{failed?'图片暂时无法加载':'此图鉴暂缺图片'}</span>}
+    {item.thumb && !failed ? <Image src={item.thumb} alt={item.name} fill unoptimized loading="eager" fetchPriority="high" sizes="(max-width: 640px) 44vw, 440px" draggable={false} onError={()=>setFailed(true)}/> : <span>{item.name}<br/>{failed?'图片暂时无法加载':'此图鉴暂缺图片'}</span>}
     {item.src && <span className={styles.zoomHint}><Maximize2 size={14}/>放大查看</span>}
   </button><span className={styles.folio} aria-label={`第${number}页`}>{number}</span></>;
 }
