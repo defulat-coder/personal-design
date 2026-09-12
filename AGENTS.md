@@ -58,8 +58,8 @@ Co-Authored-By: (the agent model's name and attribution byline)
 ## inspora 包
 
 - 从 inspora.design 增量同步的灵感库：`inspora.db`（SQLite，`node:sqlite` 读写）+ `apps/web/public/inspora/`（海报/缩略图/头像本地化），两者都是生成物但随仓库提交；大图与视频不入库，查询 API 按本地文件存在性自动回退热链原站（media.inspora.design）
-- 列表 API `/api/posts` 被 Vercel checkpoint 拦截，sync 脚本必须用 Playwright 在页面上下文里 fetch；详情无 API，从 `/posts/<slug>` HTML 的 RSC payload 提取（脚本头部注释有完整说明）
-- 增量逻辑：feed 遇到已入库 id 即停；`enriched_at IS NULL` 才补详情；媒体按文件存在性跳过——可随时中断重跑
+- 列表优先从各分类页面 HTML 的 RSC `initialPage` 读取，覆盖不足才请求 `/api/posts` 翻页；Playwright 遇到 Vercel checkpoint 时通过 `ego-browser nodejs` 使用正常浏览器会话，需本机 ego lite 可用。详情从 `/posts/<slug>` HTML 的 RSC payload 提取（脚本头部注释有完整说明）
+- 增量逻辑：各分类遇到本次运行前已入库 id 即停，全部分类发现完整后事务写入，分页失败不留下会截断后续增量的半批数据；`enriched_at IS NULL` 才补详情；媒体按文件存在性跳过——可随时中断重跑
 - 查询一律用 `src/index.ts` 的 API（`listPosts`、`getPostBySlug`、`listCategories`、`upstreamUrl`…），不在 app 里读 DB、不拼路径
 - 详情面向访客，只展示作品、作者、分类、实际说明和「查看原作」出处链接；不展示原始 JSON、同步信息、文件大小/分辨率、内部标签或空信息占位。原始数据只在包内保留（2026-09-07 用户明确）。
 - 产品对外的名字是「灵感集」，路由 `/products/muse`；**访客可见处（文案、链接、metadata）一律不得出现来源站点名**，事实性描述只留在本文件与包/脚本注释里
