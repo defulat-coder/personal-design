@@ -93,6 +93,7 @@ const MEDIA_BASE = (process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? '').replace(
   /\/+$/,
   '',
 );
+const MEDIA_VERSION = process.env.NEXT_PUBLIC_MEDIA_VERSION;
 
 /** 上游仓库的 jsDelivr CDN（热链原图用，免自建存储） */
 const UPSTREAM_CDN =
@@ -130,7 +131,7 @@ function resolveUpstreamImage(item: LayoutItem): string | null {
 export function imageUrl(item: LayoutItem): string {
   const local = `/layout-compositions/images/${item.category_slug}/${item.id}.webp`;
   if (existsSync(join(PUBLIC_DIR, local))) {
-    return `${MEDIA_BASE}${local}`;
+    return `${MEDIA_BASE}${local}${MEDIA_VERSION ? `?v=${MEDIA_VERSION}` : ''}`;
   }
   const upstreamPath = resolveUpstreamImage(item);
   return upstreamPath ? UPSTREAM_CDN + encodeURI(upstreamPath) : '';
@@ -138,7 +139,7 @@ export function imageUrl(item: LayoutItem): string {
 
 /** 站点内缩略图 WebP 路径（本地常驻，体积小）。 */
 export function thumbnailUrl(item: LayoutItem): string {
-  return `${MEDIA_BASE}/layout-compositions/thumbnails/${item.category_slug}/${item.id}.webp`;
+  return `${MEDIA_BASE}/layout-compositions/thumbnails/${item.category_slug}/${item.id}.webp${MEDIA_VERSION ? `?v=${MEDIA_VERSION}` : ''}`;
 }
 
 /** 上游图片缺失的条目 id（v2 丢失且 v1 无等价图）。 */

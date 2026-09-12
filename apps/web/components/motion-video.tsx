@@ -12,6 +12,8 @@ export function MotionVideo({ active = true, manualControls = false, src, onPaus
     if (!video) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
     let visible = false;
+    let nearby = false;
+    let releaseTimer: ReturnType<typeof setTimeout> | undefined;
     let eligible = false;
     let manualPause = false;
     let manualPlay = false;
@@ -24,6 +26,10 @@ export function MotionVideo({ active = true, manualControls = false, src, onPaus
       video.pause();
     };
     const update = () => {
+      if (active && nearby && !document.hidden && src && video.getAttribute('src') !== src && (!reduce.matches || props.controls || manualControls)) {
+        video.src = src;
+        video.load();
+      }
       eligible = active && visible && !document.hidden;
       if (!eligible || (reduce.matches && !manualPlay)) {
         pauseAutomatically();
@@ -47,14 +53,23 @@ export function MotionVideo({ active = true, manualControls = false, src, onPaus
       if (!eligible) pauseAutomatically();
     };
     const near = new IntersectionObserver(([entry]) => {
-      if (entry?.isIntersecting && src && video.getAttribute('src') !== src) {
-        video.src = src;
-        video.load();
-        near.disconnect();
+      nearby = !!entry?.isIntersecting;
+      update();
+    }, { rootMargin: '80px' });
+    // Decorative previews can restart; native/manual playback keeps its position.
+    const distant = new IntersectionObserver(([entry]) => {
+      clearTimeout(releaseTimer);
+      if (!entry?.isIntersecting && !props.controls && !manualControls) {
+        releaseTimer = setTimeout(() => {
+          pauseAutomatically();
+          video.removeAttribute('src');
+          video.load();
+        }, 1500);
       }
-    }, { rootMargin: '160px' });
+    }, { rootMargin: '600px' });
     const observer = new IntersectionObserver(([entry]) => { visible = !!entry?.isIntersecting && entry.intersectionRatio >= .3; update(); }, { threshold: .3 });
     near.observe(video);
+    distant.observe(video);
     observer.observe(video);
     document.addEventListener('visibilitychange', update);
     reduce.addEventListener('change', update);
@@ -65,6 +80,7 @@ export function MotionVideo({ active = true, manualControls = false, src, onPaus
       disposed = true;
       eligible = false;
       near.disconnect(); observer.disconnect();
+      distant.disconnect(); clearTimeout(releaseTimer);
       document.removeEventListener('visibilitychange', update);
       reduce.removeEventListener('change', update);
       video.removeEventListener('canplay', update);

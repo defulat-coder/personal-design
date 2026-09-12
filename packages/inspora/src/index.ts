@@ -17,11 +17,12 @@ const MEDIA_BASE = (process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? '').replace(
   /\/+$/,
   '',
 );
+const MEDIA_VERSION = process.env.NEXT_PUBLIC_MEDIA_VERSION;
 
 /** 本地副本存在用本地（含外置 base），否则回退热链原站 */
 function mediaUrl(localPath: string | null, upstream: string | null): string | null {
   if (localPath && existsSync(path.join(PUBLIC_DIR, localPath))) {
-    return `${MEDIA_BASE}${localPath}`;
+    return `${MEDIA_BASE}${localPath}${MEDIA_VERSION ? `?v=${MEDIA_VERSION}` : ''}`;
   }
   return upstream;
 }
@@ -86,7 +87,10 @@ export function videoPreviewUrl(post: Pick<InsporaPost, 'raw'>, media: Pick<Insp
   if (media.type !== 'video' || !post.raw || typeof post.raw !== 'object' || !('media' in post.raw) || !Array.isArray(post.raw.media)) return media.src;
   const record = post.raw.media.find(entry => entry && typeof entry === 'object' && entry.id === media.id);
   const preview = record?.videoPreview;
-  return preview && typeof preview === 'object' && typeof preview.url === 'string' && preview.url.startsWith('https://') ? preview.url : media.src;
+  if (!preview || typeof preview !== 'object' || typeof preview.url !== 'string' || !preview.url.startsWith('https://')) return media.src;
+  const smallerResolution = preview.width > 0 && preview.height > 0 && record.width > 0 && record.height > 0 && preview.width * preview.height < record.width * record.height;
+  if (preview.bytes > 0 && record.sizeBytes > 0 && preview.bytes >= record.sizeBytes && !smallerResolution) return media.src;
+  return preview.url;
 }
 
 /** inspora 原帖链接 */

@@ -12,3 +12,11 @@ test('missing, malformed and non-HTTPS previews retain the full video fallback',
   const media={id:'a',type:'video',src:'https://example.com/full.mp4'};
   for(const raw of [null,{},'bad',{media:[null]},{media:[{id:'a',videoPreview:{url:'javascript:bad'}}]}])assert.equal(videoPreviewUrl({raw},media),media.src);
 });
+
+test('does not choose a larger preview with no resolution advantage', () => {
+  const media={id:'a',type:'video',src:'https://example.com/full.mp4'};
+  const record={id:'a',sizeBytes:100,width:1080,height:1080,videoPreview:{url:'https://example.com/preview.mp4',bytes:130,width:1080,height:1080}};
+  assert.equal(videoPreviewUrl({raw:{media:[record]}},media),media.src);
+  record.videoPreview.width=540; record.videoPreview.height=540;
+  assert.equal(videoPreviewUrl({raw:{media:[record]}},media),record.videoPreview.url);
+});

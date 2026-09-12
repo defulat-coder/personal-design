@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { connection } from 'next/server';
 import styles from './page.module.css';
 import { listCategories, listPosts, videoPreviewUrl } from '@personal-design/inspora';
 import { PlateWall, type PlateWallItem } from '@/components/plate-wall';
@@ -43,7 +44,8 @@ const uncategorized = items.filter((item) => item.category === '未分类').leng
 if (uncategorized && !tabs.some((category) => category.name === '未分类')) tabs.push({ name: '未分类', count: uncategorized });
 
 
-export default function MusePage() {
+export default async function MusePage() {
+  await connection();
   return (
     <main className={styles.page}>
       <div>
